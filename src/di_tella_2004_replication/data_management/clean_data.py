@@ -36,3 +36,29 @@ month_dict = {
     11: "nov",
     12: "dic",
 }
+
+for key, value in month_dict.items():
+    for i in range(1, 23):
+        rob_data[f"rob{i}"] = rob_data[f"rob{i}"].astype(float)
+        rob_data[f"rob{i}val"] = rob_data[f"rob{i}val"].astype(float)
+        rob_data.loc[rob_data[f"rob{i}esq"] == 1, f"rob{i}"] = 0.25
+
+        rob_data[f"ron{i}{value}"] = np.where(
+            (rob_data[f"rob{i}"] != 0)
+            & (rob_data[f"rob{i}mes"] == key)
+            & (rob_data[f"rob{i}val"].between(8403.826, 100000)),
+            rob_data[f"rob{i}"],
+            0,
+        )
+
+        rob_data[f"rod{i}{value}"] = np.where(
+            (rob_data[f"rob{i}"] != 0)
+            & (rob_data[f"rob{i}mes"] == key)
+            & (rob_data[f"rob{i}val"].between(0, 8403.826)),
+            rob_data[f"rob{i}"],
+            0,
+        )
+
+    rob_data[f"totrond{key}"] = rob_data.filter(regex=f"ron\\d+{value}").sum(axis=1)
+    rob_data[f"totrobd{key}"] = rob_data.filter(regex=f"rod\\d+{value}").sum(axis=1)
+    rob_data[f"difdn{key}"] = rob_data[f"totrond{key}"] - rob_data[f"totrobd{key}"]
