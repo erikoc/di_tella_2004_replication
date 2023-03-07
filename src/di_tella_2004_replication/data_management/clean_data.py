@@ -1,4 +1,6 @@
 """Function(s) for cleaning the data set(s)."""
+import numpy as np
+import pandas as pd
 import pyreadstat
 
 # Reading the data
@@ -39,8 +41,6 @@ month_dict = {
 
 for key, value in month_dict.items():
     for i in range(1, 23):
-        rob_data[f"rob{i}"] = rob_data[f"rob{i}"].astype(float)
-        rob_data[f"rob{i}val"] = rob_data[f"rob{i}val"].astype(float)
         rob_data.loc[rob_data[f"rob{i}esq"] == 1, f"rob{i}"] = 0.25
 
         rob_data[f"ron{i}{value}"] = np.where(
@@ -62,3 +62,14 @@ for key, value in month_dict.items():
     rob_data[f"totrond{key}"] = rob_data.filter(regex=f"ron\\d+{value}").sum(axis=1)
     rob_data[f"totrobd{key}"] = rob_data.filter(regex=f"rod\\d+{value}").sum(axis=1)
     rob_data[f"difdn{key}"] = rob_data[f"totrond{key}"] - rob_data[f"totrobd{key}"]
+
+rob_cols = [col for col in rob_data.columns if col.startswith("ro")]
+rob_data = rob_data.drop(columns=rob_cols)
+
+rob_data = rob_data.reset_index()
+rob_data = pd.wide_to_long(
+    rob_data,
+    stubnames=["totrond", "totrobd", "difdn"],
+    i=["observ"],
+    j="month",
+)
