@@ -76,6 +76,22 @@ for key, value in month_dict.items():
             0,
         )
 
+        rob_data[f"theft_weekday{i}{value}_2"] = np.where(
+            (rob_data[f"rob{i}"] != 0)
+            & (rob_data[f"rob{i}mes"] == key)
+            & (rob_data[f"rob{i}day"] <= 5),
+            rob_data[f"rob{i}"],
+            0,
+        )
+
+        rob_data[f"theft_weekend{i}{value}_2"] = np.where(
+            (rob_data[f"rob{i}"] != 0)
+            & (rob_data[f"rob{i}mes"] == key)
+            & (rob_data[f"rob{i}day"] > 5),
+            rob_data[f"rob{i}"],
+            0,
+        )
+
     rob_data[f"tot_theft_hv{key}"] = rob_data.filter(regex=f"theft_hv\\d+{value}").sum(
         axis=1,
     )
@@ -96,6 +112,16 @@ for key, value in month_dict.items():
         rob_data[f"tot_theft_night{key}"] - rob_data[f"tot_theft_day{key}"]
     )
 
+    rob_data[f"tot_theft_weekday{key}"] = rob_data.filter(
+        regex=f"theft_weekday\\d+{value}",
+    ).sum(axis=1)
+    rob_data[f"tot_theft_weekend{key}"] = rob_data.filter(
+        regex=f"theft_weekend\\d+{value}",
+    ).sum(axis=1)
+    rob_data[f"dif_weekday_weekend{key}"] = (
+        rob_data[f"tot_theft_weekday{key}"] - rob_data[f"tot_theft_weekend{key}"]
+    )
+
 
 rob_cols = [col for col in rob_data.columns if col.startswith("ro")]
 rob_data = rob_data.drop(columns=rob_cols)
@@ -110,6 +136,9 @@ rob_data = pd.wide_to_long(
         "tot_theft_night",
         "tot_theft_day",
         "dif_night_day",
+        "tot_theft_weekday",
+        "tot_theft_weekend",
+        "dif_weekday_weekend",
     ],
     i=["observ"],
     j="month",
