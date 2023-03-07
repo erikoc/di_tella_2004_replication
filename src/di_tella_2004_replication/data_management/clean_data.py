@@ -9,7 +9,6 @@ crime_by_block, meta = pyreadstat.read_dta("..\\data\\CrimebyBlock.dta")
 
 # Fixing types
 
-
 crime_by_block = crime_by_block.convert_dtypes()
 crime_by_block = crime_by_block.set_index("observ")
 float_cols = [f"rob{i}" for i in range(1, 23)] + [f"rob{i}val" for i in range(1, 23)]
@@ -39,11 +38,13 @@ month_dict = {
     12: "dic",
 }
 
+# ron = high value; rod = low value
+
 for key, value in month_dict.items():
     for i in range(1, 23):
         rob_data.loc[rob_data[f"rob{i}esq"] == 1, f"rob{i}"] = 0.25
 
-        rob_data[f"ron{i}{value}"] = np.where(
+        rob_data[f"theft_hv{i}{value}"] = np.where(
             (rob_data[f"rob{i}"] != 0)
             & (rob_data[f"rob{i}mes"] == key)
             & (rob_data[f"rob{i}val"].between(8403.826, 100000)),
@@ -51,7 +52,7 @@ for key, value in month_dict.items():
             0,
         )
 
-        rob_data[f"rod{i}{value}"] = np.where(
+        rob_data[f"theft_lv{i}{value}"] = np.where(
             (rob_data[f"rob{i}"] != 0)
             & (rob_data[f"rob{i}mes"] == key)
             & (rob_data[f"rob{i}val"].between(0, 8403.826)),
@@ -59,9 +60,42 @@ for key, value in month_dict.items():
             0,
         )
 
-    rob_data[f"totrond{key}"] = rob_data.filter(regex=f"ron\\d+{value}").sum(axis=1)
-    rob_data[f"totrobd{key}"] = rob_data.filter(regex=f"rod\\d+{value}").sum(axis=1)
-    rob_data[f"difdn{key}"] = rob_data[f"totrond{key}"] - rob_data[f"totrobd{key}"]
+        rob_data[f"theft_night{i}{value}_2"] = np.where(
+            (rob_data[f"rob{i}"] != 0)
+            & (rob_data[f"rob{i}mes"] == key)
+            & ((rob_data[f"rob{i}hor"] <= 10) | (rob_data[f"rob{i}hor"] > 22)),
+            rob_data[f"rob{i}"],
+            0,
+        )
+
+        rob_data[f"theft_day{i}{value}_2"] = np.where(
+            (rob_data[f"rob{i}"] != 0)
+            & (rob_data[f"rob{i}mes"] == key)
+            & (rob_data[f"rob{i}hor"].between(10, 22, inclusive="right")),
+            rob_data[f"rob{i}"],
+            0,
+        )
+
+    rob_data[f"tot_theft_hv{key}"] = rob_data.filter(regex=f"theft_hv\\d+{value}").sum(
+        axis=1,
+    )
+    rob_data[f"tot_theft_lv{key}"] = rob_data.filter(regex=f"theft_lv\\d+{value}").sum(
+        axis=1,
+    )
+    rob_data[f"dif_hv_lv{key}"] = (
+        rob_data[f"tot_theft_hv{key}"] - rob_data[f"tot_theft_lv{key}"]
+    )
+
+    rob_data[f"tot_theft_night{key}"] = rob_data.filter(
+        regex=f"theft_night\\d+{value}",
+    ).sum(axis=1)
+    rob_data[f"tot_theft_day{key}"] = rob_data.filter(
+        regex=f"theft_day\\d+{value}",
+    ).sum(axis=1)
+    rob_data[f"dif_night_day{key}"] = (
+        rob_data[f"tot_theft_night{key}"] - rob_data[f"tot_theft_day{key}"]
+    )
+
 
 rob_cols = [col for col in rob_data.columns if col.startswith("ro")]
 rob_data = rob_data.drop(columns=rob_cols)
@@ -69,7 +103,14 @@ rob_data = rob_data.drop(columns=rob_cols)
 rob_data = rob_data.reset_index()
 rob_data = pd.wide_to_long(
     rob_data,
-    stubnames=["totrond", "totrobd", "difdn"],
+    stubnames=[
+        "tot_theft_hv",
+        "tot_theft_lv",
+        "dif_hv_lv",
+        "tot_theft_night",
+        "tot_theft_day",
+        "dif_night_day",
+    ],
     i=["observ"],
     j="month",
 )
