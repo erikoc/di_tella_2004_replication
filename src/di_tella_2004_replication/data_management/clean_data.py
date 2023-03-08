@@ -7,6 +7,39 @@ import pyreadstat
 
 crime_by_block, meta = pyreadstat.read_dta("..\\data\\CrimebyBlock.dta")
 
+# Renaming columns
+
+crime_by_block.columns = (
+    crime_by_block.columns.str.replace("rob", "theft")
+    .str.replace("day", "week_day")
+    .str.replace("dia", "day")
+    .str.replace("mes", "month")
+    .str.replace("hor", "hour")
+    .str.replace("mak", "brand")
+    .str.replace("mak", "brand")
+    .str.replace("mak", "brand")
+    .str.replace("esq", "corner")
+    .str.replace("barrio", "neighborhood")
+    .str.replace("calle", "street")
+    .str.replace("altura", "street_nr")
+    .str.replace("institu1", "jewish_inst")
+    .str.replace("institu3", "jewish_inst_one_block_away")
+    .str.replace("distanci", "distance_to_jewish_inst")
+    .str.replace("edpub", "public_building_or_embassy")
+    .str.replace("estserv", "gas_station")
+    .str.replace("banco", "bank")
+    .str.replace("district", "census_district")
+    .str.replace("frcensal", "census_tract")
+    .str.replace("edad", "av_age")
+    .str.replace("mujer", "female_rate")
+    .str.replace("propiet", "ownership_rate")
+    .str.replace("tamhogar", "av_hh_size")
+    .str.replace("nohacinado", "non_overcrowd_rate")
+    .str.replace("nobi", "non_unmet_basic_needs_rate")
+    .str.replace("educjefe", "av_hh_head_schooling")
+    .str.replace("ocupado", "employment_rate")
+)
+
 # Fixing types
 
 crime_by_block = crime_by_block.convert_dtypes()
@@ -38,7 +71,11 @@ month_dict = {
     12: "dic",
 }
 
-# ron = high value; rod = low value
+# ideas:
+#  1. do a map on a function to make this double loop more efficient
+#  2. specify this condition np.where((rob_data[f"rob{i}"] != 0) & (rob_data[f"rob{i}mes"] == key)
+#      above and call it onto the later code
+
 
 for key, value in month_dict.items():
     for i in range(1, 23):
@@ -60,7 +97,7 @@ for key, value in month_dict.items():
             0,
         )
 
-        rob_data[f"theft_night{i}{value}_2"] = np.where(
+        rob_data[f"theft_night{i}{value}"] = np.where(
             (rob_data[f"rob{i}"] != 0)
             & (rob_data[f"rob{i}mes"] == key)
             & ((rob_data[f"rob{i}hor"] <= 10) | (rob_data[f"rob{i}hor"] > 22)),
@@ -68,7 +105,7 @@ for key, value in month_dict.items():
             0,
         )
 
-        rob_data[f"theft_day{i}{value}_2"] = np.where(
+        rob_data[f"theft_day{i}{value}"] = np.where(
             (rob_data[f"rob{i}"] != 0)
             & (rob_data[f"rob{i}mes"] == key)
             & (rob_data[f"rob{i}hor"].between(10, 22, inclusive="right")),
@@ -76,7 +113,7 @@ for key, value in month_dict.items():
             0,
         )
 
-        rob_data[f"theft_weekday{i}{value}_2"] = np.where(
+        rob_data[f"theft_weekday{i}{value}"] = np.where(
             (rob_data[f"rob{i}"] != 0)
             & (rob_data[f"rob{i}mes"] == key)
             & (rob_data[f"rob{i}day"] <= 5),
@@ -84,7 +121,7 @@ for key, value in month_dict.items():
             0,
         )
 
-        rob_data[f"theft_weekend{i}{value}_2"] = np.where(
+        rob_data[f"theft_weekend{i}{value}"] = np.where(
             (rob_data[f"rob{i}"] != 0)
             & (rob_data[f"rob{i}mes"] == key)
             & (rob_data[f"rob{i}day"] > 5),
@@ -123,7 +160,9 @@ for key, value in month_dict.items():
     )
 
 
-rob_cols = [col for col in rob_data.columns if col.startswith("ro")]
+rob_cols = [
+    col for col in rob_data.columns if col.startswith("theft") or col.startswith("rob")
+]
 rob_data = rob_data.drop(columns=rob_cols)
 
 rob_data = rob_data.reset_index()

@@ -102,7 +102,7 @@ repos:
       - id: codespell
         args:
           - --skip="**.ipynb"
-          - --ignore-words-list=observ
+          - --ignore-words-list=observ,calle
   - repo: https://github.com/asottile/setup-cfg-fmt
     rev: v2.2.0
     hooks:

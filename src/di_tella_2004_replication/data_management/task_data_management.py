@@ -11,8 +11,7 @@ from di_tella_2004_replication.utilities import read_yaml
 @pytask.mark.depends_on(
     {
         "scripts": ["clean_data.py"],
-        "data_info": SRC / "data_management" / "data_info.yaml",
-        "data": SRC / "data" / "data.csv",
+        "CrimeByBlock": SRC / "data" / "CrimebyBlock.dta",
     },
 )
 @pytask.mark.produces(BLD / "python" / "data" / "data_clean.csv")
