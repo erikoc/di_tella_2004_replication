@@ -188,3 +188,7 @@ theft_data = pd.wide_to_long(
     i=["observ"],
     j="month",
 )
+
+theft_data = theft_data.sort_values(by=["observ"])
+
+crime_by_block_panel = pd.merge(ind_char_data, theft_data, how="left", on="observ")
