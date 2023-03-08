@@ -83,56 +83,28 @@ month_dict = {
 for key, value in month_dict.items():
     for i in range(1, 23):
         theft_data.loc[theft_data[f"theft{i}corner"] == 1, f"theft{i}"] = 0.25
-
-        theft_data[f"theft_hv{i}{value}"] = np.where(
-            (theft_data[f"theft{i}"] != 0)
-            & (theft_data[f"theft{i}month"] == key)
-            & (theft_data[f"theft{i}val"].between(8403.826, 100000)),
-            theft_data[f"theft{i}"],
-            0,
+        common_conditions = (theft_data[f"theft{i}"] != 0) & (
+            theft_data[f"theft{i}month"] == key
         )
-
-        theft_data[f"theft_lv{i}{value}"] = np.where(
-            (theft_data[f"theft{i}"] != 0)
-            & (theft_data[f"theft{i}month"] == key)
-            & (theft_data[f"theft{i}val"].between(0, 8403.826)),
-            theft_data[f"theft{i}"],
-            0,
-        )
-
-        theft_data[f"theft_night{i}{value}"] = np.where(
-            (theft_data[f"theft{i}"] != 0)
-            & (theft_data[f"theft{i}month"] == key)
-            & (
-                (theft_data[f"theft{i}hour"] <= 10) | (theft_data[f"theft{i}hour"] > 22)
-            ),
-            theft_data[f"theft{i}"],
-            0,
-        )
-
-        theft_data[f"theft_day{i}{value}"] = np.where(
-            (theft_data[f"theft{i}"] != 0)
-            & (theft_data[f"theft{i}month"] == key)
-            & (theft_data[f"theft{i}hour"].between(10, 22, inclusive="right")),
-            theft_data[f"theft{i}"],
-            0,
-        )
-
-        theft_data[f"theft_weekday{i}{value}"] = np.where(
-            (theft_data[f"theft{i}"] != 0)
-            & (theft_data[f"theft{i}month"] == key)
-            & (theft_data[f"theft{i}day"] <= 5),
-            theft_data[f"theft{i}"],
-            0,
-        )
-
-        theft_data[f"theft_weekend{i}{value}"] = np.where(
-            (theft_data[f"theft{i}"] != 0)
-            & (theft_data[f"theft{i}month"] == key)
-            & (theft_data[f"theft{i}day"] > 5),
-            theft_data[f"theft{i}"],
-            0,
-        )
+        suffixes = ["hv", "lv", "night", "day", "weekday", "weekend"]
+        for suffix in suffixes:
+            theft_data[f"theft_{suffix}{i}{value}"] = np.where(
+                common_conditions
+                & (theft_data[f"theft{i}val"].between(8403.826, 100000))
+                if suffix == "hv"
+                else (theft_data[f"theft{i}val"].between(0, 8403.826))
+                if suffix == "lv"
+                else (theft_data[f"theft{i}hour"] <= 10)
+                | (theft_data[f"theft{i}hour"] > 22)
+                if suffix == "night"
+                else (theft_data[f"theft{i}hour"].between(10, 22, inclusive="right"))
+                if suffix == "day"
+                else (theft_data[f"theft{i}day"] <= 5)
+                if suffix == "weekday"
+                else (theft_data[f"theft{i}day"] > 5),
+                theft_data[f"theft{i}"],
+                0,
+            )
 
     theft_data[f"tot_theft_hv{key}"] = theft_data.filter(
         regex=f"theft_hv\\d+{value}",
