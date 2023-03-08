@@ -19,6 +19,7 @@ crime_by_block.columns = (
     .str.replace("mak", "brand")
     .str.replace("mak", "brand")
     .str.replace("esq", "corner")
+    .str.replace("observ", "block")
     .str.replace("barrio", "neighborhood")
     .str.replace("calle", "street")
     .str.replace("altura", "street_nr")
@@ -43,7 +44,7 @@ crime_by_block.columns = (
 # Fixing types
 
 crime_by_block = crime_by_block.convert_dtypes()
-crime_by_block = crime_by_block.set_index("observ")
+crime_by_block = crime_by_block.set_index("block")
 float_cols = [f"theft{i}" for i in range(1, 23)] + [
     f"theft{i}val" for i in range(1, 23)
 ]
@@ -171,7 +172,11 @@ for key, value in month_dict.items():
 theft_cols = [col for col in theft_data.columns if col.startswith("theft")]
 theft_data = theft_data.drop(columns=theft_cols)
 
-theft_data = theft_data.reset_index()
+
+# does the names part do something ?
+theft_data = theft_data.reset_index(names=["block"])
+
+
 theft_data = pd.wide_to_long(
     theft_data,
     stubnames=[
@@ -185,10 +190,10 @@ theft_data = pd.wide_to_long(
         "tot_theft_weekend",
         "dif_weekday_weekend",
     ],
-    i=["observ"],
+    i=["block"],
     j="month",
 )
 
-theft_data = theft_data.sort_values(by=["observ"])
-
-crime_by_block_panel = pd.merge(ind_char_data, theft_data, how="left", on="observ")
+theft_data = theft_data.reset_index(names=["block", "month"])
+crime_by_block_panel = pd.merge(ind_char_data, theft_data, how="left", on=["block"])
+crime_by_block_panel = crime_by_block_panel.set_index(["block", "month"])
