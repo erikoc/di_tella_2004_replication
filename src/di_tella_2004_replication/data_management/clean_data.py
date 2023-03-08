@@ -44,16 +44,18 @@ crime_by_block.columns = (
 
 crime_by_block = crime_by_block.convert_dtypes()
 crime_by_block = crime_by_block.set_index("observ")
-float_cols = [f"rob{i}" for i in range(1, 23)] + [f"rob{i}val" for i in range(1, 23)]
+float_cols = [f"theft{i}" for i in range(1, 23)] + [
+    f"theft{i}val" for i in range(1, 23)
+]
 crime_by_block[float_cols] = crime_by_block[float_cols].astype(float)
 
 
 # Get columns starting with "ro"
-rob_data = crime_by_block.loc[:, crime_by_block.columns.str.startswith("ro")]
+theft_data = crime_by_block.loc[:, crime_by_block.columns.str.startswith("theft")]
 
 # Get columns that don't start with "ro"
 ind_char_data = crime_by_block[
-    [col for col in crime_by_block.columns if not col.startswith("ro")]
+    [col for col in crime_by_block.columns if not col.startswith("theft")]
 ]
 
 
@@ -73,101 +75,105 @@ month_dict = {
 
 # ideas:
 #  1. do a map on a function to make this double loop more efficient
-#  2. specify this condition np.where((rob_data[f"rob{i}"] != 0) & (rob_data[f"rob{i}mes"] == key)
+#  2. specify this condition np.where((theft_data[f"theft{i}"] != 0) & (theft_data[f"theft{i}mes"] == key)
 #      above and call it onto the later code
 
 
 for key, value in month_dict.items():
     for i in range(1, 23):
-        rob_data.loc[rob_data[f"rob{i}esq"] == 1, f"rob{i}"] = 0.25
+        theft_data.loc[theft_data[f"theft{i}corner"] == 1, f"theft{i}"] = 0.25
 
-        rob_data[f"theft_hv{i}{value}"] = np.where(
-            (rob_data[f"rob{i}"] != 0)
-            & (rob_data[f"rob{i}mes"] == key)
-            & (rob_data[f"rob{i}val"].between(8403.826, 100000)),
-            rob_data[f"rob{i}"],
+        theft_data[f"theft_hv{i}{value}"] = np.where(
+            (theft_data[f"theft{i}"] != 0)
+            & (theft_data[f"theft{i}month"] == key)
+            & (theft_data[f"theft{i}val"].between(8403.826, 100000)),
+            theft_data[f"theft{i}"],
             0,
         )
 
-        rob_data[f"theft_lv{i}{value}"] = np.where(
-            (rob_data[f"rob{i}"] != 0)
-            & (rob_data[f"rob{i}mes"] == key)
-            & (rob_data[f"rob{i}val"].between(0, 8403.826)),
-            rob_data[f"rob{i}"],
+        theft_data[f"theft_lv{i}{value}"] = np.where(
+            (theft_data[f"theft{i}"] != 0)
+            & (theft_data[f"theft{i}month"] == key)
+            & (theft_data[f"theft{i}val"].between(0, 8403.826)),
+            theft_data[f"theft{i}"],
             0,
         )
 
-        rob_data[f"theft_night{i}{value}"] = np.where(
-            (rob_data[f"rob{i}"] != 0)
-            & (rob_data[f"rob{i}mes"] == key)
-            & ((rob_data[f"rob{i}hor"] <= 10) | (rob_data[f"rob{i}hor"] > 22)),
-            rob_data[f"rob{i}"],
+        theft_data[f"theft_night{i}{value}"] = np.where(
+            (theft_data[f"theft{i}"] != 0)
+            & (theft_data[f"theft{i}month"] == key)
+            & (
+                (theft_data[f"theft{i}hour"] <= 10) | (theft_data[f"theft{i}hour"] > 22)
+            ),
+            theft_data[f"theft{i}"],
             0,
         )
 
-        rob_data[f"theft_day{i}{value}"] = np.where(
-            (rob_data[f"rob{i}"] != 0)
-            & (rob_data[f"rob{i}mes"] == key)
-            & (rob_data[f"rob{i}hor"].between(10, 22, inclusive="right")),
-            rob_data[f"rob{i}"],
+        theft_data[f"theft_day{i}{value}"] = np.where(
+            (theft_data[f"theft{i}"] != 0)
+            & (theft_data[f"theft{i}month"] == key)
+            & (theft_data[f"theft{i}hour"].between(10, 22, inclusive="right")),
+            theft_data[f"theft{i}"],
             0,
         )
 
-        rob_data[f"theft_weekday{i}{value}"] = np.where(
-            (rob_data[f"rob{i}"] != 0)
-            & (rob_data[f"rob{i}mes"] == key)
-            & (rob_data[f"rob{i}day"] <= 5),
-            rob_data[f"rob{i}"],
+        theft_data[f"theft_weekday{i}{value}"] = np.where(
+            (theft_data[f"theft{i}"] != 0)
+            & (theft_data[f"theft{i}month"] == key)
+            & (theft_data[f"theft{i}day"] <= 5),
+            theft_data[f"theft{i}"],
             0,
         )
 
-        rob_data[f"theft_weekend{i}{value}"] = np.where(
-            (rob_data[f"rob{i}"] != 0)
-            & (rob_data[f"rob{i}mes"] == key)
-            & (rob_data[f"rob{i}day"] > 5),
-            rob_data[f"rob{i}"],
+        theft_data[f"theft_weekend{i}{value}"] = np.where(
+            (theft_data[f"theft{i}"] != 0)
+            & (theft_data[f"theft{i}month"] == key)
+            & (theft_data[f"theft{i}day"] > 5),
+            theft_data[f"theft{i}"],
             0,
         )
 
-    rob_data[f"tot_theft_hv{key}"] = rob_data.filter(regex=f"theft_hv\\d+{value}").sum(
+    theft_data[f"tot_theft_hv{key}"] = theft_data.filter(
+        regex=f"theft_hv\\d+{value}",
+    ).sum(
         axis=1,
     )
-    rob_data[f"tot_theft_lv{key}"] = rob_data.filter(regex=f"theft_lv\\d+{value}").sum(
+    theft_data[f"tot_theft_lv{key}"] = theft_data.filter(
+        regex=f"theft_lv\\d+{value}",
+    ).sum(
         axis=1,
     )
-    rob_data[f"dif_hv_lv{key}"] = (
-        rob_data[f"tot_theft_hv{key}"] - rob_data[f"tot_theft_lv{key}"]
+    theft_data[f"dif_hv_lv{key}"] = (
+        theft_data[f"tot_theft_hv{key}"] - theft_data[f"tot_theft_lv{key}"]
     )
 
-    rob_data[f"tot_theft_night{key}"] = rob_data.filter(
+    theft_data[f"tot_theft_night{key}"] = theft_data.filter(
         regex=f"theft_night\\d+{value}",
     ).sum(axis=1)
-    rob_data[f"tot_theft_day{key}"] = rob_data.filter(
+    theft_data[f"tot_theft_day{key}"] = theft_data.filter(
         regex=f"theft_day\\d+{value}",
     ).sum(axis=1)
-    rob_data[f"dif_night_day{key}"] = (
-        rob_data[f"tot_theft_night{key}"] - rob_data[f"tot_theft_day{key}"]
+    theft_data[f"dif_night_day{key}"] = (
+        theft_data[f"tot_theft_night{key}"] - theft_data[f"tot_theft_day{key}"]
     )
 
-    rob_data[f"tot_theft_weekday{key}"] = rob_data.filter(
+    theft_data[f"tot_theft_weekday{key}"] = theft_data.filter(
         regex=f"theft_weekday\\d+{value}",
     ).sum(axis=1)
-    rob_data[f"tot_theft_weekend{key}"] = rob_data.filter(
+    theft_data[f"tot_theft_weekend{key}"] = theft_data.filter(
         regex=f"theft_weekend\\d+{value}",
     ).sum(axis=1)
-    rob_data[f"dif_weekday_weekend{key}"] = (
-        rob_data[f"tot_theft_weekday{key}"] - rob_data[f"tot_theft_weekend{key}"]
+    theft_data[f"dif_weekday_weekend{key}"] = (
+        theft_data[f"tot_theft_weekday{key}"] - theft_data[f"tot_theft_weekend{key}"]
     )
 
 
-rob_cols = [
-    col for col in rob_data.columns if col.startswith("theft") or col.startswith("rob")
-]
-rob_data = rob_data.drop(columns=rob_cols)
+theft_cols = [col for col in theft_data.columns if col.startswith("theft")]
+theft_data = theft_data.drop(columns=theft_cols)
 
-rob_data = rob_data.reset_index()
-rob_data = pd.wide_to_long(
-    rob_data,
+theft_data = theft_data.reset_index()
+theft_data = pd.wide_to_long(
+    theft_data,
     stubnames=[
         "tot_theft_hv",
         "tot_theft_lv",
