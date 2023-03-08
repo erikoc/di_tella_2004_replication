@@ -86,8 +86,8 @@ for key, value in month_dict.items():
         common_conditions = (theft_data[f"theft{i}"] != 0) & (
             theft_data[f"theft{i}month"] == key
         )
-        suffixes = ["hv", "lv", "night", "day", "weekday", "weekend"]
-        for suffix in suffixes:
+
+        for suffix in ["hv", "lv", "night", "day", "weekday", "weekend"]:
             theft_data[f"theft_{suffix}{i}{value}"] = np.where(
                 common_conditions
                 & (theft_data[f"theft{i}val"].between(8403.826, 100000))
@@ -106,36 +106,17 @@ for key, value in month_dict.items():
                 0,
             )
 
-    theft_data[f"tot_theft_hv{key}"] = theft_data.filter(
-        regex=f"theft_hv\\d+{value}",
-    ).sum(
-        axis=1,
-    )
-    theft_data[f"tot_theft_lv{key}"] = theft_data.filter(
-        regex=f"theft_lv\\d+{value}",
-    ).sum(
-        axis=1,
-    )
+    for suffix in ["hv", "lv", "night", "day", "weekday", "weekend"]:
+        col_regex = f"theft_{suffix}\\d+{value}"
+        tot_col = f"tot_theft_{suffix}{key}"
+        theft_data[tot_col] = theft_data.filter(regex=col_regex).sum(axis=1)
+
     theft_data[f"dif_hv_lv{key}"] = (
         theft_data[f"tot_theft_hv{key}"] - theft_data[f"tot_theft_lv{key}"]
     )
-
-    theft_data[f"tot_theft_night{key}"] = theft_data.filter(
-        regex=f"theft_night\\d+{value}",
-    ).sum(axis=1)
-    theft_data[f"tot_theft_day{key}"] = theft_data.filter(
-        regex=f"theft_day\\d+{value}",
-    ).sum(axis=1)
     theft_data[f"dif_night_day{key}"] = (
         theft_data[f"tot_theft_night{key}"] - theft_data[f"tot_theft_day{key}"]
     )
-
-    theft_data[f"tot_theft_weekday{key}"] = theft_data.filter(
-        regex=f"theft_weekday\\d+{value}",
-    ).sum(axis=1)
-    theft_data[f"tot_theft_weekend{key}"] = theft_data.filter(
-        regex=f"theft_weekend\\d+{value}",
-    ).sum(axis=1)
     theft_data[f"dif_weekday_weekend{key}"] = (
         theft_data[f"tot_theft_weekday{key}"] - theft_data[f"tot_theft_weekend{key}"]
     )
@@ -144,8 +125,6 @@ for key, value in month_dict.items():
 theft_cols = [col for col in theft_data.columns if col.startswith("theft")]
 theft_data = theft_data.drop(columns=theft_cols)
 
-
-# does the names part do something ?
 theft_data = theft_data.reset_index(names=["block"])
 
 
