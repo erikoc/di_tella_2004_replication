@@ -1,11 +1,67 @@
 """Function(s) for cleaning the data set(s)."""
 import numpy as np
 import pandas as pd
-import pyreadstat
+import pyreadstat  as pyread
+
+""" Monthly Panel """ 
+
+""" Weekly Panel """
 
 # Reading the data
 
-crime_by_block, meta = pyreadstat.read_dta("..\\data\\CrimebyBlock.dta")
+WeeklyPanel, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/march2004_ditella_data/WeeklyPanel.dta')
+
+# Renaming columns
+
+WeeklyPanel.columns = (
+    WeeklyPanel.columns.str.replace("observ", "observ")
+    .str.replace("barrio", "neighborhood")
+    .str.replace("calle", "street")
+    .str.replace("altura", "street_nr")
+    .str.replace("institu1", "jewish_inst")
+    .str.replace("institu3", "jewish_inst_one_block_away")
+    .str.replace("distanci", "distance_to_jewish_inst")
+    .str.replace("edpub", "public_building_or_embassy")
+    .str.replace("estserv", "gas_station")
+    .str.replace("banco", "bank")
+    .str.replace("totrob", "total_thefts")
+    .str.replace("week", "week")
+)
+
+# Data management
+
+WeeklyPanel.drop(columns=['street', 'street_nr', 'public_building_or_embassy', 'gas_station', 'bank'], inplace=True)
+# gen week1=0; ... gen week39=0;
+list_names = ["week1"]
+list_names.extend([f"week{i}" for i in range(2,40)])
+WeeklyPanel[[col for col in list_names]] = 0
+# replace semana1=1 if week==1; ... replace semana39=1 if week==39;
+for i in range(1,40):
+    WeeklyPanel.loc[WeeklyPanel['week']==i, f"week{i}"]=1
+# gen jewish_inst_one_block_away_1=jewish_inst_one_block_away-jewish_inst;
+WeeklyPanel['jewish_int_one_block_away_1'] = WeeklyPanel['jewish_inst_one_block_away'] - WeeklyPanel['jewish_inst']
+# gen cuad2=0;
+WeeklyPanel['cuad2'] = 0
+# replace cuad2=1 if distance_to_jewish_inst==2;
+WeeklyPanel.loc[WeeklyPanel['distance_to_jewish_inst']==2, 'cuad2']=1
+# summarize totthefts;
+WeeklyPanel['total_thefts'].describe()
+# gen post=0;
+WeeklyPanel['post'] = 0
+# replace post=1 if week>=18;
+WeeklyPanel.loc[WeeklyPanel['week']>18, 'post']=1
+# gen jewish_inst_p=jewish_inst*post;
+WeeklyPanel['jewish_inst_p'] = WeeklyPanel['jewish_inst'] * WeeklyPanel['post']
+# gen inst3_1p=inst3_1*post;
+WeeklyPanel['jewish_int_one_block_away_1_p'] = WeeklyPanel['jewish_int_one_block_away_1'] * WeeklyPanel['post']
+# gen cuad2p=cuad2*post;
+WeeklyPanel['cuad2p'] = WeeklyPanel['cuad2'] * WeeklyPanel['post']
+
+""" Crime by block """
+
+# Reading the data
+
+crime_by_block, meta = pyread.read_dta("..\\data\\CrimebyBlock.dta")
 
 # Renaming columns
 
