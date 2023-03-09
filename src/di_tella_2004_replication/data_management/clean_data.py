@@ -30,6 +30,7 @@ WeeklyPanel.columns = (
 
 # Data management
 
+# Drop
 WeeklyPanel.drop(columns=['street', 'street_nr', 'public_building_or_embassy', 'gas_station', 'bank'], inplace=True)
 # gen week1=0; ... gen week39=0;
 list_names = ["week1"]
@@ -44,18 +45,28 @@ WeeklyPanel['jewish_int_one_block_away_1'] = WeeklyPanel['jewish_inst_one_block_
 WeeklyPanel['cuad2'] = 0
 # replace cuad2=1 if distance_to_jewish_inst==2;
 WeeklyPanel.loc[WeeklyPanel['distance_to_jewish_inst']==2, 'cuad2']=1
-# summarize totthefts;
-WeeklyPanel['total_thefts'].describe()
 # gen post=0;
 WeeklyPanel['post'] = 0
 # replace post=1 if week>=18;
 WeeklyPanel.loc[WeeklyPanel['week']>18, 'post']=1
 # gen jewish_inst_p=jewish_inst*post;
 WeeklyPanel['jewish_inst_p'] = WeeklyPanel['jewish_inst'] * WeeklyPanel['post']
-# gen inst3_1p=inst3_1*post;
+# gen jewish_int_one_block_away_1_p=jewish_int_one_block_away_1*post;
 WeeklyPanel['jewish_int_one_block_away_1_p'] = WeeklyPanel['jewish_int_one_block_away_1'] * WeeklyPanel['post']
 # gen cuad2p=cuad2*post;
 WeeklyPanel['cuad2p'] = WeeklyPanel['cuad2'] * WeeklyPanel['post']
+# gen n_neighborhood=0;
+WeeklyPanel['n_neighborhood'] = 0
+# replace n_neighborhood=1 if neighborhood=="Belgrano";
+WeeklyPanel.loc[WeeklyPanel['neighborhood']=='Belgrano', 'n_neighborhood']=1
+# replace n_neighborhood=2 if neighborhood=="Once";
+WeeklyPanel.loc[WeeklyPanel['neighborhood']=='Once', 'n_neighborhood']=2
+# replace n_neighborhood=3 if neighborhood=="V. Crespo";
+WeeklyPanel.loc[WeeklyPanel['neighborhood']=='V. Crespo', 'n_neighborhood']=3
+# gen codigo2=week+10000*n_neighborhood;
+WeeklyPanel['codigo2'] = WeeklyPanel['week'] + 1000*WeeklyPanel['n_neighborhood']
+# gen ntotrob=totrob*((365/12)/7);
+WeeklyPanel['n_total_thefts'] = WeeklyPanel['total_thefts'] * (365/12)/7
 
 """ Crime by block """
 
