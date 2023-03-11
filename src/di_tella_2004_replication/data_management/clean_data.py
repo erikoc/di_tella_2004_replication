@@ -30,31 +30,27 @@ def _clean_column_names(df):
         .str.replace("mak", "brand")
         .str.replace("mak", "brand")
         .str.replace("esq", "corner")
+        .str.replace("observ", "block")
+        .str.replace("barrio", "neighborhood")
+        .str.replace("calle", "street")
+        .str.replace("altura", "street_nr")
+        .str.replace("institu1", "jewish_inst")
+        .str.replace("institu3", "jewish_inst_one_block_away")
+        .str.replace("distanci", "distance_to_jewish_inst")
+        .str.replace("edpub", "public_building_or_embassy")
+        .str.replace("estserv", "gas_station")
+        .str.replace("banco", "bank")
+        .str.replace("district", "census_district")
+        .str.replace("frcensal", "census_tract")
+        .str.replace("edad", "av_age")
+        .str.replace("mujer", "female_rate")
+        .str.replace("propiet", "ownership_rate")
+        .str.replace("tamhogar", "av_hh_size")
+        .str.replace("nohacinado", "non_overcrowd_rate")
+        .str.replace("nobi", "non_unmet_basic_needs_rate")
+        .str.replace("educjefe", "av_hh_head_schooling")
+        .str.replace("ocupado", "employment_rate")
     )
-
-    replacements = {
-        "observ": "block",
-        "barrio": "neighborhood",
-        "calle": "street",
-        "altura": "street_nr",
-        "institu1": "jewish_inst",
-        "institu3": "jewish_inst_one_block_away",
-        "distanci": "distance_to_jewish_inst",
-        "edpub": "public_building_or_embassy",
-        "estserv": "gas_station",
-        "banco": "bank",
-        "district": "census_district",
-        "frcensal": "census_tract",
-        "edad": "av_age",
-        "mujer": "female_rate",
-        "propiet": "ownership_rate",
-        "tamhogar": "av_hh_size",
-        "nohacinado": "non_overcrowd_rate",
-        "nobi": "non_unmet_basic_needs_rate",
-        "educjefe": "av_hh_head_schooling",
-        "ocupado": "employment_rate",
-    }
-    df.columns = df.columns.str.lower().str.strip().map(replacements)
     return df
 
 
@@ -209,27 +205,22 @@ def process_crimebyblock(df):
         12: "dic",
     }
 
-    _clean_column_names(df)
-    _convert_dtypes(df)
+    df = _clean_column_names(df)
+    df = _convert_dtypes(df)
 
     # Get columns starting with "ro"
-    theft_data = crime_by_block.loc[:, crime_by_block.columns.str.startswith("theft")]
+    theft_data = df.loc[:, df.columns.str.startswith("theft")]
 
     # Get columns that don't start with "ro"
-    ind_char_data = crime_by_block[
-        [col for col in crime_by_block.columns if not col.startswith("theft")]
-    ]
+    ind_char_data = df[[col for col in df.columns if not col.startswith("theft")]]
 
-    _compute_theft_data(df, month_dict)
+    theft_data = _compute_theft_data(df, month_dict)
 
     theft_cols = [col for col in theft_data.columns if col.startswith("theft")]
     theft_data = theft_data.drop(columns=theft_cols)
     theft_data = theft_data.reset_index(names=["block"])
 
-    _create_panel_data(ind_char_data, theft_data)
-
-    theft_data = theft_data.reset_index(names=["block", "month"])
-    crime_by_block_panel = pd.merge(ind_char_data, theft_data, how="left", on=["block"])
+    crime_by_block_panel = _create_panel_data(ind_char_data, theft_data)
     crime_by_block_panel = crime_by_block_panel.set_index(["block", "month"])
 
     return crime_by_block_panel
