@@ -94,11 +94,109 @@ MonthlyPanel.to_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semes
 
 ############################################## PART 2 ########################################################################################################################
 
+### Reading the data ###
+MonthlyPanel, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel.csv')
+
 # drop if mes==72; drop if mes==73;
 MonthlyPanel2 = MonthlyPanel.drop(MonthlyPanel.loc[(MonthlyPanel['month']==72) | (MonthlyPanel['month']==73)].index, inplace=True)
 
+# gen totrobc=totrob;
+MonthlyPanel2['total_thefts_c'] = MonthlyPanel2['total_thefts']
+# rep totrobc=totrob*(30/17) if mes==7; and if mes==5, 8, 10 or 12 then replace totrobc=totrob*(30/31)
+MonthlyPanel2.loc[MonthlyPanel2['month']==7, "total_thefts_c"]= MonthlyPanel2['total_thefts']*(30/17)
+MonthlyPanel2.loc[(MonthlyPanel2['month']==5) | (MonthlyPanel2['month']==8) | (MonthlyPanel2['month']==10) | (MonthlyPanel2['month']==12), "total_thefts_c"]= MonthlyPanel2['total_thefts']*(30/31)
+
+# gen prerob=.; gen posrob=.; gen robcoll=.;
+list_namess = ['prethefts', 'posthefts', 'theftscoll']
+for col in list_namess:
+    MonthlyPanel2[col] = pd.NA
+    
+# replace prerob=totrob if mes<8;
+MonthlyPanel2.loc[MonthlyPanel2['month']<8, 'prethefts']=MonthlyPanel2['total_thefts']
+# replace posrob=totrob if mes>7;
+MonthlyPanel2.loc[MonthlyPanel2['month']>7, 'posthefts']=MonthlyPanel2['total_thefts']
+
+# sort observ mes;
+MonthlyPanel2 = MonthlyPanel2.sort_values(['observ', 'month'])
+
+# egen totpre=sum(prerob), by (observ);
+MonthlyPanel2['totalpre'] = MonthlyPanel2.groupby('observ')['prethefts'].transform('sum') # The transform() function is used to apply the calculation to each row of the DataFrame, 
+# rather than aggregating the data by group. This produces a new column with the same length as the original DataFrame.
+# egen totpos=sum(posrob), by (observ);
+MonthlyPanel2['totalpos'] = MonthlyPanel2.groupby('observ')['posthefts'].transform('sum')
+
+# replace robcoll=totpre/4 if mes==4;
+MonthlyPanel2.loc[MonthlyPanel2['month']==4, 'theftscoll']=MonthlyPanel2['totalpre']/4
+# replace robcoll=totpos/5 if mes==8;
+MonthlyPanel2.loc[MonthlyPanel2['month']==8, 'theftscoll']=MonthlyPanel2['totalpre']/5
+
+# gen totrobq=totrob*4;
+MonthlyPanel2['total_thefts_q'] = MonthlyPanel2['total_thefts'] * 4
+# gen w=0.25;
+MonthlyPanel2['w'] = 0.25
+
+# gen nbarrio=0;
+MonthlyPanel2['n_neighborhood'] = 0
+
+# replace nbarrio=1 if barrio=="Belgrano"; replace nbarrio=2 if barrio=="Once"; replace nbarrio=3 if barrio=="V. Crespo";
+list_names_n = ['Belgrano', 'Once', 'V. Crespo']
+for col, i in zip(list_names_n, range(1,4)):
+    MonthlyPanel2.loc[MonthlyPanel2['neighborhood']==col, 'n_neighborhood']=i 
+
+# gen codigo2=mes+10000*nbarrio;
+MonthlyPanel2['code2'] = MonthlyPanel2['month'] + 1000*MonthlyPanel2['n_neighborhood']
+
+# gen belgrano=0; # gen once=0; # gen vcrespo=0; # gen month4=0;
+# replace belgrano=1 if barrio=="Belgrano"; replace once=1 if barrio=="Once"; replace vcrespo=1 if barrio=="V. Crespo";
+list_names_b = ['belgrano', 'once', 'vcrespo']
+for col1, col2 in zip(list_names_b, list_names_n):
+    MonthlyPanel2[col1] = 0
+    MonthlyPanel2.loc[MonthlyPanel2['neighborhood']==col2, col1]=1
+
+# gen month4=0;
+MonthlyPanel2['month4'] = 0
+# replace month4=1 if mes==4;
+MonthlyPanel2.loc[MonthlyPanel2['mes']==4, 'month4']=1
+
+# gen mbelgapr=belgrano*month4; ... gen mbelgdec=belgrano*month12;
+# gen monceapr=once*month4; ... gen moncedec=once*month12;
+# gen mvcreapr=vcrespo*month4; ... gen mvcredec=vcrespo*month12;
+
+list_names_place = ["mbelgapr"]
+list_names_place.extend([f"mbelg{i}" for i in ["may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]], [f"monce{i}" for i in ["apr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]], [f"mvcre{i}" for i in ["apr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]])
+list_names_month = ["month4"]
+list_names_month.extend([f"month{i}" for i in range(5,13)])
+
+for col1, col2 in zip(list_names_place[0:8], list_names_month[0:8]):
+    MonthlyPanel2[col1] = MonthlyPanel2["belgrano"]*MonthlyPanel2[col2]
+for col1, col2 in zip(list_names_place[9:17], list_names_month[0:8]):
+    MonthlyPanel2[col1] = MonthlyPanel2["once"]*MonthlyPanel2[col2]
+for col1, col2 in zip(list_names_place[18:26], list_names_month[0:8]):
+    MonthlyPanel2[col1] = MonthlyPanel2["vcrespo"]*MonthlyPanel2[col2]
+
 # Saving the data frame
 MonthlyPanel2.to_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel2.csv')
+
+############################################## PART 3 ########################################################################################################################
+
+### Reading the data ###
+MonthlyPanel2, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel2.csv')
+
+# drop month4;
+MonthlyPlanel3 = MonthlyPanel2.drop(columns='month4')
+
+# gen epin1p=edpub*inst1p;
+MonthlyPanel['epin1p'] = MonthlyPanel['edpub'] * MonthlyPanel['inst1p']
+# gen epin3_1p=edpub*inst3_1p;
+MonthlyPanel['epin3_1p'] = MonthlyPanel['edpub'] * MonthlyPanel['inst3_1p']
+# gen epcuad2p=edpub*cuad2p;
+MonthlyPanel['epcuad2p'] = MonthlyPanel['edpub'] * MonthlyPanel['cuad2p']
+# gen nepin1p=(1-edpub)*inst1p;
+MonthlyPanel['nepin1p'] = (1-MonthlyPanel['edpub']) * MonthlyPanel['inst1p']
+# gen nepi3_1p=(1-edpub)*inst3_1p;
+MonthlyPanel['nepi3_1p'] = (1-MonthlyPanel['edpub']) * MonthlyPanel['inst3_1p']
+# gen nepcua2p=(1-edpub)*cuad2p;
+MonthlyPanel['nepcua2p'] = (1-MonthlyPanel['edpub']) * MonthlyPanel['cuad2p']
 
 
 
