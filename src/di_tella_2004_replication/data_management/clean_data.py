@@ -95,7 +95,7 @@ MonthlyPanel.to_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semes
 ############################################## PART 2 ########################################################################################################################
 
 ### Reading the data ###
-MonthlyPanel, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel.csv')
+MonthlyPanel = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel.csv')
 
 # drop if mes==72; drop if mes==73;
 MonthlyPanel2 = MonthlyPanel.drop(MonthlyPanel.loc[(MonthlyPanel['month']==72) | (MonthlyPanel['month']==73)].index, inplace=True)
@@ -180,23 +180,113 @@ MonthlyPanel2.to_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd seme
 ############################################## PART 3 ########################################################################################################################
 
 ### Reading the data ###
-MonthlyPanel2, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel2.csv')
+MonthlyPanel2 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel2.csv')
 
 # drop month4;
-MonthlyPlanel3 = MonthlyPanel2.drop(columns='month4')
+MonthlyPanel3 = MonthlyPanel2.drop(columns='month4')
 
-# gen epin1p=edpub*inst1p;
-MonthlyPanel['epin1p'] = MonthlyPanel['edpub'] * MonthlyPanel['inst1p']
-# gen epin3_1p=edpub*inst3_1p;
-MonthlyPanel['epin3_1p'] = MonthlyPanel['edpub'] * MonthlyPanel['inst3_1p']
-# gen epcuad2p=edpub*cuad2p;
-MonthlyPanel['epcuad2p'] = MonthlyPanel['edpub'] * MonthlyPanel['cuad2p']
-# gen nepin1p=(1-edpub)*inst1p;
-MonthlyPanel['nepin1p'] = (1-MonthlyPanel['edpub']) * MonthlyPanel['inst1p']
-# gen nepi3_1p=(1-edpub)*inst3_1p;
-MonthlyPanel['nepi3_1p'] = (1-MonthlyPanel['edpub']) * MonthlyPanel['inst3_1p']
-# gen nepcua2p=(1-edpub)*cuad2p;
-MonthlyPanel['nepcua2p'] = (1-MonthlyPanel['edpub']) * MonthlyPanel['cuad2p']
+# gen epin1p=edpub*inst1p; gen epin3_1p=edpub*inst3_1p; gen epcuad2p=edpub*cuad2p; gen nepin1p=(1-edpub)*inst1p; gen nepi3_1p=(1-edpub)*inst3_1p; gen nepcua2p=(1-edpub)*cuad2p;
+list_names_data31 = ['public_building_or_embassy_p', 'public_building_or_embassy_1_p', 'public_building_or_embassy_cuad2p', 'n_public_building_or_embassy_p', 'n_public_building_or_embassy_1_p', 'n_public_building_or_embassy_cuad2p']
+list_names_data32 = ['jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p', 'jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p']
+for col1, col2 in zip(list_names_data31, list_names_data32):
+    MonthlyPanel3[col1] = MonthlyPanel3['public_building_or_embassy'] * MonthlyPanel3[col2]
+    
+# Saving the data frame
+MonthlyPanel3.to_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel3.csv')
+    
+############################################## PART 4 ########################################################################################################################
+
+### Reading the data ###
+MonthlyPanel3 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel3.csv')
+
+# drop epin1p epin3_1p epcuad2p nepin1p nepi3_1p nepcua2p;
+MonthlyPanel4 = MonthlyPanel3.drop(columns=['public_building_or_embassy_p', 'public_building_or_embassy_1_p', 'public_building_or_embassy_cuad2p', 'n_public_building_or_embassy_p', 'n_public_building_or_embassy_1_p', 'n_public_building_or_embassy_cuad2p'], inplace=True)
+
+# gen esin1p=estserv*inst1p; gen esin3_1p=estserv*inst3_1p; gen escuad2p=estserv*cuad2p; gen nesin1p=(1-estserv)*inst1p; gen nesi3_1p=(1-estserv)*inst3_1p; gen nescua2p=(1-estserv)*cuad2p;
+list_names_data41 = ['gas_station_p', 'gas_station_1_p', 'gas_station_cuad2p', 'n_gas_station_p', 'n_gas_station_1_p', 'n_gas_station_cuad2p']
+list_names_data42 = ['jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p', 'jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p']
+for col1, col2 in zip(list_names_data41, list_names_data42):
+    MonthlyPanel4[col1] = MonthlyPanel4['gas_station'] * MonthlyPanel4[col2]
+
+# Saving the data frame
+MonthlyPanel4.to_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel4.csv')
+
+
+############################################## PART 5 ########################################################################################################################
+
+### Reading the data ###
+MonthlyPanel4 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel4.csv')
+
+# drop esin1p esin3_1p escuad2p nesin1p nesi3_1p nescua2p;
+MonthlyPanel5 = MonthlyPanel4.drop(columns=['gas_station_p', 'gas_station_1_p', 'gas_station_cuad2p', 'n_gas_station_p', 'n_gas_station_1_p', 'n_gas_station_cuad2p'], inplace=True)
+
+# gen bain1p=banco*inst1p; gen bain3_1p=banco*inst3_1p; gen bacuad2p=banco*cuad2p; gen nbain1p=(1-banco)*inst1p; gen nbai3_1p=(1-banco)*inst3_1p; gen nbacua2p=(1-banco)*cuad2p;
+list_names_data51 = ['bank_p', 'bank_1_p', 'bank_cuad2p', 'n_bank_p', 'n_bank_1_p', 'n_bank_cuad2p']
+list_names_data52 = ['jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p', 'jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p']
+for col1, col2 in zip(list_names_data51, list_names_data52):
+    MonthlyPanel5[col1] = MonthlyPanel5['bank'] * MonthlyPanel5[col2]
+
+# Saving the data frame
+MonthlyPanel5.to_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel5.csv')
+
+############################################## PART 6 ########################################################################################################################
+
+### Reading the data ###
+MonthlyPanel5 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel5.csv')
+
+# drop bain1p bain3_1p bacuad2p nbain1p nbai3_1p nbacua2p;
+MonthlyPanel6 = MonthlyPanel5.drop(columns=['bank_p', 'bank_1_p', 'bank_cuad2p', 'n_bank_p', 'n_bank_1_p', 'n_bank_cuad2p'], inplace=True)
+
+# gen todos=0;
+MonthlyPanel6['all_locations'] = 0
+# replace todos=1 if (edpub==1 | estserv==1 | banco==1);
+MonthlyPanel6.loc[(MonthlyPanel6['public_building_or_embassy']==1) | (MonthlyPanel6['gas_station']==1) | (MonthlyPanel6['bank']==1), 'all_locations']=1
+
+# gen toin1p=todos*inst1p; gen toin3_1p=todos*inst3_1p; gen tocuad2p=todos*cuad2p; gen ntoin1p=(1-todos)*inst1p; gen ntoi3_1p=(1-todos)*inst3_1p; gen ntocua2p=(1-todos)*cuad2p;
+list_names_data61 = ['all_locations_p', 'all_locations_1_p', 'all_locations_cuad2p', 'n_all_locations_p', 'n_all_locations_1_p', 'n_all_locations_cuad2p']
+list_names_data62 = ['jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p', 'jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p']
+for col1, col2 in zip(list_names_data61, list_names_data62):
+    MonthlyPanel6[col1] = MonthlyPanel6['all_locations'] * MonthlyPanel6[col2]
+
+# Saving the data frame
+MonthlyPanel6.to_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel6.csv')
+
+
+#### TRYing to combine part 3 to part 6 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### Reading the data ###
+MonthlyPanel2 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel2.csv')
+
+# drop month4;
+MonthlyPanel3 = MonthlyPanel2.drop(columns='month4')
+
+# gen todos=0;
+MonthlyPanel3['all_locations'] = 0
+# replace todos=1 if (edpub==1 | estserv==1 | banco==1);
+MonthlyPanel3.loc[(MonthlyPanel3['public_building_or_embassy']==1) | (MonthlyPanel3['gas_station']==1) | (MonthlyPanel3['bank']==1), 'all_locations']=1
+
+# gen epin1p=edpub*inst1p; gen epin3_1p=edpub*inst3_1p; gen epcuad2p=edpub*cuad2p; gen nepin1p=(1-edpub)*inst1p; gen nepi3_1p=(1-edpub)*inst3_1p; gen nepcua2p=(1-edpub)*cuad2p;
+# gen esin1p=estserv*inst1p; gen esin3_1p=estserv*inst3_1p; gen escuad2p=estserv*cuad2p; gen nesin1p=(1-estserv)*inst1p; gen nesi3_1p=(1-estserv)*inst3_1p; gen nescua2p=(1-estserv)*cuad2p;
+# gen bain1p=banco*inst1p; gen bain3_1p=banco*inst3_1p; gen bacuad2p=banco*cuad2p; gen nbain1p=(1-banco)*inst1p; gen nbai3_1p=(1-banco)*inst3_1p; gen nbacua2p=(1-banco)*cuad2p;
+# gen toin1p=todos*inst1p; gen toin3_1p=todos*inst3_1p; gen tocuad2p=todos*cuad2p; gen ntoin1p=(1-todos)*inst1p; gen ntoi3_1p=(1-todos)*inst3_1p; gen ntocua2p=(1-todos)*cuad2p;
+list_names_data3_general = ['jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p', 'jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p'] 
+list_names_data3_1 = ['public_building_or_embassy_p', 'public_building_or_embassy_1_p', 'public_building_or_embassy_cuad2p', 'n_public_building_or_embassy_p', 'n_public_building_or_embassy_1_p', 'n_public_building_or_embassy_cuad2p']
+list_names_data3_2 = ['gas_station_p', 'gas_station_1_p', 'gas_station_cuad2p', 'n_gas_station_p', 'n_gas_station_1_p', 'n_gas_station_cuad2p']
+list_names_data3_3 = ['bank_p', 'bank_1_p', 'bank_cuad2p', 'n_bank_p', 'n_bank_1_p', 'n_bank_cuad2p']
+list_names_data3_4 = ['all_locations_p', 'all_locations_1_p', 'all_locations_cuad2p', 'n_all_locations_p', 'n_all_locations_1_p', 'n_all_locations_cuad2p']
+
+list_names_3_variables = ['public_building_or_embassy', 'gas_station', 'bank', 'all_locations']
+
+for i, j in zip(range(1,5), list_names_3_variables):
+    for col1, col2 in zip(f"list_names_data3_{i}", list_names_data3_general):
+        MonthlyPanel3[col1] = MonthlyPanel3[j] * MonthlyPanel3[col2] 
+ 
+
+# Saving the data frame
+MonthlyPanel3.to_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel3.csv')
+    
+# drop all variables created before
+MonthlyPanel4 = MonthlyPanel3.drop(columns=[list_names_data3_1, list_names_data3_2, list_names_data3_3, list_names_data3_4], inplace=True)
 
 
 
@@ -257,7 +347,7 @@ list3 = ["Belgrano", "Once", "V. Crespo"]
 for col, i in zip(list3, range(1,4)):
     WeeklyPanel.loc[WeeklyPanel['neighborhood']==col, 'n_neighborhood']=i
 # gen codigo2=week+10000*n_neighborhood;
-WeeklyPanel['codigo2'] = WeeklyPanel['week'] + 1000*WeeklyPanel['n_neighborhood']
+WeeklyPanel['code2'] = WeeklyPanel['week'] + 1000*WeeklyPanel['n_neighborhood']
 # gen ntotrob=totrob*((365/12)/7);
 WeeklyPanel['n_total_thefts'] = WeeklyPanel['total_thefts'] * (365/12)/7
 

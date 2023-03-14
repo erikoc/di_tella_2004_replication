@@ -79,7 +79,7 @@ def load_model(path):
 ############################################## PART 1 ########################################################################################################################
 
 # Calling the required dataframe
-MonthlyPanel, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel.csv')
+MonthlyPanel = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel.csv')
 
 # table otromes1 if mes~=72, by(codigo) c(mean totrob2 sd totrob2);
 MP = MonthlyPanel.apply(pd.to_numeric, errors='coerce') # replacing non numeric values of totrob2 with NAs
@@ -117,7 +117,7 @@ Welch_Test3 = WelchTest(MonthlyPanel, code13, code23)
 ############################################## PART 2 ########################################################################################################################
 
 # Calling the required dataframe
-MonthlyPanel2, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel2.csv')
+MonthlyPanel2 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel2.csv')
 
 # sum totrob if post==1 & distanci>2;
 MonthlyPanel2.loc[(MonthlyPanel2['post'] == 1) & (MonthlyPanel2['distance_to_jewish_inst'] > 2), 'total_thefts'].sum()
@@ -510,6 +510,146 @@ regression_clu5 = areg_clus(Data_clu5, y_clu5, x_clu5)
 
 ############################################## PART 3 ########################################################################################################################
 
+# Calling the required dataframe
+MonthlyPanel3 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel3.csv')
+
+# areg totrob nepin1p nepi3_1p nepcua2p epin1p epin3_1p epcuad2p month*, absorb(observ) robust; # USE areg_clus function
+Data_clu6 = MonthlyPanel3
+y_clu6 = "total_thefts"
+x_clu6 = ['public_building_or_embassy_p', 'public_building_or_embassy_1_p', 'public_building_or_embassy_cuad2p', 'n_public_building_or_embassy_p', 'n_public_building_or_embassy_1_p', 'n_public_building_or_embassy_cuad2p', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
+regression_clu6 = areg_clus(Data_clu6, y_clu6, x_clu6)
+
+# test nepin1p=epin1p; 
+variable_test10 = ("n_public_building_or_embassy_p")
+testing_number10 = ("public_building_or_embassy_p")
+test_diff10 = testings(regression_clu6, variable_test10, testing_number10)
+
+# test nepi3_1p=epin3_1p; 
+variable_test11 = ("n_public_building_or_embassy_1_p")
+testing_number11 = ("public_building_or_embassy_1_p")
+test_diff11 = testings(regression_clu6, variable_test11, testing_number11)
+
+# test nepcua2p=epcuad2p;
+variable_test12 = ("n_public_building_or_embassy_cuad2p")
+testing_number12 = ("public_building_or_embassy_cuad2p")
+test_diff12 = testings(regression_clu6, variable_test12, testing_number12)
+
+
+############################################## PART 4 ########################################################################################################################
+
+# Calling the required dataframe
+MonthlyPanel4 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel4.csv')
+
+# areg totrob nesin1p nesi3_1p nescua2p esin1p esin3_1p escuad2p month*, absorb(observ) robust;
+Data_clu7 = MonthlyPanel4
+y_clu7 = "total_thefts"
+x_clu7 = ['gas_station_p', 'gas_station_1_p', 'gas_station_cuad2p', 'n_gas_station_p', 'n_gas_station_1_p', 'n_gas_station_cuad2p', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
+regression_clu7 = areg_clus(Data_clu7, y_clu7, x_clu7)
+
+# test nesin1p=esin1p; 
+variable_test13 = ("n_gas_station_p")
+testing_number13 = ("gas_station_p")
+test_diff13 = testings(regression_clu7, variable_test13, testing_number13)
+
+# test nesi3_1p=esin3_1p;
+variable_test14 = ("n_gas_station_1_p")
+testing_number14 = ("gas_station_1_p")
+test_diff14 = testings(regression_clu7, variable_test14, testing_number14)
+
+# test nescua2p=escuad2p; 
+variable_test15 = ("n_gas_station_cuad2p")
+testing_number15 = ("gas_station_cuad2p")
+test_diff15 = testings(regression_clu7, variable_test15, testing_number15)
+
+
+############################################## PART 5 ########################################################################################################################
+
+# Calling the required dataframe
+MonthlyPanel5 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel5.csv')
+
+# areg totrob nbain1p nbai3_1p nbacua2p bain1p bain3_1p bacuad2p month*, absorb(observ) robust;
+Data_clu8 = MonthlyPanel5
+y_clu8 = "total_thefts"
+x_clu8 = ['bank_p', 'bank_1_p', 'bank_cuad2p', 'n_bank_p', 'n_bank_1_p', 'n_bank_cuad2p', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
+regression_clu8 = areg_clus(Data_clu8, y_clu8, x_clu8)
+
+# test nbain1p=bain1p; 
+variable_test16 = ("n_bank_p")
+testing_number16 = ("bank_p")
+test_diff16 = testings(regression_clu8, variable_test16, testing_number16)
+
+# test nbai3_1p=bain3_1p;
+variable_test17 = ("n_bank_1_p")
+testing_number17 = ("bank_1_p")
+test_diff17 = testings(regression_clu8, variable_test17, testing_number17)
+
+# test nbacua2p=bacuad2p; 
+variable_test18 = ("n_bank_cuad2p")
+testing_number18 = ("bank_cuad2p")
+test_diff18 = testings(regression_clu8, variable_test18, testing_number18)
+
+
+############################################## PART 6 ########################################################################################################################
+
+# Calling the required dataframe
+MonthlyPanel6 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel6.csv')
+
+# areg totrob ntoin1p ntoi3_1p ntocua2p toin1p toin3_1p tocuad2p month*, absorb(observ) robust;
+Data_clu9 = MonthlyPanel6
+y_clu9 = "total_thefts"
+x_clu9 = ['all_locations_p', 'all_locations_1_p', 'all_locations_cuad2p', 'n_all_locations_p', 'n_all_locations_1_p', 'n_all_locations_cuad2p', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
+regression_clu9 = areg_clus(Data_clu9, y_clu9, x_clu9)
+
+# test ntoin1p=toin1p; 
+variable_test19 = ("n_all_locations_p")
+testing_number19 = ("all_locations_p")
+test_diff19 = testings(regression_clu9, variable_test19, testing_number19)
+
+# test ntoi3_1p=toin3_1p;
+variable_test20 = ("n_all_locations_1_p")
+testing_number20 = ("all_locations_1_p")
+test_diff20 = testings(regression_clu9, variable_test20, testing_number20)
+
+# test ntocua2p=tocuad2p;
+variable_test21 = ("n_all_locations_cuad2p")
+testing_number21 = ("all_locations_cuad2p")
+test_diff21 = testings(regression_clu9, variable_test21, testing_number21)
+
+#### TRYing to combine part 3 to part 6 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Calling the required dataframe
+MonthlyPanel3 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel3.csv')
+
+# areg totrob nepin1p nepi3_1p nepcua2p epin1p epin3_1p epcuad2p month*, absorb(observ) robust; # USE areg_clus function
+# areg totrob nesin1p nesi3_1p nescua2p esin1p esin3_1p escuad2p month*, absorb(observ) robust;
+# areg totrob nbain1p nbai3_1p nbacua2p bain1p bain3_1p bacuad2p month*, absorb(observ) robust;
+# areg totrob ntoin1p ntoi3_1p ntocua2p toin1p toin3_1p tocuad2p month*, absorb(observ) robust;
+
+# Calling the necessary list
+from clean_data import list_names_data3_1 
+from clean_data import list_names_data3_2 
+from clean_data import list_names_data3_3 
+from clean_data import list_names_data3_4 
+
+# Regression
+reg_results = {} # To save the regression results
+
+for i in range(6,10):
+    Data_used = MonthlyPanel3
+    y_clu = "total_thefts"
+    x_clu = [f"list_names_data3_{i}"]
+    reg_results[f"regression_clu{i}"] = areg_clus(Data_used, y_clu, x_clu)
+
+# Tests
+test_results = {} # To save the tests results
+
+for i , j in zip(range(6,10), range(1,5)):
+    for x, y, a in zip([0,1,2], [3,4,5], ["p", "1_p", "cuad2p"]):
+        variable_test = (f"list_names_data3_{j}"[y])
+        testing_number = (f"list_names_data3_{j}"[x])
+        test_results[f"test_diff{i}_{a}"] = testings(reg_results[f"regression_clu{i}"], variable_test, testing_number)
+    
+
 
 """ Weekly Panel """
 
@@ -524,47 +664,43 @@ from clean_data import list_names
 
 # Generate a function that will get us the regression results
 
-def regression_WeeklyPanel(Data,type_of_data, type_of_regression):
+def regression_WeeklyPanel(Data, y_variable, type_of_regression):
     WeeklyP = Data[(Data['week']!=16) & (Data['week']!=17)]
-    if type_of_data == "total_thefts":
-        y = WeeklyP['total_thefts']
-        x = WeeklyP[['jewish_inst_p', 'jewish_int_one_block_away_1_p', 'cuad2p']] # inst1p = jewish_inst_p, inst3_1p = jewish_int_one_block_away_1_p
-        x = list(x.columns) + list_names 
-        x_1 = WeeklyP[x]
-    elif type_of_data == "n_total_thefts":
-        y = WeeklyP['n_total_thefts']
-        x = WeeklyP[['jewish_inst_p', 'jewish_int_one_block_away_1_p', 'cuad2p']] # inst1p = jewish_inst_p, inst3_1p = jewish_int_one_block_away_1_p
-        x = list(x.columns) + list_names 
-        x_1 = WeeklyP[x]
+    y = WeeklyP[y_variable]
+    x = WeeklyP[['jewish_inst_p', 'jewish_int_one_block_away_1_p', 'cuad2p']] # inst1p = jewish_inst_p, inst3_1p = jewish_int_one_block_away_1_p
+    x = list(x.columns) + list_names 
+    x_1 = WeeklyP[x]
     if type_of_regression == "unclustered":
-        X = smm.add_constant(x_1)
-        reg = smm.OLS(y, X).fit(cov_type='cluster', cov_kwds={'groups': WeeklyP['observ']}, hasconst=True)
-        params = reg.params
+        # Check if the modified MonthlyPanel_new is a pandas DataFrame
+        X = sm.add_constant(x_1)
+        reg = sm.OLS(y, X)
+        result = reg.fit(cov_type='cluster', cov_kwds={'groups': WeeklyP['observ']}, hasconst=True)
+        params = result.params
         return params
     elif type_of_regression == "clustered":    
-        dummies = smm.get_dummies(WeeklyP['codigo2']) # to capture the fixed efefcts by codigo2
+        dummies = pd.get_dummies(WeeklyP['code2']) # to capture the fixed efefcts by codigo2
         X = pd.concat([x_1, dummies], axis=1)
-        reg = smm.OLS(y, X).fit(cov_type='cluster', cov_kwds={'groups': WeeklyP['observ']}, use_t=True) # with cluster for observ
-        params = reg.params
-        return params  
+        result = sm.OLS(y, X).fit(cov_type='cluster', cov_kwds={'groups': WeeklyP['observ']}, use_t=True) # with cluster for observ
+        params = result.params
+        return params
 
 # areg totrob inst1p inst3_1p cuad2p semana* if (week~=16 & week~=17), absorb(observ) robust;
-Data = WeeklyPanel
-type_of_data1 = "total_thefts"
+Data1 = WeeklyPanel
+y_variable1 = "total_thefts"
 type_of_regression1 = "unclustered"
-regression_1 = regression_WeeklyPanel(Data,type_of_data1, type_of_regression1)
+regression_1 = regression_WeeklyPanel(Data1, y_variable1, type_of_regression1)
 
 # areg totrob inst1p inst3_1p cuad2p semana* if (week~=16 & week~=17), absorb(observ) robust cluster(codigo2);
-Data = WeeklyPanel
-type_of_data2 = "total_thefts"
+Data2 = WeeklyPanel
+y_variable2 = "total_thefts"
 type_of_regression2 = "clustered"
-regression_2 = regression_WeeklyPanel(Data,type_of_data2, type_of_regression2)
+regression_2 = regression_WeeklyPanel(Data2, y_variable2, type_of_regression2)
 
 # areg ntotrob inst1p inst3_1p cuad2p semana* if (week~=16 & week~=17), absorb(observ) robust cluster(codigo2);
-Data = WeeklyPanel
-type_of_data3 = "n_total_thefts"
+Data2 = WeeklyPanel
+y_variable3 = "n_total_thefts"
 type_of_regression3 = "clustered"
-regression_3 = regression_WeeklyPanel(Data,type_of_data3, type_of_regression3)
+regression_3 = regression_WeeklyPanel(Data3, y_variable3, type_of_regression3)
 
 
 
