@@ -10,83 +10,18 @@ import statsmodels.formula.api as sm
 from statsmodels.formula.api import ols
 from linearmodels.panel import FirstDifferenceOLS
 
-"""Functions for fitting the regression model."""
 
-
-
-
-##############################################################################################################################################################################
-def fit_logit_model(data, data_info, model_type):
-    """Fit a logit model to data.
-
-    Args:
-        data (pandas.DataFrame): The data set.
-        data_info (dict): Information on data set stored in data_info.yaml. The
-            following keys can be accessed:
-            - 'outcome': Name of dependent variable column in data
-            - 'outcome_numerical': Name to be given to the numerical version of outcome
-            - 'columns_to_drop': Names of columns that are dropped in data cleaning step
-            - 'categorical_columns': Names of columns that are converted to categorical
-            - 'column_rename_mapping': Old and new names of columns to be renamend,
-                stored in a dictionary with design: {'old_name': 'new_name'}
-            - 'url': URL to data set
-        model_type (str): What model to build for the linear relationship of the logit
-            model. Currently implemented:
-            - 'linear': Numerical covariates enter the regression linearly, and
-            categorical covariates are expanded to dummy variables.
-
-    Returns:
-        statsmodels.base.model.Results: The fitted model.
-
-    """
-    outcome_name = data_info["outcome"]
-    outcome_name_numerical = data_info["outcome_numerical"]
-    feature_names = list(set(data.columns) - {outcome_name, outcome_name_numerical})
-
-    if model_type == "linear":
-        # smf.logit expects the binary outcome to be numerical
-        formula = f"{outcome_name_numerical} ~ " + " + ".join(feature_names)
-    else:
-        message = "Only 'linear' model_type is supported right now."
-        raise ValueError(message)
-
-    return smf.logit(formula, data=data).fit()
-
-
-def load_model(path):
-    """Load statsmodels model.
-
-    Args:
-        path (str or pathlib.Path): Path to model file.
-
-    Returns:
-        statsmodels.base.model.Results: The stored model.
-
-    """
-    return load_pickle(path)
-##############################################################################################################################################################################
-
-
-
-
-
-
-
-
-
-""" Monthly Panel """ 
-
-############################################## PART 1 ########################################################################################################################
-
-# Calling the required dataframe
-MonthlyPanel = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel.csv')
-
-# table otromes1 if mes~=72, by(codigo) c(mean totrob2 sd totrob2);
-MP = MonthlyPanel.apply(pd.to_numeric, errors='coerce') # replacing non numeric values of totrob2 with NAs
-MP.loc[MP['month']!=72].groupby(['othermonth1', 'code'])['total_thefts2'].agg(['mean', 'std'])
+""" Function used Monthly Panel """
 
 # Defining WelchTest function
 def WelchTest(Data, code1, code2):
+    
+    """ This is a Welch test whcih is trying to compare the equality of two values.
+    What we have is simply a data set in which test that fits two conditions and these condition
+    are being reflectes in code1 and code 2. We also have a Data set in which the test is made
+    The will check whether the mean values of two specified variables are statitically different or not.
+    This is reflected and assesed via the t-statistic and the p-value"""
+    
     WT = Data[((Data["code"] == code1) | (Data["code"] == code2)) & (Data["month"] != 72)]
     codigo_values = WT["code"].unique()
     code_1 = WT[WT["code"] == code1]
@@ -98,90 +33,32 @@ def WelchTest(Data, code1, code2):
     print("t-statistic: ", t)
     print("p-value: ", p)
 
-# by mes: ttest totrob2 if ((codigo==1 | codigo==4) & mes~=72), by (codigo) unequal welch; # THIS IS A WELCH TEST  
-code11 = 1
-code21 = 4
-Welch_Test1 = WelchTest(MonthlyPanel, code11, code21)
-
-
-# by mes: ttest totrob2 if ((codigo==2 | codigo==4) & mes~=72), by (codigo) unequal welch;
-code12 = 2
-code22 = 4
-Welch_Test2 = WelchTest(MonthlyPanel, code12, code22)
-
-# by mes: ttest totrob2 if ((codigo==3 | codigo==4) & mes~=72), by (codigo) unequal welch;
-code13 = 3
-code23 = 4
-Welch_Test3 = WelchTest(MonthlyPanel, code13, code23)
-
-############################################## PART 2 ########################################################################################################################
-
-# Calling the required dataframe
-MonthlyPanel2 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel2.csv')
-
-# sum totrob if post==1 & distanci>2;
-MonthlyPanel2.loc[(MonthlyPanel2['post'] == 1) & (MonthlyPanel2['distance_to_jewish_inst'] > 2), 'total_thefts'].sum()
-
-# Regressions
-
-# reg totrob institu1 month* if post==1, robust;
-formula1="total_thefts ~ jewish_inst"
-formula1 = '+'.join([formula1] + [f"month{i}" for i in range(5,13)]) # This is using a list comprehension
-regression1 = sm.ols(formula1, data=MonthlyPanel2[MonthlyPanel2['post'] == 1]).fit()
-# reg totrob institu1 inst3_1 month* if post==1, robust;
-formula2="totrob ~ jewish_inst_one_block_away_1"
-formula2 = '+'.join([formula2] + [f"month{i}" for i in range(5,13)]) # This is using a list comprehension
-regression2 = sm.ols(formula2, data=MonthlyPanel2[MonthlyPanel2['post'] == 1]).fit()
-# reg totrob institu1 inst3_1 cuad2 month* if post==1, robust;
-formula3="totrob ~ jewish_inst + jewish_inst_one_block_away_1 + cuad2"
-formula3 = '+'.join([formula3] + [f"month{i}" for i in range(5,13)]) # This is using a list comprehension
-regression3 = sm.ols(formula3, data=MonthlyPanel2[MonthlyPanel2['post'] == 1]).fit()
-
-# Tests
+# Defining Regression Test Function
 
 def testings(regression, variable_test, testing_number):
+    
+    """" What this function is doing is just to perform a t-statistic test with the coefficients of a regression (regression) in which it is checked 
+    whether a variable (variable_test) is statistically close in value to a certain fixed value (testing_number) by us (in this case
+    by the authors of the paper)"""
+    
     tvalue = (regression.params[variable_test] - (testing_number)) / regression.bse[variable_test]
     pvalue = 2 * (1 - scy.stats.t.cdf(np.abs(tvalue), regression.df_resid))
     if pvalue < 0.05:
         print("The coefficient for institu1 is significantly different from -.08080 with p-value", pvalue)
     else:
         print("The coefficient for institu1 is not significantly different from -0.08080 with p-value", pvalue)
-    
-
-# test institu1=-0.08080; # the hypothesis being tested is that the coefficient for "institu1" is equal to -0.08080
-variable_test1 = "jewish_inst"
-testing_number1 = -0.08080
-test_diff1 = testings(regression1, variable_test1, testing_number1)
-
-# test inst3_1=-0.01398;
-variable_test2 = "jewish_inst_one_block_away_1"
-testing_number2 = -0.01398
-test_diff2 = testings(regression2, variable_test2, testing_number2)
-
-# test cuad2=-0.00218;
-variable_test3 = "cuad2"
-testing_number3 = -0.00218
-test_diff3 = testings(regression3, variable_test3, testing_number3)
-
-# test institu1=-0.0543919;
-variable_test11 = "jewish_inst"
-testing_number11 = -0.0543919
-test_diff11 = testings(regression1, variable_test11, testing_number11)
-
-# test inst3_1=-0.0124224;
-variable_test22 = "jewish_inst_one_block_away_1"
-testing_number22 = -0.0124224
-test_diff22 = testings(regression2, variable_test22, testing_number22)
-
-# test cuad2=-0.0242257;
-variable_test33 = "cuad2"
-testing_number33 = -0.0242257
-test_diff33 = testings(regression3, variable_test33, testing_number33)
-
-
+        
 # Defing areg, FIXED EFFECTS AND CLUSTERS
 
 def areg(Data, type_condition, variable_log, variable_loga, variable_logb, variable_logc, a, variable_fe, variable_y, variable_x):
+    
+    """" What this function is doing is performing a fixed effects regression with clustered covariance of these. 
+    It requires a variable (variable_fe) that will be used as the fixed effects for the clustered variance. It uses a Data set (Data) in order to perform 
+    the regression. Then, there is a condition that should be met ("type_condition) in order for the function to asses
+    which which condition/restrictions on the data used for the regression. Depending on the condition, we have different input
+    variables (variable_log, variable_loga, variable_logb, variable_log). We also have "a" which is the value of the varibles that should
+    be met in order to constraint the data set. Finally we have our exogenous variable (variable_x) and our endogenous avriable (variable_y) for the regression."""
+    
     if type_condition == "single":
         condition = Data[variable_log] == a
         m = Data.loc[condition] # the logical condition that must be accomplished to do the regression in the data
@@ -230,6 +107,171 @@ def areg(Data, type_condition, variable_log, variable_loga, variable_logb, varia
     #cov_kwds={'groups': fixed_effects} argument specifies the group variable to use in computing the cluster-robust standard errors
         params = reg.params
         return params 
+
+### Defining - distance dummies robust regression
+
+def reg_robust(Data, variable_y, variable_x):
+    
+    """This is just a simple robust regression in which the Huber's T norm is one such robust estimator that gives less weight 
+    to outliers and more weight to inliers when calculating the scale of the data. We have our Data set (Data), our exogenous
+    variable (variable_x) and our endogenous variable(variable_y)."""
+    
+    y = Data[variable_y]
+    x = Data[variable_x]
+    robust_model = smm.RLM(y, x, M=smm.robust.norms.HuberT())
+    robust_results = robust_model.fit()
+    params = robust_results.params
+    return params
+
+# Defining regression with clusters
+
+def areg_clus(Data, variable_y, variable_x):
+    
+    """This is just a simple regression with clusters and no condition on the data set. We have the same cluster variable throughout the code
+    therefore, it is already embedded in the function Data['observ']. We have our Data set (Data), our exogenous
+    variable (variable_x) and our endogenous variable(variable_y). """
+    
+    y = Data[variable_y]
+    x = Data[variable_x]
+    X = smm.add_constant(x) # adding a constant to the Xs
+    reg = smm.OLS(y, X).fit(cov_type='cluster', cov_kwds={'groups': Data['observ']}) # sm.OLS is used to run a simple linear regression, cluster is used to compute cluster-robust standard errors, 
+    #cov_kwds={'groups': fixed_effects} argument specifies the group variable to use in computing the cluster-robust standard errors
+    params = reg.params
+    return params
+
+### Defining another function with clusters
+def areg_clus_abs(Data, drop_subset, y_variable, x_variable, dummy_variable):
+    
+    """This is just another simple regression with clusters and no condition on the data set.  In this case we approach the regression
+    with the usage of dummy variables to be used for the clustering. In this case we select the dummy variable (dummy_variable) to be used.
+    We also drop a subset of data that will not be needed for the regression (drop_subset). 
+    We have our Data set (Data), our exogenous variable (variable_x) and our endogenous variable(variable_y). """
+    
+    df = Data.dropna(subset=drop_subset)
+    df = df.astype(float)
+    y = df[y_variable]
+    x = df[x_variable]
+    dummies = pd.get_dummies(df[dummy_variable])
+    X = pd.concat([x, dummies], axis=1)
+    reg = smm.OLS(y, X).fit(cov_type='cluster', cov_kwds={'groups': df[dummy_variable]}, use_t=True) # with cluster for observ
+    params = reg.params
+    return params
+
+# Defining the poisson regression
+
+def poisson_reg(Data, y_variable, x_variable, index_variables, type_of_possion, weight, x_irra):
+    
+    """This performs a fixed effects poisson regression for different types of conditions reflected in (type_of_poisson_input); 
+    whether it is a simple fixed effects poisson regression, or is it weighther by a variable, in whiich case we input (weight) or is 
+    if we need to calculate interrater reliability (IRR) coefficients for a given set of data we add (x_irra)
+    We have our Data set (Data), our exogenous variable (variable_x) and our endogenous variable(variable_y) and our 
+    index variables (index_variables) which creates a pandas Multiindex for panel data """
+    
+    data = Data.set_index(index_variables) # create a pandas MultiIndex for panel data
+    Y = data[y_variable]
+    X = data[x_variable]
+    if type_of_possion == "fixed effects":
+        model = PanelOLS(Y, X, entity_effects=True, time_effects=True, drop_absorbed=True) # drop_absorbed=True is to drop any variables that could create multicollinearity (and therefore the matrix cannot be solved)
+        results = model.fit(cov_type='clustered', cluster_entity=True)
+        params = results.params
+        return params
+    elif type_of_possion == "fixed effects weighted":        
+        w = Data[weight] # weights added
+        data['iweight'] = w 
+        model = PanelOLS(Y, X, entity_effects=True, time_effects=True, drop_absorbed=True, weights=data['w']) # drop_absorbed=True is to drop any variables that could create multicollinearity (and therefore the matrix cannot be solved)
+        results = model.fit(cov_type='clustered', cluster_entity=True)
+        params = results.params
+        return params
+    elif type_of_possion == "fixed effects weighted irr": 
+        w = Data[weight] # weights added
+        data['iweight'] = w 
+        model = PanelOLS(Y, X, entity_effects=True, time_effects=True, drop_absorbed=True, weights=data['w']) # drop_absorbed=True is to drop any variables that could create multicollinearity (and therefore the matrix cannot be solved)
+        results = model.fit(cov_type='clustered', cluster_entity=True)
+        predictions = results.predict(X[x_irra]) # The months were deleted from our regression given that they cause multicollinearity, meaning, they do not add any new explanatory info
+        irr_predictions = np.exp(predictions) # function will exponentiate the predicted values obtained from the predict() function. This will convert the results into incidence rate ratios.
+        return irr_predictions
+
+
+""" Monthly Panel """ 
+
+############################################## PART 1 ########################################################################################################################
+
+# Calling the required dataframe
+MonthlyPanel = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel.csv')
+
+# table otromes1 if mes~=72, by(codigo) c(mean totrob2 sd totrob2);
+MP = MonthlyPanel.apply(pd.to_numeric, errors='coerce') # replacing non numeric values of totrob2 with NAs
+MP.loc[MP['month']!=72].groupby(['othermonth1', 'code'])['total_thefts2'].agg(['mean', 'std'])
+
+# by mes: ttest totrob2 if ((codigo==1 | codigo==4) & mes~=72), by (codigo) unequal welch; # THIS IS A WELCH TEST  
+code11 = 1
+code21 = 4
+Welch_Test1 = WelchTest(MonthlyPanel, code11, code21)
+
+
+# by mes: ttest totrob2 if ((codigo==2 | codigo==4) & mes~=72), by (codigo) unequal welch;
+code12 = 2
+code22 = 4
+Welch_Test2 = WelchTest(MonthlyPanel, code12, code22)
+
+# by mes: ttest totrob2 if ((codigo==3 | codigo==4) & mes~=72), by (codigo) unequal welch;
+code13 = 3
+code23 = 4
+Welch_Test3 = WelchTest(MonthlyPanel, code13, code23)
+
+############################################## PART 2 ########################################################################################################################
+
+# Calling the required dataframe
+MonthlyPanel2 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel2.csv')
+
+# sum totrob if post==1 & distanci>2;
+MonthlyPanel2.loc[(MonthlyPanel2['post'] == 1) & (MonthlyPanel2['distance_to_jewish_inst'] > 2), 'total_thefts'].sum()
+
+# Regressions
+
+# reg totrob institu1 month* if post==1, robust;
+formula1="total_thefts ~ jewish_inst"
+formula1 = '+'.join([formula1] + [f"month{i}" for i in range(5,13)]) # This is using a list comprehension
+regression1 = sm.ols(formula1, data=MonthlyPanel2[MonthlyPanel2['post'] == 1]).fit()
+# reg totrob institu1 inst3_1 month* if post==1, robust;
+formula2="totrob ~ jewish_inst_one_block_away_1"
+formula2 = '+'.join([formula2] + [f"month{i}" for i in range(5,13)]) # This is using a list comprehension
+regression2 = sm.ols(formula2, data=MonthlyPanel2[MonthlyPanel2['post'] == 1]).fit()
+# reg totrob institu1 inst3_1 cuad2 month* if post==1, robust;
+formula3="totrob ~ jewish_inst + jewish_inst_one_block_away_1 + cuad2"
+formula3 = '+'.join([formula3] + [f"month{i}" for i in range(5,13)]) # This is using a list comprehension
+regression3 = sm.ols(formula3, data=MonthlyPanel2[MonthlyPanel2['post'] == 1]).fit()
+
+# test institu1=-0.08080; # the hypothesis being tested is that the coefficient for "institu1" is equal to -0.08080
+variable_test1 = "jewish_inst"
+testing_number1 = -0.08080
+test_diff1 = testings(regression1, variable_test1, testing_number1)
+
+# test inst3_1=-0.01398;
+variable_test2 = "jewish_inst_one_block_away_1"
+testing_number2 = -0.01398
+test_diff2 = testings(regression2, variable_test2, testing_number2)
+
+# test cuad2=-0.00218;
+variable_test3 = "cuad2"
+testing_number3 = -0.00218
+test_diff3 = testings(regression3, variable_test3, testing_number3)
+
+# test institu1=-0.0543919;
+variable_test11 = "jewish_inst"
+testing_number11 = -0.0543919
+test_diff11 = testings(regression1, variable_test11, testing_number11)
+
+# test inst3_1=-0.0124224;
+variable_test22 = "jewish_inst_one_block_away_1"
+testing_number22 = -0.0124224
+test_diff22 = testings(regression2, variable_test22, testing_number22)
+
+# test cuad2=-0.0242257;
+variable_test33 = "cuad2"
+testing_number33 = -0.0242257
+test_diff33 = testings(regression3, variable_test33, testing_number33)
+
         
 # FIXED EFFECTS REGRESSIONS
 
@@ -298,17 +340,6 @@ variable_test66 = "cuad2p"
 testing_number66 = -0.0034292
 test_diff66 = testings(regression_fe3, variable_test66, testing_number66)
 
-# DEFINING REGRESSION FOR CLUSTERS
-
-def areg_clus(Data, variable_y, variable_x):
-    y = Data[variable_y]
-    x = Data[variable_x]
-    X = smm.add_constant(x) # adding a constant to the Xs
-    reg = smm.OLS(y, X).fit(cov_type='cluster', cov_kwds={'groups': Data['observ']}) # sm.OLS is used to run a simple linear regression, cluster is used to compute cluster-robust standard errors, 
-    #cov_kwds={'groups': fixed_effects} argument specifies the group variable to use in computing the cluster-robust standard errors
-    params = reg.params
-    return params
-
 ### Regressions clustered
 
 # areg totrob inst1p month*, absorb(observ) robust;
@@ -376,16 +407,6 @@ variable_test999 = "cuad2p"
 testing_number999 = -0.0242257
 test_diff999 = testings(regression_clu3, variable_test999, testing_number999)
 
-### NORMAL REGRESSION - distance dummies robust
-
-def reg_robust(Data, variable_y, variable_x):
-    endogenous = Data[variable_y]
-    exogenous = Data[variable_x]
-    robust_model = smm.RLM(endogenous, exogenous, M=smm.robust.norms.HuberT())
-    robust_results = robust_model.fit()
-    params = robust_results.params
-    return params
-
 # reg totrob institu1 inst3_1 cuad2 inst1p inst3_1p cuad2p month*, robust;
 Data_robust1 = MonthlyPanel2
 variable_y_robust1 = ["total_thefts"]
@@ -401,18 +422,6 @@ Data_clu4 = MonthlyPanel2
 y_clu4 = "theftscoll"
 x_clu4 = ["jewish_inst_p", "jewish_inst_one_block_away_1_p", "cuad2p", 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
 regression_clu4 = areg_clus(Data_clu4, y_clu4, x_clu4)
-
-### DEFINING ANOTHER FUNCTION FOR CLUSTERS 
-def areg_clus_abs(Data, drop_subset, y_variable, x_variable, dummy_variable):
-    df = Data.dropna(subset=drop_subset)
-    df = df.astype(float)
-    y = df[y_variable]
-    x = df[x_variable]
-    dummies = pd.get_dummies(df[dummy_variable])
-    X = pd.concat([x, dummies], axis=1)
-    reg = smm.OLS(y, X).fit(cov_type='cluster', cov_kwds={'groups': df[dummy_variable]}, use_t=True) # with cluster for observ
-    params = reg.params
-    return params
 
 # areg totrob inst1p inst3_1p cuad2p month*, absorb(observ) robust cluster(observ);
 
@@ -437,33 +446,6 @@ variable_fe4 = ["observ"]
 variable_y4 = ["total_thefts"]
 variable_x4 = ['jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
 regression_fe4 = areg(Data=Data4, type_condition=type_condition4, variable_loga=variable_log_6, variable_logb=variable_log_7, a=a, variable_fe=variable_fe4, variable_y=variable_y4, variable_x=variable_x4)
-
-### POISSON
-
-def poisson_reg(Data, y_variable, x_variable, index_variables, type_of_possion, weight, x_irra):
-    data = Data.set_index(index_variables) # create a pandas MultiIndex for panel data
-    Y = data[y_variable]
-    X = data[x_variable]
-    if type_of_possion == "fixed effects":
-        model = PanelOLS(Y, X, entity_effects=True, time_effects=True, drop_absorbed=True) # drop_absorbed=True is to drop any variables that could create multicollinearity (and therefore the matrix cannot be solved)
-        results = model.fit(cov_type='clustered', cluster_entity=True)
-        params = results.params
-        return params
-    elif type_of_possion == "fixed effects weighted":        
-        w = Data[weight] # weights added
-        data['iweight'] = w 
-        model = PanelOLS(Y, X, entity_effects=True, time_effects=True, drop_absorbed=True, weights=data['w']) # drop_absorbed=True is to drop any variables that could create multicollinearity (and therefore the matrix cannot be solved)
-        results = model.fit(cov_type='clustered', cluster_entity=True)
-        params = results.params
-        return params
-    elif type_of_possion == "fixed effects weighted irr": 
-        w = Data[weight] # weights added
-        data['iweight'] = w 
-        model = PanelOLS(Y, X, entity_effects=True, time_effects=True, drop_absorbed=True, weights=data['w']) # drop_absorbed=True is to drop any variables that could create multicollinearity (and therefore the matrix cannot be solved)
-        results = model.fit(cov_type='clustered', cluster_entity=True)
-        predictions = results.predict(X[x_irra]) # The months were deleted from our regression given that they cause multicollinearity, meaning, they do not add any new explanatory info
-        irr_predictions = np.exp(predictions) # function will exponentiate the predicted values obtained from the predict() function. This will convert the results into incidence rate ratios.
-        return irr_predictions
     
 # xtpois totrob inst1p inst3_1p cuad2p month*, fe i(observ);
 Data_poisson1 = MonthlyPanel2
@@ -514,113 +496,6 @@ regression_clu5 = areg_clus(Data_clu5, y_clu5, x_clu5)
 MonthlyPanel3 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel3.csv')
 
 # areg totrob nepin1p nepi3_1p nepcua2p epin1p epin3_1p epcuad2p month*, absorb(observ) robust; # USE areg_clus function
-Data_clu6 = MonthlyPanel3
-y_clu6 = "total_thefts"
-x_clu6 = ['public_building_or_embassy_p', 'public_building_or_embassy_1_p', 'public_building_or_embassy_cuad2p', 'n_public_building_or_embassy_p', 'n_public_building_or_embassy_1_p', 'n_public_building_or_embassy_cuad2p', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
-regression_clu6 = areg_clus(Data_clu6, y_clu6, x_clu6)
-
-# test nepin1p=epin1p; 
-variable_test10 = ("n_public_building_or_embassy_p")
-testing_number10 = ("public_building_or_embassy_p")
-test_diff10 = testings(regression_clu6, variable_test10, testing_number10)
-
-# test nepi3_1p=epin3_1p; 
-variable_test11 = ("n_public_building_or_embassy_1_p")
-testing_number11 = ("public_building_or_embassy_1_p")
-test_diff11 = testings(regression_clu6, variable_test11, testing_number11)
-
-# test nepcua2p=epcuad2p;
-variable_test12 = ("n_public_building_or_embassy_cuad2p")
-testing_number12 = ("public_building_or_embassy_cuad2p")
-test_diff12 = testings(regression_clu6, variable_test12, testing_number12)
-
-
-############################################## PART 4 ########################################################################################################################
-
-# Calling the required dataframe
-MonthlyPanel4 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel4.csv')
-
-# areg totrob nesin1p nesi3_1p nescua2p esin1p esin3_1p escuad2p month*, absorb(observ) robust;
-Data_clu7 = MonthlyPanel4
-y_clu7 = "total_thefts"
-x_clu7 = ['gas_station_p', 'gas_station_1_p', 'gas_station_cuad2p', 'n_gas_station_p', 'n_gas_station_1_p', 'n_gas_station_cuad2p', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
-regression_clu7 = areg_clus(Data_clu7, y_clu7, x_clu7)
-
-# test nesin1p=esin1p; 
-variable_test13 = ("n_gas_station_p")
-testing_number13 = ("gas_station_p")
-test_diff13 = testings(regression_clu7, variable_test13, testing_number13)
-
-# test nesi3_1p=esin3_1p;
-variable_test14 = ("n_gas_station_1_p")
-testing_number14 = ("gas_station_1_p")
-test_diff14 = testings(regression_clu7, variable_test14, testing_number14)
-
-# test nescua2p=escuad2p; 
-variable_test15 = ("n_gas_station_cuad2p")
-testing_number15 = ("gas_station_cuad2p")
-test_diff15 = testings(regression_clu7, variable_test15, testing_number15)
-
-
-############################################## PART 5 ########################################################################################################################
-
-# Calling the required dataframe
-MonthlyPanel5 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel5.csv')
-
-# areg totrob nbain1p nbai3_1p nbacua2p bain1p bain3_1p bacuad2p month*, absorb(observ) robust;
-Data_clu8 = MonthlyPanel5
-y_clu8 = "total_thefts"
-x_clu8 = ['bank_p', 'bank_1_p', 'bank_cuad2p', 'n_bank_p', 'n_bank_1_p', 'n_bank_cuad2p', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
-regression_clu8 = areg_clus(Data_clu8, y_clu8, x_clu8)
-
-# test nbain1p=bain1p; 
-variable_test16 = ("n_bank_p")
-testing_number16 = ("bank_p")
-test_diff16 = testings(regression_clu8, variable_test16, testing_number16)
-
-# test nbai3_1p=bain3_1p;
-variable_test17 = ("n_bank_1_p")
-testing_number17 = ("bank_1_p")
-test_diff17 = testings(regression_clu8, variable_test17, testing_number17)
-
-# test nbacua2p=bacuad2p; 
-variable_test18 = ("n_bank_cuad2p")
-testing_number18 = ("bank_cuad2p")
-test_diff18 = testings(regression_clu8, variable_test18, testing_number18)
-
-
-############################################## PART 6 ########################################################################################################################
-
-# Calling the required dataframe
-MonthlyPanel6 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel6.csv')
-
-# areg totrob ntoin1p ntoi3_1p ntocua2p toin1p toin3_1p tocuad2p month*, absorb(observ) robust;
-Data_clu9 = MonthlyPanel6
-y_clu9 = "total_thefts"
-x_clu9 = ['all_locations_p', 'all_locations_1_p', 'all_locations_cuad2p', 'n_all_locations_p', 'n_all_locations_1_p', 'n_all_locations_cuad2p', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
-regression_clu9 = areg_clus(Data_clu9, y_clu9, x_clu9)
-
-# test ntoin1p=toin1p; 
-variable_test19 = ("n_all_locations_p")
-testing_number19 = ("all_locations_p")
-test_diff19 = testings(regression_clu9, variable_test19, testing_number19)
-
-# test ntoi3_1p=toin3_1p;
-variable_test20 = ("n_all_locations_1_p")
-testing_number20 = ("all_locations_1_p")
-test_diff20 = testings(regression_clu9, variable_test20, testing_number20)
-
-# test ntocua2p=tocuad2p;
-variable_test21 = ("n_all_locations_cuad2p")
-testing_number21 = ("all_locations_cuad2p")
-test_diff21 = testings(regression_clu9, variable_test21, testing_number21)
-
-#### TRYing to combine part 3 to part 6 -------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-# Calling the required dataframe
-MonthlyPanel3 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel3.csv')
-
-# areg totrob nepin1p nepi3_1p nepcua2p epin1p epin3_1p epcuad2p month*, absorb(observ) robust; # USE areg_clus function
 # areg totrob nesin1p nesi3_1p nescua2p esin1p esin3_1p escuad2p month*, absorb(observ) robust;
 # areg totrob nbain1p nbai3_1p nbacua2p bain1p bain3_1p bacuad2p month*, absorb(observ) robust;
 # areg totrob ntoin1p ntoi3_1p ntocua2p toin1p toin3_1p tocuad2p month*, absorb(observ) robust;
@@ -648,23 +523,48 @@ for i , j in zip(range(6,10), range(1,5)):
         variable_test = (f"list_names_data3_{j}"[y])
         testing_number = (f"list_names_data3_{j}"[x])
         test_results[f"test_diff{i}_{a}"] = testings(reg_results[f"regression_clu{i}"], variable_test, testing_number)
-    
-
-
-""" Weekly Panel """
+        
+############################################## PART 4 ########################################################################################################################
 
 # Calling the required dataframe
-WeeklyPanel, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/WeeklyPanel.csv')
+MonthlyPanel_new = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel_new.csv')
+       
+# summarize totrob;
+MonthlyPanel_new['total_thefts'].describe()
 
-# summarize total_thefts;
-WeeklyPanel['total_thefts'].describe()
+# areg totrob 1inst1p 1inst3_1p 1cuad2p month*, absorb(observ) robust; # USE areg_clus function
+# areg totrob 2inst1p 2inst3_1p 2cuad2p month*, absorb(observ) robust;
+# areg totrob 3inst1p 3inst3_1p 3cuad2p month*, absorb(observ) robust;
 
-# Calling necessary variables from other files
-from clean_data import list_names
+Data_clu_new = MonthlyPanel_new
+y_clu_new = "total_thefts"
+x_clu_new1 = ['1jewish_inst_1_p', '1jewish_inst_one_block_away_1_p', '1cuad2p', 'month5', 'month6', 'month7']
+x_clu_new2 = ['2jewish_inst_1_p', '2jewish_inst_one_block_away_1_p', '2cuad2p', 'month5', 'month6', 'month7']
+x_clu_new3 = ['3jewish_inst_1_p', '3jewish_inst_one_block_away_1_p', '3cuad2p', 'month5', 'month6', 'month7']
+
+regression_new1 = areg_clus(Data_clu_new, y_clu_new, x_clu_new1)   
+regression_new2 = areg_clus(Data_clu_new, y_clu_new, x_clu_new2)  
+regression_new3 = areg_clus(Data_clu_new, y_clu_new, x_clu_new3)  
+
+
+
+
+
+
+
+
+
+
+
+""" Function used Monthly Panel """
 
 # Generate a function that will get us the regression results
 
-def regression_WeeklyPanel(Data, y_variable, type_of_regression):
+def regression_WeeklyPanel(Data, y_variable, type_of_regression, abs):
+    """This is just a simple fixed effects regression which performs two different actions depending on  whether we want a clustered or an unclustered regression.
+    This is input via (type_of_regression) input. As fixed effects we know that 'observ' is normally used. Therefore, it is embedded in the function.
+    We have our Data set (Data), our exogenous variable (variable_x) and our endogenous variable(variable_y)."""
+    
     WeeklyP = Data[(Data['week']!=16) & (Data['week']!=17)]
     y = WeeklyP[y_variable]
     x = WeeklyP[['jewish_inst_p', 'jewish_int_one_block_away_1_p', 'cuad2p']] # inst1p = jewish_inst_p, inst3_1p = jewish_int_one_block_away_1_p
@@ -684,6 +584,17 @@ def regression_WeeklyPanel(Data, y_variable, type_of_regression):
         params = result.params
         return params
 
+""" Weekly Panel """
+
+# Calling the required dataframe
+WeeklyPanel, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/WeeklyPanel.csv')
+
+# summarize total_thefts;
+WeeklyPanel['total_thefts'].describe()
+
+# Calling necessary variables from other files
+from clean_data import list_names
+
 # areg totrob inst1p inst3_1p cuad2p semana* if (week~=16 & week~=17), absorb(observ) robust;
 Data1 = WeeklyPanel
 y_variable1 = "total_thefts"
@@ -701,6 +612,9 @@ Data2 = WeeklyPanel
 y_variable3 = "n_total_thefts"
 type_of_regression3 = "clustered"
 regression_3 = regression_WeeklyPanel(Data3, y_variable3, type_of_regression3)
+
+
+
 
 
 
