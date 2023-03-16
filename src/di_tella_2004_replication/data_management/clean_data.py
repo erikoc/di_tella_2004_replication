@@ -68,6 +68,9 @@ def _convert_dtypes(df, float_cols=None):
         and the 'block' column set as the index.
 
     """
+    if not isinstance(float_cols, list) and float_cols is not None:
+        raise TypeError("float_cols must be a list or None")
+
     if float_cols is None:
         float_cols = [f"theft{i}" for i in range(1, 23)] + [
             f"theft{i}val" for i in range(1, 23)
