@@ -288,28 +288,54 @@ WeeklyPanel, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economic
 
 ### Renaming columns ###
 
-WeeklyPanel.columns = (
-    WeeklyPanel.columns.str.replace("observ", "observ")
-    .str.replace("barrio", "neighborhood")
-    .str.replace("calle", "street")
-    .str.replace("altura", "street_nr")
-    .str.replace("institu1", "jewish_inst")
-    .str.replace("institu3", "jewish_inst_one_block_away")
-    .str.replace("distanci", "distance_to_jewish_inst")
-    .str.replace("edpub", "public_building_or_embassy")
-    .str.replace("estserv", "gas_station")
-    .str.replace("banco", "bank")
-    .str.replace("totrob", "total_thefts")
-    .str.replace("week", "week")
-)
+def _clean_column_names(df):
+    
+    """This function takes a pandas DataFrame and standardizes the column names to a
+    specified format.
+
+    The function renames the columns by replacing certain substrings with standardized terms such as "rob" with "theft",
+    "day" with "week_day", "dia" with "day", "mes" with "month", "hor" with "hour", "mak" with "brand", and "esq" with "corner".
+
+    In addition, the function replaces specific column names with more meaningful and descriptive names, as specified in the
+    'replacements' dictionary.
+
+    Parameters:
+    df (pandas.DataFrame): The pandas DataFrame containing the data to be standardized.
+
+    Returns:
+    pandas.DataFrame: The input DataFrame with the columns standardized to the specified format."""
+
+    df.columns = (
+        df.columns.str.replace("observ", "observ")
+        .str.replace("barrio", "neighborhood")
+        .str.replace("calle", "street")
+        .str.replace("altura", "street_nr")
+        .str.replace("institu1", "jewish_inst")
+        .str.replace("institu3", "jewish_inst_one_block_away")
+        .str.replace("distanci", "distance_to_jewish_inst")
+        .str.replace("edpub", "public_building_or_embassy")
+        .str.replace("estserv", "gas_station")
+        .str.replace("banco", "bank")
+        .str.replace("totrob", "total_thefts")
+        .str.replace("week", "week")
+    )
+    
+    return df
+
 
 ###### Data management ######
-
+"""""
 # Drop variables
 WeeklyPanel.drop(columns=['street', 'street_nr', 'public_building_or_embassy', 'gas_station', 'bank'], inplace=True)
+"""""
 
+def _drop_variables(df, list_drop):
+    df.drop(columns=list_drop, inplace=True)
+
+"""""
 # Generate variables 
 
+"fixed extension"
 # gen week1=0; ... gen week39=0;
 list_names = ["week1"]
 list_names.extend([f"week{i}" for i in range(2,40)])
@@ -317,15 +343,15 @@ WeeklyPanel[[col for col in list_names]] = 0
 # replace semana1=1 if week==1; ... replace semana39=1 if week==39;
 for i in range(1,40):
     WeeklyPanel.loc[WeeklyPanel['week']==i, f"week{i}"]=1
+    
+"fixed list simple"
 # gen cuad2=0; # gen post=0; # gen n_neighborhood=0;
 list1 = ["cuad2", "post", "n_neighborhood"]
 WeeklyPanel[[col for col in list1]] = 0
 # replace cuad2=1 if distance_to_jewish_inst==2;
 WeeklyPanel.loc[WeeklyPanel['distance_to_jewish_inst']==2, 'cuad2']=1
-# replace post=1 if week>=18;
-WeeklyPanel.loc[WeeklyPanel['week']>18, 'post']=1
-# gen jewish_inst_one_block_away_1=jewish_inst_one_block_away-jewish_inst;
-WeeklyPanel['jewish_int_one_block_away_1'] = WeeklyPanel['jewish_inst_one_block_away'] - WeeklyPanel['jewish_inst']
+
+"fixed list complex"
 # gen jewish_inst_p, jewish_int_one_block_away_1_p, cuad2p
 list2p = ["jewish_inst_p", "jewish_int_one_block_away_1_p", "cuad2p"]
 list2 = ["jewish_inst",  "jewish_int_one_block_away_1", "cuad2"]
@@ -335,15 +361,114 @@ for colp, col in zip(list2p, list2):
 list3 = ["Belgrano", "Once", "V. Crespo"]
 for col, i in zip(list3, range(1,4)):
     WeeklyPanel.loc[WeeklyPanel['neighborhood']==col, 'n_neighborhood']=i
+
+"""""
+    
+def _gen_rep_variables1(df, type_of_list, 
+                        list_names_ext, ext_cond, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext, 
+                        list_fixed, var_cond_fix, cond_fix, var_fix, value_var_fix, 
+                        list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change): 
+    
+    """This function generates a set of variables depending on the condition of whether it is a fixed extension or a fixed list
+    We have ceratin inputs for the fixed extension (list_names_ext, ext_cond, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext) and certain
+    other inputs for the fixed list simple (list_fixed, var_cond_fix, var_fix, value_var_fix). Also there is another time of fixed list which uses two condition and then
+    we call it fixed list complex and has the inputs (list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change)"""
+    
+    if type_of_list == "fixed extension": 
+        for i in range_ext:
+            list_names_ext.extend([ext_cond])  
+        df[[col for col in list_names_ext]] = original_value_var # generate
+        for i in range_loop:
+            df.loc[df[var_cond_ext]==i, ext_cond]= final_value_var # replace
+        return df
+    elif type_of_list == "fixed list simple":
+        df[[col for col in list_fixed]] = 0 # generate
+        df.loc[df[var_cond_fix]==cond_fix, var_fix]= value_var_fix # replace
+        return df
+    elif type_of_list == "fixed list complex":
+        for col1, col2 in zip(list1_fix_com, list2_fix_com):
+            df[col1] = df[col2]*df[var_fix_comp_mul]
+        for col, i in zip(list_rep_fix_com, range_rep_fix_com):
+            df.loc[df[var_fix_com_to_use]==col, var_fix_com_to_change]=i
+        return df
+ 
+"""""  
+# replace post=1 if week>=18;
+WeeklyPanel.loc[WeeklyPanel['week']>18, 'post']=1
+"""""
+        
+def _rep_variables(df, type_of_condition, var_cond_rep, condition_num, replace_var, value_replace):
+    
+    """What this function does is just to replace a variable from a data frame depending on different types of conditions and with inputs 
+    (var_cond_rep, condition_num, replace_var, value_replace)"""
+    
+    if type_of_condition == "bigger than":
+        df.loc[df[var_cond_rep]>condition_num, replace_var]=value_replace
+        return df
+    elif type_of_condition == "smaller than":
+        df.loc[df[var_cond_rep]<condition_num, replace_var]=value_replace
+        return df
+    elif type_of_condition == "equal to":
+        df.loc[df[var_cond_rep]>condition_num, replace_var]=value_replace
+        return df
+
+"""""
+ # gen jewish_inst_one_block_away_1=jewish_inst_one_block_away-jewish_inst;
+WeeklyPanel['jewish_int_one_block_away_1'] = WeeklyPanel['jewish_inst_one_block_away'] - WeeklyPanel['jewish_inst']
 # gen codigo2=week+10000*n_neighborhood;
 WeeklyPanel['code2'] = WeeklyPanel['week'] + 1000*WeeklyPanel['n_neighborhood']
 # gen ntotrob=totrob*((365/12)/7);
-WeeklyPanel['n_total_thefts'] = WeeklyPanel['total_thefts'] * (365/12)/7
+WeeklyPanel['n_total_thefts'] = WeeklyPanel['total_thefts'] * (365/12)/7 
 
+"""""
+    
+def _gen_diff_types_variables(df, type_of_gen, new_var, var1, var2, factor1, factor2):
+    """This function is creating different type of variables depending on whether their creation is based on a difference
+    a sum or a multiplication. It has the following inputs (new_var, var1, var2, factor1, factor2)"""
+    if type_of_gen == "difference":
+       df[new_var] = (factor1*df[var1]) - (factor2*df[var2])
+       return df
+    elif type_of_gen == "sum":
+        df[new_var] = (factor1*df[var1]) + (factor2*df[var2])
+        return df
+    elif type_of_gen == "multiplication":
+        df[new_var] = (factor1*df[var1]) * (factor2*df[var2])
+        return df
+        
+"""""
 # Saving the data frame
 WeeklyPanel.to_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/WeeklyPanel.csv')
+"""""
 
+def _df_to_csv(df, location):
+    df.to_csv(location)
+    
+    
+    
 
+# WHOLE FUNCTION (STILL TO BE CHANGED)
+
+def weekly_data1(df, list_drop, list_names_ext, type_of_list, ext_cond, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext):
+    df1 = _clean_column_names(df)
+    df2 = _drop_variables(df1, list_drop)
+    df3 = _gen_rep_variables1(df2, type_of_list, list_names_ext, ext_cond, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext) 
+    return df3
+
+df3 = weekly_data1(df, list_drop, list_names_ext, type_of_list, ext_cond, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext)
+df4 = _gen_rep_variables1(df3, type_of_list,  list_fixed, var_cond_fix, cond_fix, var_fix, value_var_fix) 
+df5 = _gen_rep_variables1(df4, type_of_list,  list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change) 
+    
+def weekly_data2(df, type_of_condition, var_cond_rep, condition_num, replace_var, value_replace, type_of_gen, new_var, var1, var2, factor1, factor2): 
+    df6 = _rep_variables(df, type_of_condition, var_cond_rep, condition_num, replace_var, value_replace)
+    df7 = _gen_diff_types_variables(df6, type_of_gen, new_var, var1, var2, factor1, factor2)
+    return df7
+
+df7 = weekly_data2(df, type_of_condition, var_cond_rep, condition_num, replace_var, value_replace, type_of_gen, new_var, var1, var2, factor1, factor2)
+df8 = _gen_diff_types_variables(df7, type_of_gen, new_var, var1, var2, factor1, factor2)
+df9 = _gen_diff_types_variables(df8, type_of_gen, new_var, var1, var2, factor1, factor2)
+    
+WeeklyPanel = _df_to_csv(df9, "/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/WeeklyPanel.csv")
+        
 
 
 

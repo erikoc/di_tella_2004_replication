@@ -16,7 +16,7 @@ from linearmodels.panel import FirstDifferenceOLS
 # Defining WelchTest function
 def WelchTest(Data, code1, code2):
     
-    """ This is a Welch test whcih is trying to compare the equality of two values.
+    """ This is a Welch test which is trying to compare the equality of two values.
     What we have is simply a data set in which test that fits two conditions and these condition
     are being reflectes in code1 and code 2. We also have a Data set in which the test is made
     The will check whether the mean values of two specified variables are statitically different or not.
@@ -445,7 +445,7 @@ a4 = 0
 variable_fe4 = ["observ"]
 variable_y4 = ["total_thefts"]
 variable_x4 = ['jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
-regression_fe4 = areg(Data=Data4, type_condition=type_condition4, variable_loga=variable_log_6, variable_logb=variable_log_7, a=a, variable_fe=variable_fe4, variable_y=variable_y4, variable_x=variable_x4)
+regression_fe4 = areg(Data=Data4, type_condition=type_condition4, variable_loga=variable_log_6, variable_logb=variable_log_7, a=a4, variable_fe=variable_fe4, variable_y=variable_y4, variable_x=variable_x4)
     
 # xtpois totrob inst1p inst3_1p cuad2p month*, fe i(observ);
 Data_poisson1 = MonthlyPanel2
@@ -556,7 +556,7 @@ regression_new3 = areg_clus(Data_clu_new, y_clu_new, x_clu_new3)
 
 
 
-""" Function used Monthly Panel """
+""" Function used Weekly Panel """
 
 # Generate a function that will get us the regression results
 
