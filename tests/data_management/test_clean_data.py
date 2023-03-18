@@ -1,50 +1,45 @@
-import numpy as np
 import pandas as pd
 import pytest
-from di_tella_2004_replication.config import TEST_DIR
-from di_tella_2004_replication.data_management import clean_data
-from di_tella_2004_replication.utilities import read_yaml
 
 
 @pytest.fixture()
-def data():
-    return pd.read_csv(TEST_DIR / "data_management" / "data_fixture.csv")
+def test_df():
+    return pd.DataFrame(
+        {
+            "rob1": [1, 0, 1],
+            "rob1val": [100, 150, 200],
+            "rob2": [1, 1, 0],
+            "rob2val": [300, 250, 200],
+            "day": ["Monday", "Tuesday", "Wednesday"],
+            "district": ["A", "B", "C"],
+        },
+    )
 
 
 @pytest.fixture()
-def data_info():
-    return read_yaml(TEST_DIR / "data_management" / "data_info_fixture.yaml")
+def expected_df():
+    return pd.DataFrame(
+        {
+            "theft1": [1, 1, 0],
+            "theft1val": [300, 250, 200],
+            "week_day": ["Monday", "Tuesday", "Wednesday"],
+            "census_district": ["A", "B", "C"],
+        },
+    )
 
 
-def test_clean_data_drop_columns(data, data_info):
-    data_clean = clean_data(data, data_info)
-    assert not set(data_info["columns_to_drop"]).intersection(set(data_clean.columns))
+def test_clean_column_names(test_df: DataFrame, expected_df: DataFrame):
+    df_cleaned = _clean_column_names(test_df)
+    assert list(df_cleaned.columns) == list(expected_df.columns)
 
 
-def test_clean_data_dropna(data, data_info):
-    data_clean = clean_data(data, data_info)
-    assert not data_clean.isna().any(axis=None)
+def test_clean_column_names_data(test_df: DataFrame, expected_df: DataFrame):
+    pd.testing.assert_frame_equal(_clean_column_names(test_df), expected_df)
+    assert isinstance(_clean_column_names(test_df), pd.DataFrame)
 
 
-def test_clean_data_categorical_columns(data, data_info):
-    data_clean = clean_data(data, data_info)
-    for cat_col in data_info["categorical_columns"]:
-        cat_col = data_info["column_rename_mapping"].get(cat_col, cat_col)
-        assert data_clean[cat_col].dtype == "category"
-
-
-def test_clean_data_column_rename(data, data_info):
-    data_clean = clean_data(data, data_info)
-    old_names = set(data_info["column_rename_mapping"].keys())
-    new_names = set(data_info["column_rename_mapping"].values())
-    assert not old_names.intersection(set(data_clean.columns))
-    assert new_names.intersection(set(data_clean.columns)) == new_names
-
-
-def test_convert_outcome_to_numerical(data, data_info):
-    data_clean = clean_data(data, data_info)
-    outcome_name = data_info["outcome"]
-    outcome_numerical_name = data_info["outcome_numerical"]
-    assert outcome_numerical_name in data_clean.columns
-    assert data_clean[outcome_name].dtype == "category"
-    assert data_clean[outcome_numerical_name].dtype == np.int8
+def test_convert_dtypes(expected_df: DataFrame):
+    converted_df = _convert_dtypes(expected_df)
+    for i in range(1, 23):
+        assert isinstance(converted_df[f"theft{i}"], float)
+        assert isinstance(converted_df[f"theft{i}val"], float)

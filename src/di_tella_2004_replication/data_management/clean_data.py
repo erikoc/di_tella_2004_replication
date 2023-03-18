@@ -183,6 +183,36 @@ def _create_panel_data(
     return crime_by_block_panel
 
 
+def _create_new_variables(df):
+    """This function takes a pandas DataFrame as input and creates new variables based
+    on the existing columns of the DataFrame.
+
+    Args:
+    df (pandas.DataFrame): A pandas DataFrame containing the data for creating new variables.
+
+    Returns:
+    pandas.DataFrame: A pandas DataFrame with new variables added based on the existing columns of the input DataFrame. The new variables are:
+    - jewish_inst_only_one_block_away: The difference between the number of Jewish institutions that are one block away and the number of Jewish institutions.
+    - month_dummy: A dummy variable for each month in the input data.
+    - post: A dummy variable that takes the value 1 if the month is greater than 7, and 0 otherwise.
+    - treatment: A treatment dummy variable based on the "sameblock" and "post" columns.
+    - treatment_1d: A treatment dummy variable based on the "oneblock" and "post" columns.
+    - treatment_2d: A treatment dummy variable that takes the value 1 if the distance between the observation and the Jewish institution is 2 blocks, and the month is greater than 7. Otherwise, it takes the value 0.
+
+    """
+    df["jewish_inst_only_one_block_away"] = (
+        df["jewish_inst_one_block_away"] - df["jewish_inst"]
+    )
+    df["month_dummy"] = df["month"]
+    df = pd.get_dummies(df, columns=["month_dummy"], drop_first=False)
+    df["post"] = np.where(df["month"] > 7, 1, 0)
+    df["treatment"] = df["sameblock"] * df["post"]
+    df["treatment_1d"] = df["oneblock"] * df["post"]
+    df["treatment_2d"] = np.where(df["distance"] == 2, 1, 0) * df["post"]
+
+    return df
+
+
 def process_crimebyblock(df):
     """Processes the crime data in the given DataFrame, `df`, and returns a panel data
     structure with information on theft and individual characteristics by block and
@@ -224,6 +254,7 @@ def process_crimebyblock(df):
     theft_data = theft_data.reset_index(names=["block"])
 
     crime_by_block_panel = _create_panel_data(ind_char_data, theft_data)
+    crime_by_block_panel = _create_new_variables(crime_by_block_panel)
     crime_by_block_panel = crime_by_block_panel.set_index(["block", "month"])
 
     return crime_by_block_panel
