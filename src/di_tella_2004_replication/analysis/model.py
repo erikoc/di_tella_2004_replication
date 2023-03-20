@@ -208,7 +208,6 @@ code11 = 1
 code21 = 4
 Welch_Test1 = WelchTest(MonthlyPanel, code11, code21)
 
-
 # by mes: ttest totrob2 if ((codigo==2 | codigo==4) & mes~=72), by (codigo) unequal welch;
 code12 = 2
 code22 = 4
@@ -560,10 +559,16 @@ regression_new3 = areg_clus(Data_clu_new, y_clu_new, x_clu_new3)
 
 # Generate a function that will get us the regression results
 
-def regression_WeeklyPanel(Data, y_variable, type_of_regression, abs):
+
+def regression_WeeklyPanel(Data, y_variable, type_of_regression):
     """This is just a simple fixed effects regression which performs two different actions depending on  whether we want a clustered or an unclustered regression.
     This is input via (type_of_regression) input. As fixed effects we know that 'observ' is normally used. Therefore, it is embedded in the function.
     We have our Data set (Data), our exogenous variable (variable_x) and our endogenous variable(variable_y)."""
+    
+    # Creating a list (using list comprehension) of the columns to be created
+    list_names = ["week1"]
+    #list_names.extend([list_names] + [f"month{i}" for i in range(6,13)])
+    list_names.extend([f"week{i}" for i in range(2,40)])
     
     WeeklyP = Data[(Data['week']!=16) & (Data['week']!=17)]
     y = WeeklyP[y_variable]
@@ -572,28 +577,25 @@ def regression_WeeklyPanel(Data, y_variable, type_of_regression, abs):
     x_1 = WeeklyP[x]
     if type_of_regression == "unclustered":
         # Check if the modified MonthlyPanel_new is a pandas DataFrame
-        X = sm.add_constant(x_1)
-        reg = sm.OLS(y, X)
+        X = smm.add_constant(x_1)
+        reg = smm.OLS(y, X)
         result = reg.fit(cov_type='cluster', cov_kwds={'groups': WeeklyP['observ']}, hasconst=True)
         params = result.params
         return params
     elif type_of_regression == "clustered":    
         dummies = pd.get_dummies(WeeklyP['code2']) # to capture the fixed efefcts by codigo2
         X = pd.concat([x_1, dummies], axis=1)
-        result = sm.OLS(y, X).fit(cov_type='cluster', cov_kwds={'groups': WeeklyP['observ']}, use_t=True) # with cluster for observ
+        result = smm.OLS(y, X).fit(cov_type='cluster', cov_kwds={'groups': WeeklyP['observ']}, use_t=True) # with cluster for observ
         params = result.params
         return params
 
 """ Weekly Panel """
 
 # Calling the required dataframe
-WeeklyPanel, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/WeeklyPanel.csv')
+WeeklyPanel = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Clean_data/WeeklyPanel.csv' )
 
 # summarize total_thefts;
 WeeklyPanel['total_thefts'].describe()
-
-# Calling necessary variables from other files
-from clean_data import list_names
 
 # areg totrob inst1p inst3_1p cuad2p semana* if (week~=16 & week~=17), absorb(observ) robust;
 Data1 = WeeklyPanel
@@ -608,7 +610,7 @@ type_of_regression2 = "clustered"
 regression_2 = regression_WeeklyPanel(Data2, y_variable2, type_of_regression2)
 
 # areg ntotrob inst1p inst3_1p cuad2p semana* if (week~=16 & week~=17), absorb(observ) robust cluster(codigo2);
-Data2 = WeeklyPanel
+Data3 = WeeklyPanel
 y_variable3 = "n_total_thefts"
 type_of_regression3 = "clustered"
 regression_3 = regression_WeeklyPanel(Data3, y_variable3, type_of_regression3)

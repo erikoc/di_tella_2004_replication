@@ -31,7 +31,7 @@ def _clean_column_names_mon(df):
     pandas.DataFrame: The input DataFrame with the columns standardized to the specified format."""
 
 
-    df = (
+    df.columns = (
         df.columns.str.replace("observ", "observ")
         .str.replace("barrio", "neighborhood")
         .str.replace("calle", "street")
@@ -69,7 +69,7 @@ for i in range(5,13):
     MonthlyPanel.loc[MonthlyPanel['month']==i, f"month{i}"]=1
 """""
 
-def _gen_rep_var_fixed_extension_mon(df, range_ext, list_names_ext, ext_cond, original_value_var, range_loop, var_cond_ext, final_value_var):
+def _gen_rep_var_fixed_extension_mon(df, range_ext, list_names_ext, original_value_var, range_loop, var_cond_ext, final_value_var):
     
     """This function is just generating new variables (columns) for our dataframe (df) given a certain condition. In this case, we generate variable based on a
     list extension (list_names_ext) which has a range of extension(range_ext). The extension of the list follows a condition of extension (ext_cond). In the end
@@ -79,16 +79,15 @@ def _gen_rep_var_fixed_extension_mon(df, range_ext, list_names_ext, ext_cond, or
     (final_value_var)"""
     
     for i in range_ext:
-        list_names_ext.extend([ext_cond])  
+        list_names_ext.extend([f"month{i}"])  
     df[[col for col in list_names_ext]] = original_value_var # generate
     for i in range_loop:
-        df.loc[df[var_cond_ext]==i, ext_cond]= final_value_var # replace
+        df.loc[df[var_cond_ext]==i, f"month{i}"]= final_value_var # replace
     return df
 
 # _gen_rep_var_fixed_extension_mon(df, range_ext, list_names_ext, ext_cond, original_value_var, range_loop, var_cond_ext, final_value_var)
 range_ext_m1 = range(6,13)
 list_names_ext_m1 = ["month5"]
-ext_cond_m1 = f"month{i}"
 original_value_var_m1 = 0
 range_loop_m1 = range(5,13)
 var_cond_ext_m1 = 'month'
@@ -133,28 +132,7 @@ original_value_m1 = 0
 cond_var_m1 = 'month'
 final_value_m1 = 1
 cond_m1 = 7
-    
 
-"""""    
-# gen inst1p=institu1*post; # gen inst3_1p=inst3_1*post;
-list1p_m = ["jewish_inst_p", "jewish_inst_one_block_away_1_p"]
-list1_m = ["jewish_inst",  "jewish_int_one_block_away_1"]
-for colp, col in zip(list1p_m, list1_m):
-        MonthlyPanel[colp] = MonthlyPanel[col]*MonthlyPanel['post'] 
-""""" 
-
-def _gen_var_double_listed_mon(df, list_gen_var, list_ori_var, fixed_var):
-    
-    """This function is generating variables listed on a list (list_gen_var) given a list of existing variables (list_ori_var) within a dataframe (df) 
-    using a multiplication rule multiplying it by a fixed variable (fixed_var) already existent in thedataframe(df) """
-    for col1, col2 in zip(list_gen_var, list_ori_var):
-        df[col1] = df[col2]*df[fixed_var] 
-    return df
-
-# _gen_var_double_listed_mon(df, list_gen_var, list_ori_var, fixed_var)
-list_gen_var_m1 = ["jewish_inst_p", "jewish_inst_one_block_away_1_p"]
-list_ori_var_m1 = ["jewish_inst",  "jewish_int_one_block_away_1"]
-fixed_var_m1 = 'post'
     
 """""            
 # gen cuad0=0; ... gen cuad7=0;
@@ -173,7 +151,7 @@ for i in range(0,8):
 
 # FOR THE ABOVE ONE USE _gen_rep_var_fixed_estension_mon()
 
-def _gen_rep_var_fixed_extension_mon2(df, range_ext2, list_names_ext2, ext_cond2, original_value_var2, range_loop2, var_cond_ext2, final_value_var2):
+def _gen_rep_var_fixed_extension_mon2(df, range_ext2, list_names_ext2, original_value_var2, range_loop2, var_cond_ext2, final_value_var2):
     
     """This function is just generating new variables (columns) for our dataframe (df) given a certain condition. In this case, we generate variable based on a
     list extension (list_names_ext) which has a range of extension(range_ext). The extension of the list follows a condition of extension (ext_cond). In the end
@@ -183,16 +161,15 @@ def _gen_rep_var_fixed_extension_mon2(df, range_ext2, list_names_ext2, ext_cond2
     (final_value_var)"""
     
     for i in range_ext2:
-        list_names_ext2.extend([ext_cond2])  
+        list_names_ext2.extend([f"cuad{i}"])  
     df[[col for col in list_names_ext2]] = original_value_var2 # generate
     for i in range_loop2:
-        df.loc[df[var_cond_ext2]==i, ext_cond2]= final_value_var2 # replace
+        df.loc[df[var_cond_ext2]==i, f"cuad{i}"]= final_value_var2 # replace
     return df
 
 # _gen_rep_var_fixed_extension_mon2(df, range_ext2, list_names_ext2, ext_cond2, original_value_var2, range_loop2, var_cond_ext2, final_value_var2)
 range_ext2_m1 = range(1,8)
 list_names_ext2_m1 = ["cuad0"]
-ext_cond2_m1 = f"month{i}"
 original_value_var2_m1 = 0
 range_loop2_m1 = range(0,8)
 var_cond_ext2_m1 = 'distance_to_jewish_inst'
@@ -241,9 +218,30 @@ def _gen_rep_var_various_cond_equality_mon(df, new_gen_variable, new_original_va
 # _gen_rep_var_various_cond_equality_mon(df, new_gen_variable, new_original_value, list_ext_variables, range_new_gen, value_originallist)
 new_gen_variable_m1 = 'code'
 new_original_value_m1 = 4
-list_ext_variables_m1 = ['jewish_inst', 'jewish_int_one_block_away_1', 'cuad2']
+list_ext_variables_m1 = ['jewish_inst', 'jewish_inst_one_block_away_1', 'cuad2']
 range_new_gen_m1 = range(1,4)
 value_originallist_m1 = 1
+
+"""""    
+# gen inst1p=institu1*post; # gen inst3_1p=inst3_1*post;
+list1p_m = ["jewish_inst_p", "jewish_inst_one_block_away_1_p"]
+list1_m = ["jewish_inst",  "jewish_int_one_block_away_1"]
+for colp, col in zip(list1p_m, list1_m):
+        MonthlyPanel[colp] = MonthlyPanel[col]*MonthlyPanel['post'] 
+""""" 
+
+def _gen_var_double_listed_mon(df, list_gen_var, list_ori_var, fixed_var):
+    
+    """This function is generating variables listed on a list (list_gen_var) given a list of existing variables (list_ori_var) within a dataframe (df) 
+    using a multiplication rule multiplying it by a fixed variable (fixed_var) already existent in thedataframe(df) """
+    for col1, col2 in zip(list_gen_var, list_ori_var):
+        df[col1] = df[col2]*df[fixed_var] 
+    return df
+
+# _gen_var_double_listed_mon(df, list_gen_var, list_ori_var, fixed_var)
+list_gen_var_m1 = ["jewish_inst_p", "jewish_inst_one_block_away_1_p"]
+list_ori_var_m1 = ["jewish_inst",  "jewish_inst_one_block_away_1"]
+fixed_var_m1 = 'post'
 
     
 """""
@@ -295,10 +293,12 @@ MonthlyPanel.loc[(MonthlyPanel['month'] != 72) & (MonthlyPanel['month'] != 73), 
 def _gen_rep_total_thefts2_mon(df, var_complex_cond, cond1, cond2):
     """This funtion is generating a a new variable by observation "total_thefts2" in a dataframe (df) """
     df = df.assign(total_thefts2=pd.Series())
-    for i in range(1, len(df)):  #### I am here 
+    df['total_thefts2'] = df['total_thefts2'].tolist()
+    for i in range(1, len(df)):  
         if df[var_complex_cond].iloc[i] == cond1 or df[var_complex_cond].iloc[i] == cond2:
-            df['total_thefts2'].iloc[i] == df['total_thefts'].iloc[i].cumsum() # generate
-    df[(df[var_complex_cond] != cond1) & (df[var_complex_cond] != cond2), 'total_thefts2'] = df['total_thefts'] # replace
+            df['total_thefts2'].loc[i] == df['total_thefts'].iloc[i].cumsum() # generate
+    df.loc[(df[var_complex_cond] != cond1) & (df[var_complex_cond] != cond2), 'total_thefts2'] = df['total_thefts'] # replace
+    df['total_thefts2'] = pd.Series(df['total_thefts2'])
     return df
 
 # _gen_rep_total_thefts2(df, var_complex_cond, cond1, cond2)
@@ -317,32 +317,32 @@ def _df_to_csv_mon(df, location):
     df.to_csv(location)
 
 # _df_to_csv_mon(df, location)
-location_m1 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel.csv'
+location_m1 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel.csv'
 
     
 
 #### TRYING TO PUT EVERYTHING INSIDE A FUNCTION ####
 
 def monthlypanel_1(df, 
-                   range_ext, list_names_ext, ext_cond, original_value_var, range_loop, var_cond_ext, final_value_var,
+                   range_ext, list_names_ext, original_value_var, range_loop, var_cond_ext, final_value_var,
                    new_var, var1, var_sub,
                    var_gen, original_value, cond_var, final_value, cond,
-                   list_gen_var, list_ori_var, fixed_var,
-                   range_ext2, list_names_ext2, ext_cond2, original_value_var2, range_loop2, var_cond_ext2, final_value_var2,
+                   range_ext2, list_names_ext2, original_value_var2, range_loop2, var_cond_ext2, final_value_var2,
                    ori_variables, fixed_variable, name_change,
                    new_gen_variable, new_original_value, list_ext_variables, range_new_gen, value_originallist,
+                   list_gen_var, list_ori_var, fixed_var,
                    NEW_var, ORI_var, list_a, list_b,
                    list_sort,
                    var_complex_cond, cond1, cond2,
                    location):
     df = _clean_column_names_mon(df)
-    df = _gen_rep_var_fixed_extension_mon(df, range_ext, list_names_ext, ext_cond, original_value_var, range_loop, var_cond_ext, final_value_var)
+    df = _gen_rep_var_fixed_extension_mon(df, range_ext, list_names_ext, original_value_var, range_loop, var_cond_ext, final_value_var)
     df = _gen_var_difference_mon(df, new_var, var1, var_sub)
     df = _gen_rep_var_single_cond_biggerthan_mon(df, var_gen, original_value, cond_var, final_value, cond)
-    df = _gen_var_double_listed_mon(df, list_gen_var, list_ori_var, fixed_var)
-    df = _gen_rep_var_fixed_extension_mon2(df, range_ext2, list_names_ext2, ext_cond2, original_value_var2, range_loop2, var_cond_ext2, final_value_var2)
+    df = _gen_rep_var_fixed_extension_mon2(df, range_ext2, list_names_ext2, original_value_var2, range_loop2, var_cond_ext2, final_value_var2)
     df = _gen_var_cond_list_similar_mon(df, ori_variables, fixed_variable, name_change)
     df = _gen_rep_var_various_cond_equality_mon(df, new_gen_variable, new_original_value, list_ext_variables, range_new_gen, value_originallist)
+    df = _gen_var_double_listed_mon(df, list_gen_var, list_ori_var, fixed_var)
     df = _gen_rep_var_various_cond_equality_listedvalues_mon(df, NEW_var, ORI_var, list_a, list_b)
     df = _sort_mon(df, list_sort)
     df = _gen_rep_total_thefts2_mon(df, var_complex_cond, cond1, cond2)
@@ -352,15 +352,16 @@ def monthlypanel_1(df,
 ### FUNCTION ###
 
 MonthlyPanel = monthlypanel_1(df=df_m1, 
-                              range_ext=range_ext_m1, list_names_ext=list_names_ext_m1, ext_cond=ext_cond_m1, original_value_var=original_value_var_m1, range_loop=range_loop_m1, var_cond_ext=var_cond_ext_m1, final_value_var=final_value_var_m1,
+                              range_ext=range_ext_m1, list_names_ext=list_names_ext_m1, original_value_var=original_value_var_m1, range_loop=range_loop_m1, var_cond_ext=var_cond_ext_m1, final_value_var=final_value_var_m1,
                               new_var=new_var_m1, var1=var1_m1, var_sub=var_sub_m1,
                               var_gen=var_gen_m1, original_value=original_value_m1, cond_var=cond_var_m1, final_value=final_value_m1, cond=cond_m1,
-                              list_gen_var=list_gen_var_m1, list_ori_var=list_ori_var_m1, fixed_var=fixed_var_m1,
-                              range_ext2=range_ext2_m1, list_names_ext=list_names_ext2_m1, ext_cond=ext_cond2_m1, original_value_var=original_value_var2_m1, range_loop=range_loop2_m1, var_cond_ext=var_cond_ext2_m1, final_value_var=final_value_var2_m1,
+                              range_ext2=range_ext2_m1, list_names_ext2=list_names_ext2_m1, original_value_var2=original_value_var2_m1, range_loop2=range_loop2_m1, var_cond_ext2=var_cond_ext2_m1, final_value_var2=final_value_var2_m1,
                               ori_variables=ori_variables_m1, fixed_variable=fixed_variable_m1, name_change=name_change_m1,
                               new_gen_variable=new_gen_variable_m1, new_original_value=new_original_value_m1, list_ext_variables=list_ext_variables_m1, range_new_gen=range_new_gen_m1, value_originallist=value_originallist_m1,
+                              list_gen_var=list_gen_var_m1, list_ori_var=list_ori_var_m1, fixed_var=fixed_var_m1,
                               NEW_var=NEW_var_m1, ORI_var=ORI_var_m1, list_a=list_a_m1, list_b=list_b_m1,
-                              list_sort=list_sort_m1, var_complex_cond=var_complex_cond_m1, cond1=cond1_m1, cond2=cond2_m1,
+                              list_sort=list_sort_m1, 
+                              var_complex_cond=var_complex_cond_m1, cond1=cond1_m1, cond2=cond2_m1,
                               location=location_m1)
 
    
@@ -1068,9 +1069,6 @@ MonthlyPanel_new = monthlypanel_4(df = MonthlyPanel_new,
 
 
 
-
-
-
 """ Weekly Panel """
 
 ### Reading the data ###
@@ -1079,7 +1077,7 @@ WeeklyPanel, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economic
 
 ### Renaming columns ###
 
-def _clean_column_names(df):
+def _clean_column_names_we(df):
     
     """This function takes a pandas DataFrame and standardizes the column names to a
     specified format.
@@ -1123,15 +1121,14 @@ df_we = WeeklyPanel
 WeeklyPanel.drop(columns=['street', 'street_nr', 'public_building_or_embassy', 'gas_station', 'bank'], inplace=True)
 """""
 
-def _drop_variables(df, list_drop):
+def _drop_variables_we(df, list_drop):
     df.drop(columns=list_drop, inplace=True)
+    return df
 
 # def _drop_variables(df, list_drop)
 list_drop_we = ['street', 'street_nr', 'public_building_or_embassy', 'gas_station', 'bank']
 
 """""
-# Generate variables 
-
 "fixed extension"
 # gen week1=0; ... gen week39=0;
 list_names = ["week1"]
@@ -1140,44 +1137,33 @@ WeeklyPanel[[col for col in list_names]] = 0
 # replace semana1=1 if week==1; ... replace semana39=1 if week==39;
 for i in range(1,40):
     WeeklyPanel.loc[WeeklyPanel['week']==i, f"week{i}"]=1
+"""""
     
+def _gen_rep_variables_fixedextension_we(df,list_names_ext, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext):    
+    """"This functions has certain inputs to generate a variable and replace its values (list_names_ext, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext)""" 
+    for i in range_ext:
+        list_names_ext.extend([f"week{i}"])  
+    df[[col for col in list_names_ext]] = original_value_var # generate
+    for i in range_loop:
+        df.loc[df[var_cond_ext]==i, f"week{i}"]= final_value_var # replace
+    return df
+
+# _gen_rep_variables_we(df, type_of_list, list_names_ext, ext_cond, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext) # FIXED EXTENSION
+list_names_ext_we = ["week1"]
+range_ext_we = range(2,40)
+original_value_var_we = 0
+final_value_var_we = 1
+range_loop_we = range(1,40)
+var_cond_ext_we = 'week'
+
+"""""
 "fixed list simple"
 # gen cuad2=0; # gen post=0; # gen n_neighborhood=0;
 list1 = ["cuad2", "post", "n_neighborhood"]
 WeeklyPanel[[col for col in list1]] = 0
 # replace cuad2=1 if distance_to_jewish_inst==2;
 WeeklyPanel.loc[WeeklyPanel['distance_to_jewish_inst']==2, 'cuad2']=1
-
-"fixed list complex"
-# gen jewish_inst_p, jewish_int_one_block_away_1_p, cuad2p
-list2p = ["jewish_inst_p", "jewish_int_one_block_away_1_p", "cuad2p"]
-list2 = ["jewish_inst",  "jewish_int_one_block_away_1", "cuad2"]
-for colp, col in zip(list2p, list2):
-        WeeklyPanel[colp] = WeeklyPanel[col]*WeeklyPanel['post']
-# replace n_neighborhood=1 if neighborhood=="Belgrano"; replace n_neighborhood=2 if neighborhood=="Once"; replace n_neighborhood=3 if neighborhood=="V. Crespo";      
-list3 = ["Belgrano", "Once", "V. Crespo"]
-for col, i in zip(list3, range(1,4)):
-    WeeklyPanel.loc[WeeklyPanel['neighborhood']==col, 'n_neighborhood']=i
-
 """""
-    
-def _gen_rep_variables_fixedextension_we(df,list_names_ext, ext_cond, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext):    
-    """"This functions has certain inputs to generate a variable and replace its values (list_names_ext, ext_cond, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext)""" 
-    for i in range_ext:
-        list_names_ext.extend([ext_cond])  
-    df[[col for col in list_names_ext]] = original_value_var # generate
-    for i in range_loop:
-        df.loc[df[var_cond_ext]==i, ext_cond]= final_value_var # replace
-    return df
-
-# _gen_rep_variables_we(df, type_of_list, list_names_ext, ext_cond, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext) # FIXED EXTENSION
-list_names_ext_we = ["week1"]
-ext_cond_we = f"week{i}"
-range_ext_we = range(2,40)
-original_value_var_we = 0
-final_value_var_we = 1
-range_loop_we = range(1,40)
-var_cond_ext_we = 'week'
 
 
 def _gen_rep_variables_fixedlistsimple_we(df, list_fixed, var_cond_fix, cond_fix, var_fix, value_var_fix): 
@@ -1193,31 +1179,12 @@ cond_fix_we = 2
 var_fix_we = 'cuad2'
 value_var_fix_we = 1
 
-
-def _gen_rep_variables_fixedlistcomplex_we(df, list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change): 
-    """This functions has certain inputs to generate a variable and replace its values 
-    (list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change)"""
-    for col1, col2 in zip(list1_fix_com, list2_fix_com):
-        df[col1] = df[col2]*df[var_fix_comp_mul]
-    for col, i in zip(list_rep_fix_com, range_rep_fix_com):
-        df.loc[df[var_fix_com_to_use]==col, var_fix_com_to_change]=i
-    return df
-    
-# _gen_rep_variables_we(df, type_of_list, list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change)
-list1_fix_com_we = ["jewish_inst_p", "jewish_int_one_block_away_1_p", "cuad2p"]
-list2_fix_com_we = ["jewish_inst",  "jewish_int_one_block_away_1", "cuad2"]
-var_fix_comp_mul_we = 'post'
-range_rep_fix_com_we = range(1,4)
-list_rep_fix_com_we = ["Belgrano", "Once", "V. Crespo"]
-var_fix_com_to_use_we = 'neighborhood'
-var_fix_com_to_change_we = 'n_neighborhood'
-
 """""  
 # replace post=1 if week>=18;
 WeeklyPanel.loc[WeeklyPanel['week']>18, 'post']=1
 """""
         
-def _rep_variables(df, type_of_condition, var_cond_rep, condition_num, replace_var, value_replace):
+def _rep_variables_we(df, type_of_condition, var_cond_rep, condition_num, replace_var, value_replace):
     
     """What this function does is just to replace a variable from a data frame depending on different types of conditions and with inputs 
     (var_cond_rep, condition_num, replace_var, value_replace)"""
@@ -1249,7 +1216,7 @@ WeeklyPanel['n_total_thefts'] = WeeklyPanel['total_thefts'] * (365/12)/7
 
 """""
     
-def _gen_diff_diff_variables(df, new_var_d, var1_d, var2_d, factor1_d, factor2_d):
+def _gen_diff_diff_variables_we(df, new_var_d, var1_d, var2_d, factor1_d, factor2_d):
     """This function is creating a variable based on a difference of already existing variables in a dataframe. It has the following inputs (new_var_d, var1_d, var2_d, factor1_d, factor2_d)"""
     df[new_var_d] = (factor1_d*df[var1_d]) - (factor2_d*df[var2_d])
     return df
@@ -1261,7 +1228,8 @@ var2_d_we = 'jewish_inst'
 factor1_d_we = 1
 factor2_d_we = 1
 
-def _gen_diff_sum_variables(df, new_var_s, var1_s, var2_s, factor1_s, factor2_s):
+
+def _gen_diff_sum_variables_we(df, new_var_s, var1_s, var2_s, factor1_s, factor2_s):
     """This function is creating a variable based on a difference of already existing variables in a dataframe. It has the following inputs (new_var_s, var1_s, var2_s, factor1_s, factor2_s)"""
     df[new_var_s] = (factor1_s*df[var1_s]) + (factor2_s*df[var2_s])
     return df
@@ -1273,17 +1241,47 @@ var2_s_we = 'n_neighborhood'
 factor1_s_we = 1
 factor2_s_we = 1000
 
-def _gen_diff_multiplication_variables(df, new_var_m, var1_m, var2_m, factor1_m, factor2_m):
+def _gen_simple_we(df, new_var_sim, var_sim, factor_sim):
     """This function is creating a variable based on a difference of already existing variables in a dataframe. It has the following inputs (new_var_m, var1_m, var2_m, factor1_m, factor2_m)"""
-    df[new_var_m] = (factor1_m*df[var1_m]) * (factor2_m*df[var2_m])
+    df[new_var_sim] = df[var_sim]*factor_sim
     return df
 
-# _gen_diff_multiplication_variables(df, new_var_m, var1_m, var2_m, factor1_m, factor2_m)
-new_var_m_we = 'n_total_thefts'
-var1_m_we = 'total_thefts'
-var2_m_we = (365/12)/7 
-factor1_m_we = 1 
-factor2_m_we = 1
+# _gen_simple_we(df, new_var_sim, var_sim, factor_sim)
+new_var_sim_we = 'n_total_thefts'
+var_sim_we = 'total_thefts'
+factor_sim_we = (365/12)/7 
+
+"""""
+"fixed list complex"
+# gen jewish_inst_p, jewish_int_one_block_away_1_p, cuad2p
+list2p = ["jewish_inst_p", "jewish_int_one_block_away_1_p", "cuad2p"]
+list2 = ["jewish_inst",  "jewish_int_one_block_away_1", "cuad2"]
+for colp, col in zip(list2p, list2):
+        WeeklyPanel[colp] = WeeklyPanel[col]*WeeklyPanel['post']
+# replace n_neighborhood=1 if neighborhood=="Belgrano"; replace n_neighborhood=2 if neighborhood=="Once"; replace n_neighborhood=3 if neighborhood=="V. Crespo";      
+list3 = ["Belgrano", "Once", "V. Crespo"]
+for col, i in zip(list3, range(1,4)):
+    WeeklyPanel.loc[WeeklyPanel['neighborhood']==col, 'n_neighborhood']=i
+"""""
+
+
+def _gen_rep_variables_fixedlistcomplex_we(df, list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change): 
+    """This functions has certain inputs to generate a variable and replace its values 
+    (list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change)"""
+    for col1, col2 in zip(list1_fix_com, list2_fix_com):
+        df[col1] = df[col2]*df[var_fix_comp_mul]
+    for col, i in zip(list_rep_fix_com, range_rep_fix_com):
+        df.loc[df[var_fix_com_to_use]==col, var_fix_com_to_change]=i
+    return df
+    
+# _gen_rep_variables_we(df, type_of_list, list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change)
+list1_fix_com_we = ["jewish_inst_p", "jewish_int_one_block_away_1_p", "cuad2p"]
+list2_fix_com_we = ["jewish_inst",  "jewish_int_one_block_away_1", "cuad2"]
+var_fix_comp_mul_we = 'post'
+range_rep_fix_com_we = range(1,4)
+list_rep_fix_com_we = ["Belgrano", "Once", "V. Crespo"]
+var_fix_com_to_use_we = 'neighborhood'
+var_fix_com_to_change_we = 'n_neighborhood'
   
 """""
 # Saving the data frame
@@ -1295,40 +1293,40 @@ def _df_to_csv(df, location):
     df.to_csv(location)
     
 # _df_to_csv(df, location)
-location_we = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/WeeklyPanel.csv' 
+location_we = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/WeeklyPanel.csv' 
 
 #### TRYING TO PUT EVERYTHING INSIDE A FUNCTION ####
 
 def weeklypanel(df, 
                 list_drop,
-                list_names_ext, ext_cond, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext,
+                list_names_ext, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext,
                 list_fixed, var_cond_fix, cond_fix, var_fix, value_var_fix,
-                list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change,
                 type_of_condition, var_cond_rep, condition_num, replace_var, value_replace,
                 new_var_d, var1_d, var2_d, factor1_d, factor2_d,
                 new_var_s, var1_s, var2_s, factor1_s, factor2_s,
-                new_var_m, var1_m, var2_m, factor1_m, factor2_m,
+                new_var_sim, var_sim, factor_sim,
+                list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change,
                 location):
-    df = _clean_column_names(df)
-    df = _drop_variables(df, list_drop)
-    df = _gen_rep_variables_fixedextension_we(df,list_names_ext, ext_cond, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext)
+    df = _clean_column_names_we(df)
+    df = _drop_variables_we(df, list_drop)
+    df = _gen_rep_variables_fixedextension_we(df,list_names_ext, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext)
     df = _gen_rep_variables_fixedlistsimple_we(df, list_fixed, var_cond_fix, cond_fix, var_fix, value_var_fix)
+    df = _rep_variables_we(df, type_of_condition, var_cond_rep, condition_num, replace_var, value_replace)
+    df = _gen_diff_diff_variables_we(df, new_var_d, var1_d, var2_d, factor1_d, factor2_d)
+    df = _gen_diff_sum_variables_we(df, new_var_s, var1_s, var2_s, factor1_s, factor2_s)
+    df = _gen_simple_we(df, new_var_sim, var_sim, factor_sim)
     df = _gen_rep_variables_fixedlistcomplex_we(df, list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change)
-    df = _rep_variables(df, type_of_condition, var_cond_rep, condition_num, replace_var, value_replace)
-    df = _gen_diff_diff_variables(df, new_var_d, var1_d, var2_d, factor1_d, factor2_d)
-    df = _gen_diff_sum_variables(df, new_var_s, var1_s, var2_s, factor1_s, factor2_s)
-    df = _gen_diff_multiplication_variables(df, new_var_m, var1_m, var2_m, factor1_m, factor2_m)
     _df_to_csv(df, location)
     
 WeeklyPanel = weeklypanel(df=WeeklyPanel, 
                 list_drop=list_drop_we,
-                list_names_ext=list_names_ext_we, ext_cond=ext_cond_we, range_ext=range_ext_we, original_value_var=original_value_var_we, final_value_var=final_value_var_we, range_loop=range_loop_we, var_cond_ext=var_cond_ext_we,
+                list_names_ext=list_names_ext_we, range_ext=range_ext_we, original_value_var=original_value_var_we, final_value_var=final_value_var_we, range_loop=range_loop_we, var_cond_ext=var_cond_ext_we,
                 list_fixed=list_fixed_we, var_cond_fix=var_cond_fix_we, cond_fix=cond_fix_we, var_fix=var_fix_we, value_var_fix=value_var_fix_we,
-                list1_fix_com=list1_fix_com_we, list2_fix_com=list2_fix_com_we, var_fix_comp_mul=var_fix_comp_mul_we, range_rep_fix_com=range_rep_fix_com_we, list_rep_fix_com=list_rep_fix_com_we, var_fix_com_to_use=var_fix_com_to_use_we, var_fix_com_to_change=var_fix_com_to_change_we,
                 type_of_condition=type_of_condition_we, var_cond_rep=var_cond_rep_we, condition_num=condition_num_we, replace_var=replace_var_we, value_replace=value_replace_we,
                 new_var_d=new_var_d_we, var1_d=var1_d_we, var2_d=var2_d_we, factor1_d=factor1_d_we, factor2_d=factor2_d_we,
                 new_var_s=new_var_s_we, var1_s=var1_s_we, var2_s=var2_s_we, factor1_s=factor1_s_we, factor2_s=factor2_s_we,
-                new_var_m=new_var_m_we, var1_m=var1_m_we, var2_m=var2_m_we, factor1_m=factor1_m_we, factor2_m=factor2_m_we,
+                new_var_sim=new_var_sim_we, var_sim=var_sim_we, factor_sim=factor_sim_we,
+                list1_fix_com=list1_fix_com_we, list2_fix_com=list2_fix_com_we, var_fix_comp_mul=var_fix_comp_mul_we, range_rep_fix_com=range_rep_fix_com_we, list_rep_fix_com=list_rep_fix_com_we, var_fix_com_to_use=var_fix_com_to_use_we, var_fix_com_to_change=var_fix_com_to_change_we,
                 location=location_we)
 
 
