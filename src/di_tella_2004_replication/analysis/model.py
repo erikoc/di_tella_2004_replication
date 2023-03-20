@@ -538,9 +538,9 @@ MonthlyPanel_new['total_thefts'].describe()
 
 Data_clu_new = MonthlyPanel_new
 y_clu_new = "total_thefts"
-x_clu_new1 = ['1jewish_inst_1_p', '1jewish_inst_one_block_away_1_p', '1cuad2p', 'month5', 'month6', 'month7']
-x_clu_new2 = ['2jewish_inst_1_p', '2jewish_inst_one_block_away_1_p', '2cuad2p', 'month5', 'month6', 'month7']
-x_clu_new3 = ['3jewish_inst_1_p', '3jewish_inst_one_block_away_1_p', '3cuad2p', 'month5', 'month6', 'month7']
+x_clu_new1 = ['one_jewish_inst_1_p', 'one_jewish_inst_one_block_away_1_p', 'one_cuad2p', 'month5', 'month6', 'month7']
+x_clu_new2 = ['two_jewish_inst_1_p', 'two_jewish_inst_one_block_away_1_p', 'two_cuad2p', 'month5', 'month6', 'month7']
+x_clu_new3 = ['three_jewish_inst_1_p', 'three_jewish_inst_one_block_away_1_p', 'three_cuad2p', 'month5', 'month6', 'month7']
 
 regression_new1 = areg_clus(Data_clu_new, y_clu_new, x_clu_new1)   
 regression_new2 = areg_clus(Data_clu_new, y_clu_new, x_clu_new2)  
