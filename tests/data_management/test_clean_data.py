@@ -1,5 +1,9 @@
 import pandas as pd
 import pytest
+from di_tella_2004_replication.data_management.clean_data import (
+    _clean_column_names,
+    _convert_dtypes,
+)
 
 
 @pytest.fixture()
@@ -28,17 +32,17 @@ def expected_df():
     )
 
 
-def test_clean_column_names(test_df: DataFrame, expected_df: DataFrame):
+def test_clean_column_names(test_df, expected_df):
     df_cleaned = _clean_column_names(test_df)
     assert list(df_cleaned.columns) == list(expected_df.columns)
 
 
-def test_clean_column_names_data(test_df: DataFrame, expected_df: DataFrame):
+def test_clean_column_names_data(test_df, expected_df):
     pd.testing.assert_frame_equal(_clean_column_names(test_df), expected_df)
     assert isinstance(_clean_column_names(test_df), pd.DataFrame)
 
 
-def test_convert_dtypes(expected_df: DataFrame):
+def test_convert_dtypes(expected_df):
     converted_df = _convert_dtypes(expected_df)
     for i in range(1, 23):
         assert isinstance(converted_df[f"theft{i}"], float)
