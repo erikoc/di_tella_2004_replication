@@ -376,7 +376,8 @@ def _reading_data_csv(location_origin):
     return df
 
 # _reading_data_csv(location_origin)
-location_origin_m2 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel.csv'
+location_origin_m2 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel.csv'
+
     
 """""
 # drop if mes==72; drop if mes==73;
@@ -389,7 +390,6 @@ def _drop_if_simple_mon2(df, var_drop, drop1, drop2):
     return df
 
 # _drop_if_simple_m2(df, var_drop, drop1, drop2):
-df_m2 = MonthlyPanel
 var_drop_m2 = 'month'
 drop1_m2 = 72
 drop2_m2 = 73
@@ -410,8 +410,8 @@ def _gen_rep_various_cond_mon2(df, new_var_v_cond, ori_var_v_cond, var_con_v_con
     and depending on the conditions, the variables get a new value scaled by different factors (multiple1_v_cond, multiple2_v_cond) 
     multiplied by the original variable (ori_var_v_cond)""" 
     df[new_var_v_cond] = df[ori_var_v_cond] # generate
-    df.loc[df[var_con_v_cond]==con_v_cond1, new_var_v_cond]= MonthlyPanel2[ori_var_v_cond]*multiple1_v_cond # replace
-    MonthlyPanel2.loc[(MonthlyPanel2[var_con_v_cond]==con_v_cond2) | (MonthlyPanel2[var_con_v_cond]==con_v_cond3) | (MonthlyPanel2[var_con_v_cond]==con_v_cond4) | (MonthlyPanel2[var_con_v_cond]==con_v_cond5), new_var_v_cond]= MonthlyPanel2[ori_var_v_cond]*multiple2_v_cond # replace
+    df.loc[df[var_con_v_cond]==con_v_cond1, new_var_v_cond]= df[ori_var_v_cond]*multiple1_v_cond # replace
+    df.loc[(df[var_con_v_cond]==con_v_cond2) | (df[var_con_v_cond]==con_v_cond3) | (df[var_con_v_cond]==con_v_cond4) | (df[var_con_v_cond]==con_v_cond5), new_var_v_cond]= df[ori_var_v_cond]*multiple2_v_cond # replace
     return df 
 
 # _gen_rep_various_cond_m2(df, new_var_v_cond, ori_var_v_cond, var_con_v_cond, con_v_cond1, con_v_cond2, con_v_cond3, con_v_cond4, con_v_cond5, multiple1_v_cond, multiple2_v_cond)
@@ -465,6 +465,7 @@ def _sort_mon2(df, list_sort):
     df = df.sort_values(list_sort)
     return df
 
+#_sort_mon2(df, list_sort)
 list_sort_m2 = ['observ', 'month']
 
 """""
@@ -649,11 +650,21 @@ for col1, col2 in zip(list_names_place[18:26], list_names_month[0:8]):
 def _gen_based_variouslists_mon2(df, list_names_place, list_names_month, list_names_variouslists):
     """This function is firstly extending two lists which in turn will be used to create a set of variables (list_names_place) based on the values of two different 
     other lists (list_names_month,  list_names_variouslists_m2) multiplied by each other"""
-    list_names_place.extend([f"mbelg{i}" for i in ["may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]], [f"monce{i}" for i in ["apr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]], [f"mvcre{i}" for i in ["apr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]])
+    
+    list_names_place.extend([f"mbelg{i}" for i in ["may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]])
+    list_names_place.extend([f"monce{i}" for i in ["apr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]])
+    list_names_place.extend([f"mvcre{i}" for i in ["apr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]])
     list_names_month.extend([f"month{i}" for i in range(5,13)])
-    for i in range(0,3):
-        for col1, col2 in zip(list_names_place[0:8], list_names_month[0:8]):
-            df[col1] = df[list_names_variouslists[i]]*df[col2]
+
+    """ This is making a loop over the three different elements of list_names_variouslists_m2. Ity is usimng an index to go through thje 27 elements in list_names_place
+    and it is using a second loop to go over the elemensr of list_names_month. """
+    for i in range(3):
+        start_idx = i * 9
+        for j in range(9):
+            col1 = f"{list_names_place[start_idx + j]}"
+            col2 = list_names_variouslists[i]
+            col3 = list_names_month[j]
+            df[col1] = df[col2] * df[col3]         
     return df
             
             
@@ -672,7 +683,8 @@ def _df_to_csv_mon2(df, location):
     df.to_csv(location)
     
 # _df_to_csv_mon2(df, location)
-location_m2 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel2.csv'
+location_m2 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel2.csv'
+
 
 #### TRYING TO PUT EVERYTHING INSIDE A FUNCTION ####
 
@@ -723,6 +735,7 @@ MonthlyPanel2 = monthlypanel_2(location_origin=location_origin_m2,
                    location=location_m2)
 
 
+
 ############################################## PART 3 ########################################################################################################################
 
 """""
@@ -735,7 +748,7 @@ def _reading_data_csv(location_origin):
     return df
 
 # _reading_data_csv(location_origin)
-location_origin_m3 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel2.csv'
+location_origin_m3 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel2.csv'
     
 """""
 # drop month4;
@@ -790,16 +803,14 @@ for i, j in zip(range(1,5), list_names_3_variables):
         MonthlyPanel3[col1] = MonthlyPanel3[j] * MonthlyPanel3[col2] 
 """""
 
-def _gen_multiplevariables_listbased(df, list_value1, list_value2, list_value3, list_value4, list_names_3_variables, list_names_data3_general):
+def _gen_multiplevariables_listbased(df, list_values, list_names_3_variables, list_names_data3_general):
     """This function is list based. Given some list entries (list_value1, list_value2, list_value3, list_value4, list_names_3_variables, list_names_data3_general), 
     various variables are created in a data frame (df)."""
-    list_names_data3_1 = list_value1
-    list_names_data3_2 = list_value2
-    list_names_data3_3 = list_value3
-    list_names_data3_4 = list_value4
-    for i, j in zip(range(1,5), list_names_3_variables):
-        for col1, col2 in zip(f"list_names_data3_{i}", list_names_data3_general):
-            df[col1] = df[j] * df[col2] 
+    for i, values in enumerate(list_values):
+        for j in range(3):
+            df[values[j]] = df[list_names_3_variables[i]] * df[list_names_data3_general[j]]
+        for j in range(3, 6):
+            df[values[j]] = (1-df[list_names_3_variables[i]]) * df[list_names_data3_general[j]]        
     return df
 
 # _gen_multiplevariables_listbased(df, list_value1, list_value2, list_value3, list_value4, list_names_3_variables, list_names_data3_general)
@@ -821,19 +832,19 @@ def _df_to_csv_mon3(df, location):
     df.to_csv(location)
     
 # _df_to_csv_mon3(df, location)
-location_m3 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel3.csv'
+location_m3 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel3.csv'
 
 #### TRYING TO PUT EVERYTHING INSIDE A FUNCTION ####
 
 def monthlypanel_3(location_origin, 
                    column_to_drop,
                    gen_var_3cond, initial_val_3cond, col1_3cond, col2_3cond, col3_3cond, global_replace_val_3cond,
-                   list_value1, list_value2, list_value3, list_value4, list_names_3_variables, list_names_data3_general,
+                   list_values, list_names_3_variables, list_names_data3_general,
                    location):
     df = _reading_data_csv(location_origin)
     df = _single_drop(df, column_to_drop)
     df = _gen_rep_3cond_mon3(df, gen_var_3cond, initial_val_3cond, col1_3cond, col2_3cond, col3_3cond, global_replace_val_3cond)
-    df = _gen_multiplevariables_listbased(df, list_value1, list_value2, list_value3, list_value4, list_names_3_variables, list_names_data3_general)
+    df = _gen_multiplevariables_listbased(df, list_values, list_names_3_variables, list_names_data3_general)
     _df_to_csv_mon3(df, location)
 
 ### FUNCTION ###
@@ -841,18 +852,18 @@ def monthlypanel_3(location_origin,
 MonthlyPanel3 = monthlypanel_3(location_origin=location_origin_m3, 
                                column_to_drop=column_to_drop_m3,
                                gen_var_3cond=gen_var_3cond_m3, initial_val_3cond=initial_val_3cond_m3, col1_3cond=col1_3cond_m3, col2_3cond=col2_3cond_m3, col3_3cond=col3_3cond_m3, global_replace_val_3cond=global_replace_val_3cond_m3,
-                               list_value1=list_value1_m3, list_value2=list_value2_m3, list_value3=list_value3_m3, list_value4=list_value4_m3, list_names_3_variables=list_names_3_variables_m3, list_names_data3_general=list_names_data3_general_m3,
+                               list_values=[list_value1_m3, list_value2_m3, list_value3_m3, list_value4_m3], list_names_3_variables=list_names_3_variables_m3, list_names_data3_general=list_names_data3_general_m3,
                                location=location_m3) 
 
 ############################################## PART 4 ########################################################################################################################
     
 # drop all variables created before
-MonthlyPanel4 = MonthlyPanel3.drop(columns=[list_names_data3_1, list_names_data3_2, list_names_data3_3, list_names_data3_4], inplace=True)
+#MonthlyPanel4 = MonthlyPanel3.drop(columns=[list_names_data3_1, list_names_data3_2, list_names_data3_3, list_names_data3_4], inplace=True)
 
 ######################################################################################################################################################################
 
 # use "C:\_ernesto\Crime\AER_DataFiles&Programs\MonthlyPanel.dta", clear;
-MonthlyPanel_new, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/march2004_ditella_data/MonthlyPanel.dta')
+MonthlyPanel_new, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data/MonthlyPanel.dta')
 
 ### Renaming columns ###
 
@@ -931,17 +942,16 @@ for i in range (5,8):
     MonthlyPanel_new.loc[MonthlyPanel_new['month']==i, f'month{i}'] = 1
 """""
 
-def _rep_various_mon4(df, range_replace, cond_var_simple_v, variables_replace, val_assigned_various):
+def _rep_various_mon4(df, range_replace, cond_var_simple_v, val_assigned_various):
     """This function is replacing various variables (variables_replace) in a dataframe (df) by means of using a loop on a fixed range (range_replace), based on a condition
     that should be met by another variable in the dataframe (cond_var_simple_v). If the condition is met, the value assigned to this variables is also fixed (val_assigned_various)"""
     for i in range_replace:
-        df.loc[df[cond_var_simple_v]==i, variables_replace] = val_assigned_various
+        df.loc[df[cond_var_simple_v]==i, f'month{i}'] = val_assigned_various
     return df
 
 # _rep_various_mon4(df, range_replace, cond_var_simple_v, variables_replace, val_assigned_various)
 range_replace_m4 = range (5,8)
 cond_var_simple_v_m4 = 'month'
-variables_replace_m4 = f'month{i}'
 val_assigned_various_m4 = 1
     
 """""    
@@ -1001,7 +1011,7 @@ def _gen_specificrule_list(df, range_specific_loop, list_var_gen_spec, list_var_
     """This function is generating specific new variables (ist_var_gen_spec) in a dataframe (df) based on already existing set of variables in the data frame
     (list_var_ext_spec, list_new_var_spec) and this is done over a loop range(range_specific_loop)"""
     for i in range_specific_loop:
-        for col1, col2, col3 in zip(list_var_gen_spec, list_var_ext_spec, list_new_var_spec[i:i+2]):
+        for col1, col2, col3 in zip(list_var_gen_spec, list_var_ext_spec, list_new_var_spec[i:i+3]):
             df[col3] = df[col1] * df[col2]
     return df
             
@@ -1030,7 +1040,7 @@ def _df_to_csv_mon4(df, location):
     df.to_csv(location)
     
 # _df_to_csv_mon3(df, location)
-location_m4 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/MonthlyPanel_new.csv'
+location_m4 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel_new.csv'
 
 #### TRYING TO PUT EVERYTHING INSIDE A FUNCTION ####
 
@@ -1038,7 +1048,7 @@ def monthlypanel_4(df,
                    new_var_new, var1_new, var_sub_new,
                    list_various_gen, original_val_various_list,
                    cond_var_simple, cond_val_simple, var_simple_rep, val_assigned_simple,
-                   range_replace, cond_var_simple_v, variables_replace, val_assigned_various,
+                   range_replace, cond_var_simple_v, val_assigned_various,
                    var_drop_cond, drop_condition_list,
                    list_gen_var_cond, original_value_var_cond, range_var_cond, cond_var_cond, final_value_var_cond,
                    range_specific_loop, list_var_gen_spec, list_var_ext_spec, list_new_var_spec,
@@ -1047,7 +1057,7 @@ def monthlypanel_4(df,
     df = _gen_var_difference_mon4(df, new_var_new, var1_new, var_sub_new)
     df = _gen_variouslisted_var_mon4(df, list_various_gen, original_val_various_list)
     df = _rep_simple_mon4(df, cond_var_simple, cond_val_simple, var_simple_rep, val_assigned_simple)
-    df = _rep_various_mon4(df, range_replace, cond_var_simple_v, variables_replace, val_assigned_various)
+    df = _rep_various_mon4(df, range_replace, cond_var_simple_v, val_assigned_various)
     df = _drop_conditional(df, var_drop_cond, drop_condition_list)
     df = _gen_rep_var_various_cond_biggerthan_mon4(df, list_gen_var_cond, original_value_var_cond, range_var_cond, cond_var_cond, final_value_var_cond)
     df = _gen_specificrule_list(df, range_specific_loop, list_var_gen_spec, list_var_ext_spec, list_new_var_spec)
@@ -1060,7 +1070,7 @@ MonthlyPanel_new = monthlypanel_4(df = MonthlyPanel_new,
                    new_var_new = new_var_new_m4, var1_new=var1_new_m4, var_sub_new=var_sub_new_m4,
                    list_various_gen=list_various_gen_m4, original_val_various_list=original_val_various_list_m4,
                    cond_var_simple=cond_var_simple_m4, cond_val_simple=cond_val_simple_m4, var_simple_rep=var_simple_rep_m4, val_assigned_simple=val_assigned_simple_m4,
-                   range_replace=range_replace_m4, cond_var_simple_v=cond_var_simple_v_m4, variables_replace=variables_replace_m4, val_assigned_various=val_assigned_various_m4,
+                   range_replace=range_replace_m4, cond_var_simple_v=cond_var_simple_v_m4, val_assigned_various=val_assigned_various_m4,
                    var_drop_cond=var_drop_cond_m4, drop_condition_list=drop_condition_list_m4,
                    list_gen_var_cond=list_gen_var_cond_m4, original_value_var_cond=original_value_var_cond_m4, range_var_cond=range_var_cond_m4, cond_var_cond=cond_var_cond_m4, final_value_var_cond=final_value_var_cond_m4,
                    range_specific_loop=range_specific_loop_m4, list_var_gen_spec=list_var_gen_spec_m4, list_var_ext_spec=list_var_ext_spec_m4, list_new_var_spec=list_new_var_spec_m4,
