@@ -93,7 +93,7 @@ def areg_double(Data, type_condition, variable_loga, variable_logb, a, variable_
         reg = smm.OLS(y, X).fit(cov_type='cluster', cov_kwds={'groups': fixed_effects[variable_fe]}) # sm.OLS is used to run a simple linear regression, cluster is used to compute cluster-robust standard errors, 
         # cov_kwds={'groups': usage['observ']} argument specifies the group variable to use in computing the cluster-robust standard errors
         params = reg.params
-        return reg, params
+        return reg
     elif type_condition == "unequal":
         fixed_effects = Data.loc[(Data[variable_loga] != a) | (Data[variable_logb] != a)]
         y = fixed_effects[variable_y]
@@ -159,7 +159,6 @@ def areg_clus_abs(Data, drop_subset, y_variable, x_variable, dummy_variable):
     We have our Data set (Data), our exogenous variable (variable_x) and our endogenous variable(variable_y). """
     
     df = Data.dropna(subset=drop_subset)
-    df = df.astype(float)
     y = df[y_variable]
     x = df[x_variable]
     dummies = pd.get_dummies(df[dummy_variable])
@@ -288,33 +287,33 @@ test_diff33 = testings(regression3, variable_test33, testing_number33)
 
 # areg totrobc inst1p if institu1==1, absorb(observ) robust; # This is a linear regression with fixed effects
 Data1 = MonthlyPanel2
-variable_log_1 = ["jewish_inst"]
+variable_log_1 = "jewish_inst"
 a1 = 1
-variable_fe1 = ["observ"]
-variable_y1 = ["total_thefts_c"]
-variable_x1 = ["jewish_inst_p"]
+variable_fe1 = "observ"
+variable_y1 = "total_thefts_c"
+variable_x1 = "jewish_inst_p"
 regression_fe1 = areg_single(Data=Data1, variable_log=variable_log_1, a=a1, variable_fe=variable_fe1, variable_y=variable_y1, variable_x=variable_x1)
 
 # areg totrobc inst1p inst3_1p if (institu1==1 | inst3_1==1), absorb(observ) robust;
 Data2 = MonthlyPanel2
 type_condition2 = "equal"
-variable_loga_2 = ["jewish_inst"]
-variable_logb_2 = ["jewish_inst_one_block_away_1"]
+variable_loga_2 = "jewish_inst"
+variable_logb_2 = "jewish_inst_one_block_away_1"
 a2 = 1
-variable_fe2 = ["observ"]
-variable_y2 = ["total_thefts_c"]
+variable_fe2 = "observ"
+variable_y2 = "total_thefts_c"
 variable_x2 = ["jewish_inst_p", "jewish_inst_one_block_away_1_p"]
 regression_fe2 = areg_double(Data=Data2, type_condition=type_condition2, variable_loga=variable_loga_2, variable_logb=variable_logb_2, a=a2, variable_fe=variable_fe2, variable_y=variable_y2, variable_x=variable_x2)
 
 # areg totrobc inst1p inst3_1p cuad2p if (institu1==1 | inst3_1==1 | cuad2==1), absorb(observ) robust;
 # areg totrobc inst1p inst3_1p cuad2p if (institu1==1 | inst3_1==1 | cuad2==1), absorb(observ) robust;
 Data3 = MonthlyPanel2
-variable_loga_3 = ["jewish_inst"]
-variable_logb_3 = ["jewish_inst_one_block_away_1"]
-variable_logc_3 = ["cuad2"]
+variable_loga_3 = "jewish_inst"
+variable_logb_3 = "jewish_inst_one_block_away_1"
+variable_logc_3 = "cuad2"
 a3 = 1
-variable_fe3 = ["observ"]
-variable_y3 = ["total_thefts_c"]
+variable_fe3 = "observ"
+variable_y3 = "total_thefts_c"
 variable_x3 = ["jewish_inst_p", "jewish_inst_one_block_away_1_p", "cuad2p"]
 regression_fe3 = areg_triple(Data=Data3, variable_loga=variable_loga_3, variable_logb=variable_logb_3, variable_logc=variable_logc_3, a=a3, variable_fe=variable_fe3, variable_y=variable_y3, variable_x=variable_x3)
 
@@ -421,7 +420,7 @@ test_diff999 = testings(regression_clu3, variable_test999, testing_number999)
 
 # reg totrob institu1 inst3_1 cuad2 inst1p inst3_1p cuad2p month*, robust;
 Data_robust1 = MonthlyPanel2
-variable_y_robust1 = ["total_thefts"]
+variable_y_robust1 = "total_thefts"
 variable_x_robust1 = ['jewish_inst', 'jewish_inst_one_block_away_1', 'cuad2', 'jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
 reg_robust1 = reg_robust(Data=Data_robust1, variable_y=variable_y_robust1, variable_x=variable_x_robust1)
 
@@ -438,9 +437,9 @@ regression_clu4 = areg_clus(Data_clu4, y_clu4, x_clu4)
 # areg totrob inst1p inst3_1p cuad2p month*, absorb(observ) robust cluster(observ);
 Data_clus_abs1 = MonthlyPanel2
 drop_subset_clus_abs1 = ['total_thefts', 'jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
-y_variable_clus_abs1 = ["total_thefts"]
+y_variable_clus_abs1 = "total_thefts"
 x_variable_clus_abs1 = ['jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
-dummy_variable_clus_abs1 = ['observ']
+dummy_variable_clus_abs1 = "observ"
 regression_clus_abs1 = areg_clus_abs(Data_clus_abs1, drop_subset_clus_abs1, y_variable_clus_abs1, x_variable_clus_abs1, dummy_variable_clus_abs1)
 
 # summarize totrob if mes>7 & (institu1==0 & inst3_1==0 & cuad2==0 & (totpre~=0 | totpos~=0));
@@ -450,11 +449,11 @@ summary # summary of totrob given the coditions above specified
 # areg totrob inst1p inst3_1p cuad2p month* if (totpre~=0 | totpos~=0), absorb(observ) robust; # We can use fixed effects
 Data4 = MonthlyPanel2
 type_condition4 = "unequal"
-variable_log_6 = ["totalpre"]
-variable_log_7 = ["totalpos"]
+variable_log_6 = "totalpre"
+variable_log_7 = "totalpos"
 a4 = 0
-variable_fe4 = ["observ"]
-variable_y4 = ["total_thefts"]
+variable_fe4 = "observ"
+variable_y4 = "total_thefts"
 variable_x4 = ['jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
 regression_fe4 = areg_double(Data=Data4, type_condition=type_condition4, variable_loga=variable_log_6, variable_logb=variable_log_7, a=a4, variable_fe=variable_fe4, variable_y=variable_y4, variable_x=variable_x4)
     
@@ -491,9 +490,9 @@ reg_poisson3 = poisson_reg(Data=Data_poisson3, y_variable=y_variable_poisson3, x
 # areg totrob inst1p inst3_1p cuad2p month*, absorb(observ) robust cluster(codigo2); # We can use the function areg_clus_abs
 Data_clus_abs2 = MonthlyPanel2
 drop_subset_clus_abs2 = ['total_thefts', 'jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
-y_variable_clus_abs2 = ["total_thefts"]
+y_variable_clus_abs2 = "total_thefts"
 x_variable_clus_abs2 = ['jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p', 'month5', 'month6', 'month7', 'month8', 'month9', 'month10', 'month11', 'month12']
-dummy_variable_clus_abs2 = ['code2']
+dummy_variable_clus_abs2 = 'code2'
 regression_clus_abs2 = areg_clus_abs(Data_clus_abs2, drop_subset_clus_abs2, y_variable_clus_abs2, x_variable_clus_abs2, dummy_variable_clus_abs2)
 
 # areg totrob inst1p inst3_1p cuad2p mbelg* monce* mvcre*, absorb(observ) robust;
@@ -601,7 +600,7 @@ x_clu_new2 = ['two_jewish_inst_1_p', 'two_jewish_inst_one_block_away_1_p', 'two_
 x_clu_new3 = ['three_jewish_inst_1_p', 'three_jewish_inst_one_block_away_1_p', 'three_cuad2p', 'month5', 'month6', 'month7']
 
 regression_new1 = areg_clus(Data_clu_new, y_clu_new, x_clu_new1)   
-regression_new2 = areg_clus(Data_clu_new, y_clu_new, x_clu_new2)  
+regression_new2 = areg_clus(Data_clu_new, y_clu_new, x_clu_new2) 
 regression_new3 = areg_clus(Data_clu_new, y_clu_new, x_clu_new3)  
 
 
