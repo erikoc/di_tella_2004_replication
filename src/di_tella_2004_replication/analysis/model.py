@@ -58,7 +58,7 @@ def abs_regression_models(df):
                     + [f"month_dummy_{i}" for i in range(5, 13)]
                 ],
             ),
-            absorb=df["block"].to_frame().astype(int),
+            absorb=df["block"].to_frame().astype(float),
             drop_absorbed=True,
         )
 
