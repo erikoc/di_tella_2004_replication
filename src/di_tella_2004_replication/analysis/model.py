@@ -1,54 +1,67 @@
 """Functions for fitting the regression model."""
-
-import statsmodels.formula.api as smf
-from statsmodels.iolib.smpickle import load_pickle
-
-
-def fit_logit_model(data, data_info, model_type):
-    """Fit a logit model to data.
-
-    Args:
-        data (pandas.DataFrame): The data set.
-        data_info (dict): Information on data set stored in data_info.yaml. The
-            following keys can be accessed:
-            - 'outcome': Name of dependent variable column in data
-            - 'outcome_numerical': Name to be given to the numerical version of outcome
-            - 'columns_to_drop': Names of columns that are dropped in data cleaning step
-            - 'categorical_columns': Names of columns that are converted to categorical
-            - 'column_rename_mapping': Old and new names of columns to be renamend,
-                stored in a dictionary with design: {'old_name': 'new_name'}
-            - 'url': URL to data set
-        model_type (str): What model to build for the linear relationship of the logit
-            model. Currently implemented:
-            - 'linear': Numerical covariates enter the regression linearly, and
-            categorical covariates are expanded to dummy variables.
-
-    Returns:
-        statsmodels.base.model.Results: The fitted model.
-
-    """
-    outcome_name = data_info["outcome"]
-    outcome_name_numerical = data_info["outcome_numerical"]
-    feature_names = list(set(data.columns) - {outcome_name, outcome_name_numerical})
-
-    if model_type == "linear":
-        # smf.logit expects the binary outcome to be numerical
-        formula = f"{outcome_name_numerical} ~ " + " + ".join(feature_names)
-    else:
-        message = "Only 'linear' model_type is supported right now."
-        raise ValueError(message)
-
-    return smf.logit(formula, data=data).fit()
+import statsmodels.api as sm
+from linearmodels import PanelOLS
+from linearmodels.iv import absorbing
 
 
-def load_model(path):
-    """Load statsmodels model.
+def fe_regression_models(df):
+    """Perform panel regression analysis on the input dataframe using different
+    regression models for each suffix in the list.
 
     Args:
-        path (str or pathlib.Path): Path to model file.
+    df (pandas.DataFrame): Input dataframe with the necessary variables
 
     Returns:
-        statsmodels.base.model.Results: The stored model.
+    A tuple containing two dictionaries with the results of the fixed effects models and the absorbing fixed effects models, respectively.
 
     """
-    return load_pickle(path)
+    fe_results = {}
+
+    for suffix in ["hv", "lv", "night", "day", "weekday", "weekend"]:
+
+        fe_model = PanelOLS(
+            df[f"tot_theft_{suffix}"],
+            sm.add_constant(
+                df[
+                    ["treatment", "treatment_1d", "treatment_2d"]
+                    + [f"month_dummy_{i}" for i in range(5, 13)]
+                ],
+            ),
+            entity_effects=True,
+            check_rank=True,
+        )
+        fe_results[suffix] = fe_model.fit(cov_type="clustered", cluster_entity=True)
+
+    return fe_results
+
+
+def abs_regression_models(df):
+    """Perform panel regression analysis on the input dataframe using different
+    regression models for each suffix in the list.
+
+    Args:
+    df (pandas.DataFrame): Input dataframe with the necessary variables
+
+    Returns:
+    A tuple containing two dictionaries with the results of the fixed effects models and the absorbing fixed effects models, respectively.
+
+    """
+    abs_results = {}
+
+    for suffix in ["hv", "lv", "night", "day", "weekday", "weekend"]:
+
+        abs_model = absorbing.AbsorbingLS(
+            df[f"tot_theft_{suffix}"],
+            sm.add_constant(
+                df[
+                    ["treatment", "treatment_1d", "treatment_2d"]
+                    + [f"month_dummy_{i}" for i in range(5, 13)]
+                ],
+            ),
+            absorb=df["block"].to_frame().astype(int),
+            drop_absorbed=True,
+        )
+
+        abs_results[suffix] = abs_model.fit(cov_type="robust", debiased=True)
+
+    return abs_results

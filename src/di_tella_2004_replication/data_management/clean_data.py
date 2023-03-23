@@ -95,8 +95,6 @@ def _split_theft_data(theft_data, month):
 
     """
     for i in range(1, 24):
-        theft_data.loc[theft_data[f"theft{i}corner"] == 1, f"theft{i}"] = 0.25
-
         common_conditions = (theft_data[f"theft{i}"] != 0) & (
             theft_data[f"theft{i}month"] == month
         )
@@ -130,11 +128,11 @@ def _split_theft_data(theft_data, month):
             elif suffix == "weekend":
                 condition = common_conditions & theft_data[f"theft{i}day"].between(6, 7)
 
-            theft_data[f"theft_{suffix}{i}{month}"] = np.where(
+            theft_data.loc[condition, f"theft_{suffix}{i}{month}"] = theft_data.loc[
                 condition,
-                theft_data[f"theft{i}"],
-                0,
-            )
+                f"theft{i}",
+            ]
+            theft_data.loc[~condition, f"theft_{suffix}{i}{month}"] = 0
 
     return theft_data
 
@@ -194,7 +192,6 @@ def _create_panel_data(ind_char_data, theft_data):
     - pd.DataFrame: Merged DataFrame with individual characteristics and theft data by block and month.
 
     """
-    # Reshape the theft data using wide_to_long
     theft_data = pd.wide_to_long(
         theft_data,
         stubnames=[
@@ -212,7 +209,6 @@ def _create_panel_data(ind_char_data, theft_data):
         j="month",
     )
 
-    # Reset the index and column names of the reshaped DataFrame
     theft_data = theft_data.reset_index(names=["block", "month"])
 
     return pd.merge(ind_char_data, theft_data, how="left", on=["block"])
@@ -267,8 +263,11 @@ def process_crimebyblock(df):
     theft_data = df.loc[:, df.columns.str.startswith("theft")]
     ind_char_data = df[[col for col in df.columns if not col.startswith("theft")]]
 
+    for i in range(1, 24):
+        theft_data.loc[theft_data[f"theft{i}corner"] == 1, f"theft{i}"] = 0.25
+
     for month in range(4, 13):
-        theft_data = _split_theft_data(theft_data, {month})
+        theft_data = _split_theft_data(theft_data, month)
         theft_data = _calculate_total_theft_by_suffix(theft_data, month)
         theft_data = _calculate_theft_differences(theft_data, month)
 

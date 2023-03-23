@@ -5,6 +5,7 @@ from di_tella_2004_replication.config import SRC
 from di_tella_2004_replication.data_management.clean_data import (
     _clean_column_names,
     _convert_dtypes,
+    _split_theft_data,
 )
 
 
@@ -39,6 +40,25 @@ def expected_df():
 
 
 @pytest.fixture()
+def theft_df():
+    return pd.DataFrame(
+        {
+            "block": [1, 2],
+            "theft1": [1, 1],
+            "theft1val": [5000, 10000],
+            "theft2": [0, 0.25],
+            "theft2val": [None, 50000],
+            "theft1hour": [5, 12],
+            "theft2hour": [None, 6],
+            "theft1day": [1, 7],
+            "theft2day": [None, 3],
+            "theft1month": [1, 1],
+            "theft2month": [None, 2],
+        },
+    )
+
+
+@pytest.fixture()
 def original_data_input():
     data, meta = pyreadstat.read_dta(SRC / "data" / "CrimebyBlock.dta")
     return data
@@ -62,3 +82,30 @@ def test_convert_dtypes(expected_df):
     ]
     for col in theft_cols:
         assert converted_df[col].dtypes == float
+
+
+def test_split_theft_data_shape(theft_df):
+    theft_data = _split_theft_data(theft_df, 1)
+    assert theft_data.shape == (2, 15)
+
+
+def test_split_theft_data_cols(theft_df):
+    theft_data = _split_theft_data(theft_df, 1)
+    assert set(theft_data.columns) == {
+        "theft1",
+        "theft1month",
+        "theft1val",
+        "theft1hour",
+        "theft1day",
+        "theft2",
+        "theft2month",
+        "theft2val",
+        "theft2hour",
+        "theft2day",
+        "theft_hv1",
+        "theft_lv1",
+        "theft_night1",
+        "theft_day1",
+        "theft_weekday1",
+        "theft_weekend1",
+    }
