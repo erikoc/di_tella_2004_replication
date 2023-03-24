@@ -4,7 +4,9 @@ import pyreadstat
 import pytask
 
 from di_tella_2004_replication.config import BLD, SRC
-from di_tella_2004_replication.data_management.clean_data import process_crimebyblock
+from di_tella_2004_replication.data_management.clean_crime_by_block import (
+    process_crimebyblock,
+)
 
 
 @pytask.mark.depends_on(
