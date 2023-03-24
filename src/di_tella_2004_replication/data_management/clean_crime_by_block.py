@@ -244,7 +244,7 @@ def _create_new_variables(df):
     return df
 
 
-def process_crimebyblock(df):
+def process_crime_by_block(df):
     """Processes the crime data in the given DataFrame, `df`, and returns a panel data
     structure with information on theft and individual characteristics by block and
     month.
