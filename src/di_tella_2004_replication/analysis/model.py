@@ -46,6 +46,8 @@ def abs_regression_models(df):
     A tuple containing two dictionaries with the results of the fixed effects models and the absorbing fixed effects models, respectively.
 
     """
+    df = df.reset_index(names=["block", "month"])
+
     abs_results = {}
 
     for suffix in ["hv", "lv", "night", "day", "weekday", "weekend"]:
