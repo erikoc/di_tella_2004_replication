@@ -2,7 +2,7 @@ import pandas as pd
 import pyreadstat
 import pytest
 from di_tella_2004_replication.config import SRC
-from di_tella_2004_replication.data_management.clean_data import (
+from di_tella_2004_replication.data_management.clean_crime_by_block import (
     _clean_column_names,
     _convert_dtypes,
     _split_theft_data,
