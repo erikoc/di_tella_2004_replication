@@ -54,7 +54,7 @@ def _clean_column_names(df):
     return df
 
 
-def _convert_dtypes(df, float_cols=None):
+def _convert_dtypes(df, float_cols=None, maxrange=24):
     """Converts specified columns in a pandas DataFrame to float type. Sets the 'block'
     column as the DataFrame index.
 
@@ -72,8 +72,8 @@ def _convert_dtypes(df, float_cols=None):
         raise TypeError("float_cols must be a list or None")
 
     if float_cols is None:
-        float_cols = [f"theft{i}" for i in range(1, 24)] + [
-            f"theft{i}val" for i in range(1, 24)
+        float_cols = [f"theft{i}" for i in range(1, maxrange)] + [
+            f"theft{i}val" for i in range(1, maxrange)
         ]
     df = df.convert_dtypes()
     df = df.set_index("block")
@@ -82,7 +82,7 @@ def _convert_dtypes(df, float_cols=None):
     return df
 
 
-def _split_theft_data(theft_data, month):
+def _split_theft_data(theft_data, month, maxrange=24):
     """Splits the theft data into different categories based on specific conditions for
     a given month.
 
@@ -94,7 +94,7 @@ def _split_theft_data(theft_data, month):
         pd.DataFrame: The split theft data.
 
     """
-    for i in range(1, 24):
+    for i in range(1, maxrange):
         common_conditions = (theft_data[f"theft{i}"] != 0) & (
             theft_data[f"theft{i}month"] == month
         )
@@ -142,7 +142,7 @@ def _calculate_total_theft_by_suffix(theft_data, month):
 
     Args:
         theft_data (pd.DataFrame): A DataFrame containing theft data.
-        month (str): The month for which to calculate the total theft.
+        month (Int): The month for which to calculate the total theft.
 
     Returns:
         pd.DataFrame: A DataFrame containing the calculated total theft by suffix.
@@ -161,7 +161,7 @@ def _calculate_theft_differences(theft_data, month):
 
     Args:
         theft_data (pd.DataFrame): A DataFrame containing theft data.
-        month (str): The month for which to calculate the differences.
+        month (Int): The month for which to calculate the differences.
 
     Returns:
         pd.DataFrame: A DataFrame containing the calculated differences in theft by suffix.
@@ -244,7 +244,7 @@ def _create_new_variables(df):
     return df
 
 
-def process_crime_by_block(df):
+def process_crime_by_block(df, maxrange=24):
     """Processes the crime data in the given DataFrame, `df`, and returns a panel data
     structure with information on theft and individual characteristics by block and
     month.
@@ -263,7 +263,7 @@ def process_crime_by_block(df):
     theft_data = df.loc[:, df.columns.str.startswith("theft")]
     ind_char_data = df[[col for col in df.columns if not col.startswith("theft")]]
 
-    for i in range(1, 24):
+    for i in range(1, maxrange):
         theft_data.loc[theft_data[f"theft{i}corner"] == 1, f"theft{i}"] = 0.25
 
     for month in range(4, 13):

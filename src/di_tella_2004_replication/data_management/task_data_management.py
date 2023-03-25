@@ -15,7 +15,7 @@ from di_tella_2004_replication.data_management.clean_crime_by_block import (
         "CrimeByBlock": SRC / "data" / "CrimebyBlock.dta",
     },
 )
-@pytask.mark.produces(BLD / "python" / "data" / "CrimeByBlock_panel.csv")
+@pytask.mark.produces(BLD / "python" / "data" / "CrimeByBlock_Panel.pkl")
 def task_clean_data_python(depends_on, produces):
     """Clean the data (Python version)."""
     data, meta = pyreadstat.read_dta(depends_on["CrimeByBlock"])
