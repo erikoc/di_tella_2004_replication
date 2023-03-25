@@ -5,11 +5,10 @@ import pyreadstat  as pyread
 
 """ Weekly Panel """
 
-### Reading the data ###
-
 WeeklyPanel, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data/WeeklyPanel.dta')
 
-### Renaming columns ###
+
+
 
 def _clean_column_names_we(df):
     
@@ -45,83 +44,116 @@ def _clean_column_names_we(df):
     
     return df
 
-# _clean_column_names(df)
 df_we = WeeklyPanel
 
 
-###### Data management ######
-"""""
-# Drop variables
-WeeklyPanel.drop(columns=['street', 'street_nr', 'public_building_or_embassy', 'gas_station', 'bank'], inplace=True)
-"""""
+
 
 def _drop_variables_we(df, list_drop):
+    """
+    Drops columns from a Pandas DataFrame.
+
+    Args:
+        df (pandas.DataFrame): The DataFrame from which to drop columns.
+        list_drop (list): A list of column names to drop from the DataFrame.
+
+    Returns:
+        pandas.DataFrame: The input DataFrame with the specified columns dropped.
+
+    """
     df.drop(columns=list_drop, inplace=True)
     return df
 
-# def _drop_variables(df, list_drop)
 list_drop_we = ['street', 'street_nr', 'public_building_or_embassy', 'gas_station', 'bank']
 
-"""""
-"fixed extension"
-# gen week1=0; ... gen week39=0;
-list_names = ["week1"]
-list_names.extend([f"week{i}" for i in range(2,40)])
-WeeklyPanel[[col for col in list_names]] = 0
-# replace semana1=1 if week==1; ... replace semana39=1 if week==39;
-for i in range(1,40):
-    WeeklyPanel.loc[WeeklyPanel['week']==i, f"week{i}"]=1
-"""""
+
+
+
     
-def _gen_rep_variables_fixedextension_we(df,list_names_ext, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext):    
-    """"This functions has certain inputs to generate a variable and replace its values (list_names_ext, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext)""" 
-    for i in range_ext:
+def _gen_rep_variables_fixedextension_we(df, var_cond_ext, range_loop=range(1,40), original_value_var=0, final_value_var=1):    
+    """
+    Generates a set of variables based on a fixed extension, and replaces their values in a Pandas DataFrame.
+
+    Args:
+        df (pandas.DataFrame): The DataFrame in which to generate and replace variables.
+        var_cond_ext (str): The name of the variable in df used to condition the replacement.
+        range_loop (range or iterable): An iterable with the values of the extension to use for variable names.
+            Default is range(1, 40).
+        original_value_var (int or any): The initial value to set to each generated variable.
+            Default is 0.
+        final_value_var (int or any): The final value to set to the variables that match the condition var_cond_ext==i.
+            Default is 1.
+
+    Returns:
+        pandas.DataFrame: The input DataFrame with the generated variables replaced according to the condition.
+    """ 
+    for i in range_loop:
+        list_names_ext = []
         list_names_ext.extend([f"week{i}"])  
-    df[[col for col in list_names_ext]] = original_value_var # generate
+        df[[col for col in list_names_ext]] = original_value_var # generate
     for i in range_loop:
         df.loc[df[var_cond_ext]==i, f"week{i}"]= final_value_var # replace
     return df
 
-# _gen_rep_variables_we(df, type_of_list, list_names_ext, ext_cond, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext) # FIXED EXTENSION
-list_names_ext_we = ["week1"]
-range_ext_we = range(2,40)
-original_value_var_we = 0
-final_value_var_we = 1
-range_loop_we = range(1,40)
 var_cond_ext_we = 'week'
 
-"""""
-"fixed list simple"
-# gen cuad2=0; # gen post=0; # gen n_neighborhood=0;
-list1 = ["cuad2", "post", "n_neighborhood"]
-WeeklyPanel[[col for col in list1]] = 0
-# replace cuad2=1 if distance_to_jewish_inst==2;
-WeeklyPanel.loc[WeeklyPanel['distance_to_jewish_inst']==2, 'cuad2']=1
-"""""
 
 
-def _gen_rep_variables_fixedlistsimple_we(df, list_fixed, var_cond_fix, cond_fix, var_fix, value_var_fix): 
-    """This functions has certain inputs to generate a variable and replace its values (list_fixed, var_cond_fix, var_fix, value_var_fix)"""
-    df[[col for col in list_fixed]] = 0 # generate
-    df.loc[df[var_cond_fix]==cond_fix, var_fix]= value_var_fix # replace
+
+
+
+def _gen_rep_variables_fixedlistsimple_we(df, list_fixed, var_cond_fix, var_fix, cond_fix=2, value_var_fix_ori=0, value_var_fix_fin=1): 
+    """
+    Generates a set of variables based on a fixed list, and replaces their values in a Pandas DataFrame.
+
+    Args:
+        df (pandas.DataFrame): The DataFrame in which to generate and replace variables.
+        list_fixed (list): A list of column names to generate.
+        var_cond_fix (str): The name of the variable in df used to condition the replacement.
+        var_fix (str): The name of the variable in df to replace its values.
+        cond_fix (int or any): The condition to match in var_cond_fix to apply the replacement.
+            Default is 2.
+        value_var_fix_ori (int or any): The initial value to set to each generated variable.
+            Default is 0.
+        value_var_fix_fin (int or any): The final value to set to the variable var_fix that match the condition.
+            Default is 1.
+
+    Returns:
+        pandas.DataFrame: The input DataFrame with the generated variables replaced according to the condition.
+    """
+    df[[col for col in list_fixed]] = value_var_fix_ori # generate
+    df.loc[df[var_cond_fix]==cond_fix, var_fix]= value_var_fix_fin # replace
     return df
     
-# _gen_rep_variables_fixed_list_simple_we(df, list_fixed, var_cond_fix, cond_fix, var_fix, value_var_fix)
 list_fixed_we = ["cuad2", "post", "n_neighborhood"]
 var_cond_fix_we = 'distance_to_jewish_inst'
-cond_fix_we = 2
 var_fix_we = 'cuad2'
-value_var_fix_we = 1
 
-"""""  
-# replace post=1 if week>=18;
-WeeklyPanel.loc[WeeklyPanel['week']>18, 'post']=1
-"""""
+
+
+
         
-def _rep_variables_we(df, type_of_condition, var_cond_rep, condition_num, replace_var, value_replace):
+def _rep_variables_we(df, type_of_condition, var_cond_rep, replace_var, condition_num=18, value_replace=1):
     
-    """What this function does is just to replace a variable from a data frame depending on different types of conditions and with inputs 
-    (var_cond_rep, condition_num, replace_var, value_replace)"""
+    """
+    Generates a set of variables based on a fixed list, and replaces their values in a Pandas DataFrame.
+
+    Args:
+        df (pandas.DataFrame): The DataFrame in which to generate and replace variables.
+        list_fixed (list): A list of column names to generate.
+        var_cond_fix (str): The name of the variable in df used to condition the replacement.
+        var_fix (str): The name of the variable in df to replace its values.
+        cond_fix (int or any): The condition to match in var_cond_fix to apply the replacement.
+            Default is 2.
+        value_var_fix_ori (int or any): The initial value to set to each generated variable.
+            Default is 0.
+        value_var_fix_fin (int or any): The final value to set to the variable var_fix that match the condition.
+            Default is 1.
+
+    Returns:
+        pandas.DataFrame: The input DataFrame with the generated variables replaced according to the condition.
+
+    """
     
     if type_of_condition == "bigger than":
         df.loc[df[var_cond_rep]>condition_num, replace_var]=value_replace
@@ -133,132 +165,170 @@ def _rep_variables_we(df, type_of_condition, var_cond_rep, condition_num, replac
         df.loc[df[var_cond_rep]>condition_num, replace_var]=value_replace
         return df
     
-# def _rep_variables(df, type_of_condition, var_cond_rep, condition_num, replace_var, value_replace)
 type_of_condition_we = "bigger than"
 var_cond_rep_we = 'week'
-condition_num_we = 18
 replace_var_we = 'post'
-value_replace_we = 1
 
-"""""
- # gen jewish_inst_one_block_away_1=jewish_inst_one_block_away-jewish_inst;
-WeeklyPanel['jewish_int_one_block_away_1'] = WeeklyPanel['jewish_inst_one_block_away'] - WeeklyPanel['jewish_inst']
-# gen codigo2=week+10000*n_neighborhood;
-WeeklyPanel['code2'] = WeeklyPanel['week'] + 1000*WeeklyPanel['n_neighborhood']
-# gen ntotrob=totrob*((365/12)/7);
-WeeklyPanel['n_total_thefts'] = WeeklyPanel['total_thefts'] * (365/12)/7 
 
-"""""
+
+
     
-def _gen_diff_diff_variables_we(df, new_var_d, var1_d, var2_d, factor1_d, factor2_d):
-    """This function is creating a variable based on a difference of already existing variables in a dataframe. It has the following inputs (new_var_d, var1_d, var2_d, factor1_d, factor2_d)"""
+def _gen_diff_diff_variables_we(df, new_var_d, var1_d, var2_d, factor1_d=1, factor2_d=1):
+    """
+    Creates a new variable in a DataFrame based on the difference between two existing variables, optionally scaled by factors.
+
+    Args:
+        df (pandas.DataFrame): The DataFrame in which to create the new variable.
+        new_var_d (str): The name of the new variable to create.
+        var1_d (str): The name of the first existing variable to use in the difference.
+        var2_d (str): The name of the second existing variable to use in the difference.
+        factor1_d (float or int): A scaling factor for var1_d. Default is 1.
+        factor2_d (float or int): A scaling factor for var2_d. Default is 1.
+
+    Returns:
+        pandas.DataFrame: The input DataFrame with the new variable added.
+
+    """
     df[new_var_d] = (factor1_d*df[var1_d]) - (factor2_d*df[var2_d])
     return df
 
-# _gen_diff_diff_variables(df, new_var_d, var1_d, var2_d, factor1_d, factor2_d)
 new_var_d_we = 'jewish_int_one_block_away_1'
 var1_d_we = 'jewish_inst_one_block_away'
 var2_d_we = 'jewish_inst'
-factor1_d_we = 1
-factor2_d_we = 1
 
 
-def _gen_diff_sum_variables_we(df, new_var_s, var1_s, var2_s, factor1_s, factor2_s):
-    """This function is creating a variable based on a difference of already existing variables in a dataframe. It has the following inputs (new_var_s, var1_s, var2_s, factor1_s, factor2_s)"""
+
+
+def _gen_diff_sum_variables_we(df, new_var_s, var1_s, var2_s, factor1_s=1, factor2_s=1000):
+    """
+    Creates a new variable in a DataFrame based on the sum of two existing variables, optionally scaled by factors.
+
+    Args:
+        df (pandas.DataFrame): The DataFrame in which to create the new variable.
+        new_var_s (str): The name of the new variable to create.
+        var1_s (str): The name of the first existing variable to use in the sum.
+        var2_s (str): The name of the second existing variable to use in the sum.
+        factor1_s (float or int): A scaling factor for var1_s. Default is 1.
+        factor2_s (float or int): A scaling factor for var2_s. Default is 1000.
+
+    Returns:
+        pandas.DataFrame: The input DataFrame with the new variable added.
+
+    """
     df[new_var_s] = (factor1_s*df[var1_s]) + (factor2_s*df[var2_s])
     return df
 
-# _gen_diff_sum_variables(df, new_var_s, var1_s, var2_s, factor1_s, factor2_s)
 new_var_s_we = 'code2'
 var1_s_we = 'week'
 var2_s_we = 'n_neighborhood'
-factor1_s_we = 1
-factor2_s_we = 1000
 
-def _gen_simple_we(df, new_var_sim, var_sim, factor_sim):
-    """This function is creating a variable based on a difference of already existing variables in a dataframe. It has the following inputs (new_var_m, var1_m, var2_m, factor1_m, factor2_m)"""
+
+
+
+
+def _gen_simple_we(df, new_var_sim, var_sim, factor_sim=(365/12)/7 ):
+    """
+    Creates a new variable in a DataFrame by multiplying an existing variable by a scaling factor.
+
+    Args:
+        df (pandas.DataFrame): The DataFrame in which to create the new variable.
+        new_var_sim (str): The name of the new variable to create.
+        var_sim (str): The name of the existing variable to use.
+        factor_sim (float or int): A scaling factor to multiply var_sim with. 
+            The default value corresponds to converting monthly values to weekly values.
+
+    Returns:
+        pandas.DataFrame: The input DataFrame with the new variable added.
+
+    """
     df[new_var_sim] = df[var_sim]*factor_sim
     return df
 
-# _gen_simple_we(df, new_var_sim, var_sim, factor_sim)
 new_var_sim_we = 'n_total_thefts'
 var_sim_we = 'total_thefts'
-factor_sim_we = (365/12)/7 
-
-"""""
-"fixed list complex"
-# gen jewish_inst_p, jewish_int_one_block_away_1_p, cuad2p
-list2p = ["jewish_inst_p", "jewish_int_one_block_away_1_p", "cuad2p"]
-list2 = ["jewish_inst",  "jewish_int_one_block_away_1", "cuad2"]
-for colp, col in zip(list2p, list2):
-        WeeklyPanel[colp] = WeeklyPanel[col]*WeeklyPanel['post']
-# replace n_neighborhood=1 if neighborhood=="Belgrano"; replace n_neighborhood=2 if neighborhood=="Once"; replace n_neighborhood=3 if neighborhood=="V. Crespo";      
-list3 = ["Belgrano", "Once", "V. Crespo"]
-for col, i in zip(list3, range(1,4)):
-    WeeklyPanel.loc[WeeklyPanel['neighborhood']==col, 'n_neighborhood']=i
-"""""
 
 
-def _gen_rep_variables_fixedlistcomplex_we(df, list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change): 
-    """This functions has certain inputs to generate a variable and replace its values 
-    (list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change)"""
+
+
+
+
+def _gen_rep_variables_fixedlistcomplex_we(df, list1_fix_com, list2_fix_com, var_fix_comp_mul, list_rep_fix_com, var_fix_com_to_use='neighborhood', var_fix_com_to_change='n_neighborhood', range_rep_fix_com=range(1,4)): 
+    """This function generates new variables based on existing variables in a dataframe and replaces the values of a specified variable based on certain conditions.
+    
+    Args:
+    - df: pandas dataframe
+    - list1_fix_com: list of column names in the dataframe to be multiplied with `var_fix_comp_mul` to generate new variables
+    - list2_fix_com: list of column names in the dataframe to be used in the multiplication
+    - var_fix_comp_mul: variable to be used as a multiplier in the multiplication
+    - list_rep_fix_com: list of values of `var_fix_com_to_use` to be replaced in `var_fix_com_to_change`
+    - var_fix_com_to_use: name of the column in the dataframe to use as condition for replacement (default: 'neighborhood')
+    - var_fix_com_to_change: name of the column in the dataframe to be replaced (default: 'n_neighborhood')
+    - range_rep_fix_com: range of values to use for replacement (default: range(1, 4))
+    
+    Returns:
+    - df: pandas dataframe with new variables generated and specified variable replaced based on conditions
+    """
     for col1, col2 in zip(list1_fix_com, list2_fix_com):
         df[col1] = df[col2]*df[var_fix_comp_mul]
     for col, i in zip(list_rep_fix_com, range_rep_fix_com):
         df.loc[df[var_fix_com_to_use]==col, var_fix_com_to_change]=i
     return df
     
-# _gen_rep_variables_we(df, type_of_list, list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change)
 list1_fix_com_we = ["jewish_inst_p", "jewish_int_one_block_away_1_p", "cuad2p"]
 list2_fix_com_we = ["jewish_inst",  "jewish_int_one_block_away_1", "cuad2"]
 var_fix_comp_mul_we = 'post'
-range_rep_fix_com_we = range(1,4)
 list_rep_fix_com_we = ["Belgrano", "Once", "V. Crespo"]
-var_fix_com_to_use_we = 'neighborhood'
-var_fix_com_to_change_we = 'n_neighborhood'
-  
-"""""
-# Saving the data frame
-WeeklyPanel.to_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/clean data/WeeklyPanel.csv')
-"""""
+
+
 
 def _df_to_csv(df, location):
-    "This functions saves a dataframe (df) as a csv file ina specific location (location)"
-    df.to_csv(location)
-    
-# _df_to_csv(df, location)
-location_we = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/WeeklyPanel.csv' 
+    """
+    Saves a pandas DataFrame to a CSV file at the specified location.
 
-#### TRYING TO PUT EVERYTHING INSIDE A FUNCTION ####
+    Args:
+        df (pandas DataFrame): The DataFrame to be saved.
+        location (str): The file path and name for the CSV file, including the ".csv" extension.
+
+    Returns:
+        None
+    """
+    df.to_csv(location)  
+
+location_we = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/WeeklyPanel.csv'
+
+
+
+
+"""Everything inside a function"""
 
 def weeklypanel(df, 
                 list_drop,
-                list_names_ext, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext,
-                list_fixed, var_cond_fix, cond_fix, var_fix, value_var_fix,
-                type_of_condition, var_cond_rep, condition_num, replace_var, value_replace,
-                new_var_d, var1_d, var2_d, factor1_d, factor2_d,
-                new_var_s, var1_s, var2_s, factor1_s, factor2_s,
-                new_var_sim, var_sim, factor_sim,
-                list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change,
+                var_cond_ext,
+                list_fixed, var_cond_fix, var_fix,
+                type_of_condition, var_cond_rep, replace_var,
+                new_var_d, var1_d, var2_d,
+                new_var_s, var1_s, var2_s,
+                new_var_sim, var_sim,
+                list1_fix_com, list2_fix_com, var_fix_comp_mul, list_rep_fix_com,
                 location):
     df = _clean_column_names_we(df)
     df = _drop_variables_we(df, list_drop)
-    df = _gen_rep_variables_fixedextension_we(df,list_names_ext, range_ext, original_value_var, final_value_var, range_loop, var_cond_ext)
-    df = _gen_rep_variables_fixedlistsimple_we(df, list_fixed, var_cond_fix, cond_fix, var_fix, value_var_fix)
-    df = _rep_variables_we(df, type_of_condition, var_cond_rep, condition_num, replace_var, value_replace)
-    df = _gen_diff_diff_variables_we(df, new_var_d, var1_d, var2_d, factor1_d, factor2_d)
-    df = _gen_diff_sum_variables_we(df, new_var_s, var1_s, var2_s, factor1_s, factor2_s)
-    df = _gen_simple_we(df, new_var_sim, var_sim, factor_sim)
-    df = _gen_rep_variables_fixedlistcomplex_we(df, list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com, list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change)
+    df = _gen_rep_variables_fixedextension_we(df, var_cond_ext)
+    df = _gen_rep_variables_fixedlistsimple_we(df, list_fixed, var_cond_fix, var_fix)
+    df = _rep_variables_we(df, type_of_condition, var_cond_rep, replace_var)
+    df = _gen_diff_diff_variables_we(df, new_var_d, var1_d, var2_d)
+    df = _gen_diff_sum_variables_we(df, new_var_s, var1_s, var2_s)
+    df = _gen_simple_we(df, new_var_sim, var_sim)
+    df = _gen_rep_variables_fixedlistcomplex_we(df, list1_fix_com, list2_fix_com, var_fix_comp_mul, list_rep_fix_com)
     _df_to_csv(df, location)
     
 WeeklyPanel = weeklypanel(df=WeeklyPanel,
                 list_drop=list_drop_we,
-                list_names_ext=list_names_ext_we, range_ext=range_ext_we, original_value_var=original_value_var_we, final_value_var=final_value_var_we, range_loop=range_loop_we, var_cond_ext=var_cond_ext_we,
-                list_fixed=list_fixed_we, var_cond_fix=var_cond_fix_we, cond_fix=cond_fix_we, var_fix=var_fix_we, value_var_fix=value_var_fix_we,
-                type_of_condition=type_of_condition_we, var_cond_rep=var_cond_rep_we, condition_num=condition_num_we, replace_var=replace_var_we, value_replace=value_replace_we,
-                new_var_d=new_var_d_we, var1_d=var1_d_we, var2_d=var2_d_we, factor1_d=factor1_d_we, factor2_d=factor2_d_we,
-                new_var_s=new_var_s_we, var1_s=var1_s_we, var2_s=var2_s_we, factor1_s=factor1_s_we, factor2_s=factor2_s_we,
-                new_var_sim=new_var_sim_we, var_sim=var_sim_we, factor_sim=factor_sim_we,
-                list1_fix_com=list1_fix_com_we, list2_fix_com=list2_fix_com_we, var_fix_comp_mul=var_fix_comp_mul_we, range_rep_fix_com=range_rep_fix_com_we, list_rep_fix_com=list_rep_fix_com_we, var_fix_com_to_use=var_fix_com_to_use_we, var_fix_com_to_change=var_fix_com_to_change_we,
+                var_cond_ext=var_cond_ext_we,
+                list_fixed=list_fixed_we, var_cond_fix=var_cond_fix_we, var_fix=var_fix_we,           
+                type_of_condition=type_of_condition_we, var_cond_rep=var_cond_rep_we, replace_var=replace_var_we,
+                new_var_d=new_var_d_we, var1_d=var1_d_we, var2_d=var2_d_we,
+                new_var_s=new_var_s_we, var1_s=var1_s_we, var2_s=var2_s_we,
+                new_var_sim=new_var_sim_we, var_sim=var_sim_we,
+                list1_fix_com=list1_fix_com_we, list2_fix_com=list2_fix_com_we, var_fix_comp_mul=var_fix_comp_mul_we, list_rep_fix_com=list_rep_fix_com_we,
                 location=location_we)

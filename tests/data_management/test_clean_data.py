@@ -96,6 +96,7 @@ def test_split_theft_data_shape(theft_df):
     theft_data = _split_theft_data(theft_df, 1)
     assert theft_data.shape == (2, 15)
 
+"""Test WEEKLY DATA"""
 
 def test_split_theft_data_cols(theft_df):
     theft_data = _split_theft_data(theft_df, 1)
@@ -117,12 +118,57 @@ def test_split_theft_data_cols(theft_df):
         "theft_weekday1",
         "theft_weekend1",
     }
+    
 
+"""Test WEEKLY DATA"""
 
-def test_clean_column_names_we(original_data):
+# from clean_data import _clean_column_names_we
+
+def _clean_column_names_we(df):
+    
+    """This function takes a pandas DataFrame and standardizes the column names to a
+    specified format.
+
+    The function renames the columns by replacing certain substrings with standardized terms such as "rob" with "theft",
+    "day" with "week_day", "dia" with "day", "mes" with "month", "hor" with "hour", "mak" with "brand", and "esq" with "corner".
+
+    In addition, the function replaces specific column names with more meaningful and descriptive names, as specified in the
+    'replacements' dictionary.
+
+    Parameters:
+    df (pandas.DataFrame): The pandas DataFrame containing the data to be standardized.
+
+    Returns:
+    pandas.DataFrame: The input DataFrame with the columns standardized to the specified format."""
+
+    df.columns = (
+        df.columns.str.replace("observ", "observ")
+        .str.replace("barrio", "neighborhood")
+        .str.replace("calle", "street")
+        .str.replace("altura", "street_nr")
+        .str.replace("institu1", "jewish_inst")
+        .str.replace("institu3", "jewish_inst_one_block_away")
+        .str.replace("distanci", "distance_to_jewish_inst")
+        .str.replace("edpub", "public_building_or_embassy")
+        .str.replace("estserv", "gas_station")
+        .str.replace("banco", "bank")
+        .str.replace("totrob", "total_thefts")
+        .str.replace("week", "week")
+    )
+    
+    return df
+    
+@pytest.fixture
+def input_data_clean_column_names_we():
+    df = WeeklyPanel
+    return df
+
+def test_clean_column_names_we(input_data_clean_column_names_we):  
+    df = input_data_clean_column_names_we
+
     # Call the function being tested
     new_df = _clean_column_names_we(original_data["weekly_panel"])
-
+    
     # Define list of names replaced
     list_replace = [
         "observ",
@@ -138,15 +184,16 @@ def test_clean_column_names_we(original_data):
         "total_thefts",
         "week",
     ]
-
+    
     # Assert that the new columns are there
     assert all(list_replace) in new_df.columns
-
+        
 
 ### For the new test this will be used --------------
 WeeklyPanel = _clean_column_names_we(WeeklyPanel)
 ####-------------------------------------------------
 
+# from clean_data import _gen_rep_variables_fixedextension_we
 
 def _gen_rep_variables_fixedextension_we(
     df,
@@ -161,7 +208,7 @@ def _gen_rep_variables_fixedextension_we(
     (list_names_ext, range_ext, original_value_var, final_value_var, range_loop,
     var_cond_ext)"""
     for i in range_ext:
-        list_names_ext.extend([f"week{i}"])
+        list_names_ext.extend([f"week{i}"])  
     df[list(list_names_ext)] = original_value_var  # generate
     for i in range_loop:
         df.loc[df[var_cond_ext] == i, f"week{i}"] = final_value_var  # replace
@@ -220,7 +267,7 @@ def test_gen_rep_variables_fixedextension_we(
     # Test that the values were replaced as we wanted
     for i in range_loop:
         assert all(new_df.loc[new_df[var_cond_ext] == i, f"week{i}"] == final_value_var)
-
+        
 
 def _gen_rep_variables_fixedlistsimple_we(
     df,
@@ -270,14 +317,14 @@ def test_gen_rep_variables_fixedlistsimple_we(
         value_var_fix,
     )
 
-    # Test that the new columns were added
+    # Test that the new columns were added 
     assert all(list_fixed) in new_df.columns
-
+    
     # Test that the values were replaced as we wanted
     assert all(
         new_df.loc[new_df[var_cond_fix] == cond_fix, list_fixed] == value_var_fix,
     )
-
+    
 
 def _rep_variables_we(
     df,
@@ -291,7 +338,7 @@ def _rep_variables_we(
     """What this function does is just to replace a variable from a data frame depending
     on different types of conditions and with inputs (var_cond_rep, condition_num,
     replace_var, value_replace)"""
-
+    
     if type_of_condition == "bigger than":
         df.loc[df[var_cond_rep] > condition_num, replace_var] = value_replace
         return df
@@ -301,7 +348,7 @@ def _rep_variables_we(
     elif type_of_condition == "equal to":
         df.loc[df[var_cond_rep] > condition_num, replace_var] = value_replace
         return df
-
+    
 
 @pytest.fixture()
 def input_data_rep_variables_we():
@@ -321,7 +368,7 @@ def input_data_rep_variables_we():
     )
 
 
-def test_rep_variables_we(input_data_rep_variables_we):
+def test_rep_variables_we(input_data_rep_variables_we):   
     (
         df,
         type_of_condition,
@@ -340,12 +387,12 @@ def test_rep_variables_we(input_data_rep_variables_we):
         replace_var,
         value_replace,
     )
-
+    
     # Test that the values were replaced as we wanted
     assert all(
         new_df.loc[new_df[var_cond_rep] > condition_num, replace_var] == value_replace,
     )
-
+    
     # Test that the values were not replaced when the condition is not satisfied (checking it is not following any other elif condition)
     assert all(
         new_df.loc[new_df[var_cond_rep] <= condition_num, replace_var] != value_replace,
@@ -422,7 +469,7 @@ def test_gen_diff_general_we(
     input_data_gen_diff_sum_variables_we,
     input_data_gen_simple_we,
 ):
-
+    
     """First with _gen_diff_diff_variables_we."""
     (
         df,
@@ -443,15 +490,15 @@ def test_gen_diff_general_we(
         factor1_d,
         factor2_d,
     )
-
+    
     # Check that the column is now in the Dataframe
     assert new_var_d in new_df1.columns
-
+    
     # Check that the value of the variable is the correct one
     assert new_df1[new_var_d] == (factor1_d * new_df1[var1_d]) - (
         factor2_d * new_df1[var2_d]
     )
-
+    
     """Second with _gen_diff_sum_variables_we"""
     (
         df,
@@ -461,7 +508,7 @@ def test_gen_diff_general_we(
         factor1_s,
         factor2_s,
     ) = input_data_gen_diff_sum_variables_we
-
+    
     # Call the function being tested
     new_df2 = _gen_diff_sum_variables_we(
         df,
@@ -471,28 +518,28 @@ def test_gen_diff_general_we(
         factor1_s,
         factor2_s,
     )
-
+    
     # Check that the column is now in the Dataframe
     assert new_var_s in new_df2.columns
-
+    
     # Check that the value of the variable is the correct one
     assert new_df2[new_var_s] == (factor1_s * new_df2[var1_s]) + (
         factor2_s * new_df2[var2_s]
     )
-
+    
     """Third with input_data_gen_simple_we"""
     df, new_var_sim, var_sim, factor_sim = input_data_gen_simple_we
-
+    
     # Call the function being tested
     new_df3 = _gen_simple_we(df, new_var_sim, var_sim, factor_sim)
-
+    
     # Check that the column is now in the Dataframe
     assert new_var_sim in new_df3.columns
-
+    
     # Check that the value of the variable is the correct one
     assert new_df3[new_var_sim] == new_df3[var_sim] * factor_sim
-
-
+    
+    
 def _gen_rep_variables_fixedlistcomplex_we(
     df,
     list1_fix_com,
@@ -503,7 +550,7 @@ def _gen_rep_variables_fixedlistcomplex_we(
     var_fix_com_to_use,
     var_fix_com_to_change,
 ):
-    """This functions has certain inputs to generate a variable and replace its values
+    """This functions has certain inputs to generate a variable and replace its values 
     (list1_fix_com, list2_fix_com, var_fix_comp_mul, range_rep_fix_com,
     list_rep_fix_com, var_fix_com_to_use, var_fix_com_to_change)"""
     for col1, col2 in zip(list1_fix_com, list2_fix_com):
@@ -548,7 +595,7 @@ def test_gen_rep_variables_fixedlistcomplex_we(
         var_fix_com_to_use,
         var_fix_com_to_change,
     ) = input_data_gen_rep_variables_fixedlistcomplex_we
-
+    
     # Call the function being tested
     new_df = _gen_rep_variables_fixedlistcomplex_we(
         df,
@@ -560,10 +607,10 @@ def test_gen_rep_variables_fixedlistcomplex_we(
         var_fix_com_to_use,
         var_fix_com_to_change,
     )
-
+    
     # Test that new columns were added
     assert all(list1_fix_com) in new_df.columns
-
+    
     # Test that the values were replaced correctly
     for col, i in zip(list_rep_fix_com, range_rep_fix_com):
         assert new_df.loc[new_df[var_fix_com_to_use] == col, var_fix_com_to_change] == i
@@ -572,8 +619,8 @@ def test_gen_rep_variables_fixedlistcomplex_we(
 MonthlyPanel, meta = pyread.read_dta(
     "/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data/MonthlyPanel.dta",
 )
-
-
+    
+    
 def _clean_column_names_mon(df):
     """This function takes a pandas DataFrame and standardizes the column names to a
     specified format.
@@ -606,7 +653,7 @@ def _clean_column_names_mon(df):
         .str.replace("totrob", "total_thefts")
         .str.replace("mes", "month")
     )
-
+    
     return df
 
 
@@ -616,12 +663,12 @@ def input_data_clean_column_names_mon():
     return df
 
 
-def test__clean_column_names_mon(input_data_clean_column_names_mon):
+def test__clean_column_names_mon(input_data_clean_column_names_mon):  
     df = input_data_clean_column_names_mon
 
     # Call the function being tested
     new_df = _clean_column_names_mon(df)
-
+    
     # Define list of names replaced
     list_replace = [
         "observ",
@@ -637,11 +684,11 @@ def test__clean_column_names_mon(input_data_clean_column_names_mon):
         "total_thefts",
         "month",
     ]
-
+    
     # Assert that the new columns are there
     assert all(list_replace) in new_df.columns
-
-
+    
+    
 ### For the new test this will be used --------------
 MonthlyPanel = _clean_column_names_mon(MonthlyPanel)
 ####-------------------------------------------------
@@ -669,15 +716,15 @@ def _gen_rep_var_fixed_extension_mon(
     the same as the extension condition (ext_cond) that we used to extend the list to
     generate the variables. In the end, all the columns have a fixed replaced variable
     (final_value_var)
-
+    
     """
-
+    
     for i in range_ext:
-        list_names_ext.extend([f"month{i}"])
+        list_names_ext.extend([f"month{i}"])  
     df[list(list_names_ext)] = original_value_var  # generate
     for i in range_loop:
         df.loc[df[var_cond_ext] == i, f"month{i}"] = final_value_var  # replace
-    return df
+    return df 
 
 
 @pytest.fixture()
@@ -734,7 +781,7 @@ def test_gen_rep_variables_fixedextension_mon(
         assert all(
             new_df.loc[new_df[var_cond_ext] == i, f"month{i}"] == final_value_var,
         )
-
+        
 
 def _gen_var_difference_mon(df, new_var, var1, var_sub):
     """This function generates a new variable (new_var) in a dataframe (df) using
@@ -756,7 +803,7 @@ def input_data_gen_var_difference_mon():
     return df, new_var, var1, var_sub
 
 
-def test_gen_var_difference_mon(input_data_gen_var_difference_mon):
+def test_gen_var_difference_mon(input_data_gen_var_difference_mon):  
     df, new_var, var1, var_sub = input_data_gen_var_difference_mon
 
     # Call the function being tested
@@ -764,11 +811,11 @@ def test_gen_var_difference_mon(input_data_gen_var_difference_mon):
 
     # Check that the column is now in the Dataframe
     assert new_var in new_df.columns
-
+    
     # Check that the value of the variable is the correct one
     assert new_df[new_var] == new_df[var1] + new_df[var_sub]
-
-
+    
+    
 def _gen_rep_var_single_cond_biggerthan_mon(
     df,
     var_gen,
@@ -777,12 +824,12 @@ def _gen_rep_var_single_cond_biggerthan_mon(
     final_value,
     cond,
 ):
-
+    
     """This function tries to generate a variable (var_gen) in a data frame (df) with an
     original (original_value) value to later on replace it given a condition of another
     column (cond_var) given it a specific value (final_value) if the bigger than
     condition (cond) is met."""
-
+    
     df[var_gen] = original_value
     df.loc[df[cond_var] > cond, var_gen] = final_value
     return df
@@ -823,8 +870,8 @@ def test_gen_rep_var_single_cond_biggerthan_mon(
 
     # Test that the values were replaced as we wanted
     assert all(new_df.loc[new_df[cond_var] > cond, var_gen] == final_value)
-
-
+   
+   
 def _gen_rep_var_fixed_extension_mon2(
     df,
     range_ext2,
@@ -834,7 +881,7 @@ def _gen_rep_var_fixed_extension_mon2(
     var_cond_ext2,
     final_value_var2,
 ):
-
+    
     """This function is just generating new variables (columns) for our dataframe (df)
     given a certain condition.
 
@@ -849,9 +896,9 @@ def _gen_rep_var_fixed_extension_mon2(
     (final_value_var)
 
     """
-
+    
     for i in range_ext2:
-        list_names_ext2.extend([f"cuad{i}"])
+        list_names_ext2.extend([f"cuad{i}"])  
     df[list(list_names_ext2)] = original_value_var2  # generate
     for i in range_loop2:
         df.loc[df[var_cond_ext2] == i, f"cuad{i}"] = final_value_var2  # replace
@@ -912,7 +959,7 @@ def test_gen_rep_variables_fixedextension_mon(
         assert all(
             new_df.loc[new_df[var_cond_ext2] == i, f"cuad{i}"] == final_value_var2,
         )
-
+        
 
 # from clean_data import _gen_rep_var_fixed_extension_mon2]
 
@@ -923,7 +970,7 @@ def _gen_var_cond_list_similar_mon(df, ori_variables, fixed_variable, name_chang
     dataframe (df) and it is generated by giving them a similar name with a new added
     condition to the original ones (name_change) and by multiplying the original columns
     of the df on a loop by a fixed column (fixed_variable) in the dataframe."""
-
+    
     for col in ori_variables:
         df[col + name_change] = df[col] * df[fixed_variable]
     return df
@@ -954,7 +1001,7 @@ def test_gen_var_cond_list_similar_mon(input_data_gen_var_cond_list_similar_mon)
         fixed_variable,
         name_change,
     ) = input_data_gen_var_cond_list_similar_mon
-
+    
     # Call the function being tested
     new_df = _gen_var_cond_list_similar_mon(
         df,
@@ -962,8 +1009,8 @@ def test_gen_var_cond_list_similar_mon(input_data_gen_var_cond_list_similar_mon)
         fixed_variable,
         name_change,
     )
-
-    # Test that new columns were added
+    
+    # Test that new columns were added 
     list_var = [
         "cuad0p",
         "cuad1p",
@@ -1032,7 +1079,7 @@ def test_gen_rep_var_various_cond_equality_mon(
         range_new_gen,
         value_originallist,
     ) = input_data_gen_rep_var_various_cond_equality_mon
-
+    
     # Call the function being tested
     new_df = _gen_rep_var_various_cond_equality_mon(
         df,
@@ -1042,14 +1089,18 @@ def test_gen_rep_var_various_cond_equality_mon(
         range_new_gen,
         value_originallist,
     )
-
+    
     # Test that new columns were added
     assert new_gen_variable in new_df.columns
-
+    
     # Test that the values were replaced correctly
     for col, i in zip(list_ext_variables, range_new_gen):
         assert new_df.loc[new_df[col] == value_originallist, new_gen_variable] == i
+         
 
+
+
+# from clean_data import _gen_var_double_listed_mon
 
 def _gen_var_double_listed_mon(df, list_gen_var, list_ori_var, fixed_var):
     """This function is generating variables listed on a list (list_gen_var) given a
@@ -1072,17 +1123,18 @@ def input_data_gen_var_double_listed_mon():
 
 def test_gen_var_double_listed_mon(input_data_gen_var_double_listed_mon):
     df, list_gen_var, list_ori_var, fixed_var = input_data_gen_var_double_listed_mon
-
+    
     # Call the function being tested
     new_df = _gen_var_double_listed_mon(df, list_gen_var, list_ori_var, fixed_var)
-
+    
     # Test that new columns were added
     assert all(list_gen_var) in new_df.columns
-
+    
     # Test that the values were replaced correctly
     for col1, col2 in zip(list_gen_var, list_ori_var):
         assert new_df[col1] == new_df[col2] * df[fixed_var]
 
+# from clean_data import _gen_rep_var_various_cond_equality_listedvalues_mon
 
 def _gen_rep_var_various_cond_equality_listedvalues_mon(
     df,
@@ -1121,7 +1173,7 @@ def test_gen_rep_var_various_cond_equality_listedvalues_mon(
         list_a,
         list_b,
     ) = input_data_gen_rep_var_various_cond_equality_listedvalues_mon
-
+    
     # Call the function being tested
     new_df = _gen_rep_var_various_cond_equality_listedvalues_mon(
         df,
@@ -1130,14 +1182,18 @@ def test_gen_rep_var_various_cond_equality_listedvalues_mon(
         list_a,
         list_b,
     )
-
+    
     # Test that new columns were added
     assert all(new_df[NEW_var]) == all(new_df[ORI_var])
-
+    
     # Test that the values were replaced correctly
     for i, j in zip(list_a, list_b):
         assert new_df.loc[new_df[ORI_var] == i, NEW_var] == j
 
+
+
+
+# from clean_data import _sort_mon
 
 def _sort_mon(df, list_sort):
     """This functions is sorting the values of a dataframe (df) given a list of values
@@ -1151,9 +1207,9 @@ def input_data_sort_mon():
     # Create a sample dataframe
     df = pd.DataFrame(
         {
-            "observ": [1, 2, 3],
-            "month": ["January", "February", "March"],
-            "value1": [10, 5, 20],
+        "observ": [1, 2, 3],
+        "month": ["January", "February", "March"],
+        "value1": [10, 5, 20],
             "value2": [30, 15, 5],
         },
     )  # using a reference DataFrame
@@ -1164,10 +1220,10 @@ def input_data_sort_mon():
 def test_sort_mon(input_data_sort_mon):
     # Unpack the input data
     df, list_sort = input_data_sort_mon
-
+    
     # Call the function
     df_output = _sort_mon(df, list_sort)
-
+    
     # Check that the output dataframe is sorted correctly
     assert df_output.iloc[0]["month"] == "January"
     assert df_output.iloc[-1]["month"] == "March"
@@ -1175,12 +1231,17 @@ def test_sort_mon(input_data_sort_mon):
     assert df_output.iloc[-1]["observ"] == 3
 
 
+
+
+
+# from clean_data import _gen_rep_total_thefts2_mon
+
 def _gen_rep_total_thefts2_mon(df, var_complex_cond, cond1, cond2):
     """This function is generating a a new variable by observation "total_thefts2" in a
     dataframe (df)"""
     df = df.assign(total_thefts2=pd.Series())
     df["total_thefts2"] = df["total_thefts2"].tolist()
-    for i in range(1, len(df)):
+    for i in range(1, len(df)):  
         if (
             df[var_complex_cond].iloc[i] == cond1
             or df[var_complex_cond].iloc[i] == cond2
@@ -1202,8 +1263,8 @@ def _gen_rep_total_thefts2_mon(df, var_complex_cond, cond1, cond2):
 def input_data_gen_rep_total_thefts2_mon():
     df = pd.DataFrame(
         {
-            "month": [72, 73, 74, 75, 76, 77],
-            "total_thefts": [10, 20, 30, 40, 50, 60],
+        "month": [72, 73, 74, 75, 76, 77],
+        "total_thefts": [10, 20, 30, 40, 50, 60],
         },
     )  # using a reference DataFrame because the function is more complex to grasp
     var_complex_cond = "month"
@@ -1214,10 +1275,10 @@ def input_data_gen_rep_total_thefts2_mon():
 
 def test_gen_rep_total_thefts2_mon(input_data_gen_rep_total_thefts2_mon):
     df, var_complex_cond, cond1, cond2 = input_data_gen_rep_total_thefts2_mon
-
+    
     # Call the function being tested
     new_df = _gen_rep_total_thefts2_mon(df, var_complex_cond, cond1, cond2)
-
+    
     # Test that new columns were added
     expected_output = pd.DataFrame(
         {
@@ -1234,3 +1295,43 @@ def test_gen_rep_total_thefts2_mon(input_data_gen_rep_total_thefts2_mon):
         },
     )
     pd.testing.assert_frame_equal(new_df, expected_output)
+    
+
+
+
+
+
+    theft_cols = [
+        col
+        for col in converted_df.columns
+        if col.startswith("theft") and ("val" in col or col[-1].isdigit())
+    ]
+    for col in theft_cols:
+        assert converted_df[col].dtypes == float
+
+
+def test_split_theft_data_shape(theft_df):
+    theft_data = _split_theft_data(theft_df, 1)
+    assert theft_data.shape == (2, 15)
+
+
+def test_split_theft_data_cols(theft_df):
+    theft_data = _split_theft_data(theft_df, 1)
+    assert set(theft_data.columns) == {
+        "theft1",
+        "theft1month",
+        "theft1val",
+        "theft1hour",
+        "theft1day",
+        "theft2",
+        "theft2month",
+        "theft2val",
+        "theft2hour",
+        "theft2day",
+        "theft_hv1",
+        "theft_lv1",
+        "theft_night1",
+        "theft_day1",
+        "theft_weekday1",
+        "theft_weekend1",
+    }
