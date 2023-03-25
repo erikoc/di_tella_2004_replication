@@ -3,17 +3,13 @@
 import pandas as pd
 import pytask
 
-from di_tella_2004_replication.analysis.model import fit_logit_model, load_model
-from di_tella_2004_replication.analysis.predict import predict_prob_by_age
-from di_tella_2004_replication.config import BLD, GROUPS, SRC
-from di_tella_2004_replication.utilities import read_yaml
+from di_tella_2004_replication.config import BLD
 
 
 @pytask.mark.depends_on(
     {
-        "scripts": ["model.py", "predict.py"],
-        "data": BLD / "python" / "data" / "data_clean.csv",
-        "data_info": SRC / "data_management" / "data_info.yaml",
+        "scripts": ["crime_by_block_analysis.py", "predict.py"],
+        "CrimeByBlock": BLD / "python" / "data" / "CrimeByBlock.pkl",
     },
 )
 @pytask.mark.produces(BLD / "python" / "models" / "model.pickle")

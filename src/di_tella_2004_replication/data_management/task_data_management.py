@@ -20,4 +20,4 @@ def task_clean_data_python(depends_on, produces):
     """Clean the data (Python version)."""
     data, meta = pyreadstat.read_dta(depends_on["CrimeByBlock"])
     data = process_crime_by_block(data)
-    data.to_csv(produces, index=False)
+    data.to_pickle(produces)
