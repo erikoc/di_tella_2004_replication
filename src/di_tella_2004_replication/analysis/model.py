@@ -37,6 +37,7 @@ def WelchTest(Data, code1, code2):
     cod_1 = code_1["total_thefts"].astype("int")
     cod_2 = code_2["total_thefts"].astype("int")
     t, p = stats.ttest_ind(cod_1, cod_2, equal_var=False)
+    return t, p
 
 
 def testings(regression, variable_test, testing_number):
@@ -62,9 +63,9 @@ def testings(regression, variable_test, testing_number):
     ]
     pvalue = 2 * (1 - scy.stats.t.cdf(np.abs(tvalue), regression.df_resid))
     if pvalue < 0.05:
-        pass
+        print(f"The coefficient of {variable_test}] is significantly different from {testing_number} with p-value", pvalue)
     else:
-        pass
+        print(f"The coefficient of {variable_test} is not significantly different from {testing_number} with p-value", pvalue)
 
 
 def testings_div(regression, variable_test, testing_number, division_f):
@@ -90,9 +91,9 @@ def testings_div(regression, variable_test, testing_number, division_f):
     )
     pvalue = 2 * (1 - scy.stats.t.cdf(np.abs(tvalue), regression.df_resid))
     if pvalue < 0.05:
-        pass
+        print(f"The coefficient of {variable_test}] is significantly different from {testing_number} with p-value", pvalue)
     else:
-        pass
+        print(f"The coefficient of {variable_test} is not significantly different from {testing_number} with p-value", pvalue)
 
 
 def areg_single(Data, variable_log, a, variable_fe, variable_y, variable_x):

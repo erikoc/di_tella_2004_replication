@@ -3,12 +3,13 @@ import numpy as np
 import pandas as pd
 import pyreadstat  as pyread
 
-
-
 """ Monthly Panel """ 
+
+############################################## PART 1 ########################################################################################################################
 
 MonthlyPanel, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data/MonthlyPanel.dta')
 
+""" Clean Data Set"""
 
 def _clean_column_names_mon(df):
     
@@ -48,9 +49,7 @@ def _clean_column_names_mon(df):
 
 df_m1 = MonthlyPanel
 
-
-
-############################################## PART 1 ########################################################################################################################
+# PART 1
 
 def _gen_rep_var_fixed_extension_mon(df, var_cond_ext, range_loop=range(5,13), original_value_var=0, final_value_var=1):
     
@@ -82,33 +81,6 @@ var_cond_ext_m1 = 'month'
 
 
 
-
-def _gen_var_difference_mon(df, new_var, var1, var_sub):
-    
-    """
-    Generate a new variable in a dataframe by subtracting one column from another.
-
-    Args:
-    - df: pandas dataframe
-    - new_var: name of the new variable to be generated
-    - var1: name of the column to subtract from
-    - var_sub: name of the column to subtract
-
-    Returns:
-    - df: pandas dataframe with the new variable generated
-    """
-    
-    df[new_var] = df[var1] - df[var_sub]
-    return df
-
-new_var_m1 = 'jewish_inst_one_block_away_1'
-var1_m1 = 'jewish_inst_one_block_away'
-var_sub_m1 = 'jewish_inst'
-    
-
-
-
-
 def _gen_rep_var_single_cond_biggerthan_mon(df, var_gen, cond_var, original_value=0, final_value=1, cond=7):
     
     """Generate a new variable `var_gen` in a pandas dataframe `df` with an original value `original_value`. 
@@ -134,7 +106,6 @@ var_gen_m1 = 'post'
 cond_var_m1 = 'month'
 
 
-    
 
 
 def _gen_rep_var_fixed_extension_mon2(df, var_cond_ext2, original_value_var2=0, range_loop2=range(0,8), final_value_var2=1):
@@ -161,9 +132,7 @@ def _gen_rep_var_fixed_extension_mon2(df, var_cond_ext2, original_value_var2=0, 
         df.loc[df[var_cond_ext2]==i, f"cuad{i}"]= final_value_var2 
     return df
 
-
 var_cond_ext2_m1 = 'distance_to_jewish_inst'
-
 
 
 
@@ -190,9 +159,6 @@ def _gen_var_cond_list_similar_mon(df, ori_variables, fixed_variable, name_chang
 
 ori_variables_m1 = ["cuad0", "cuad1", "cuad2", "cuad3", "cuad4", "cuad5", "cuad6", "cuad7"]
 fixed_variable_m1 = "post"
- 
- 
- 
 
 
 
@@ -229,7 +195,6 @@ def _gen_rep_var_various_cond_equality_mon(df, new_gen_variable, list_ext_variab
          df.loc[df[col]==value_originallist, new_gen_variable]=i 
     return df
 
-
 new_gen_variable_m1 = 'code'
 list_ext_variables_m1 = ['jewish_inst', 'jewish_inst_one_block_away_1', 'cuad2']
 
@@ -259,8 +224,7 @@ list_gen_var_m1 = ["jewish_inst_p", "jewish_inst_one_block_away_1_p"]
 list_ori_var_m1 = ["jewish_inst",  "jewish_inst_one_block_away_1"]
 fixed_var_m1 = 'post'
 
-    
-    
+
 
 
 def _gen_rep_var_various_cond_equality_listedvalues_mon(df, NEW_var, ORI_var, list_a=[72,73], list_b=[7.2,7.3]):
@@ -291,35 +255,8 @@ def _gen_rep_var_various_cond_equality_listedvalues_mon(df, NEW_var, ORI_var, li
         df.loc[df[ORI_var]==i, NEW_var]=j
     return df
 
-
 NEW_var_m1 = 'othermonth1'
 ORI_var_m1 = 'month'
-    
-
-
-
-
-def _sort_mon(df, list_sort):
-    """
-    This function sorts the values of a dataframe (df) given a list of values to be used for sorting (list_sort).
-    
-    Parameters:
-    -----------
-    df : pandas DataFrame
-        The DataFrame to be sorted.
-    list_sort : list
-        A list of column names or values that will be used to sort the DataFrame.
-    
-    Returns:
-    --------
-    pandas DataFrame
-        The sorted DataFrame.
-    """
-    df = df.sort_values(list_sort)
-    return df
-
-list_sort_m1 = ['observ', 'month']
-
 
 
 
@@ -344,110 +281,62 @@ def _gen_rep_total_thefts2_mon(df, var_complex_cond, cond1=72, cond2=73):
     return df
 
 var_complex_cond_m1 = 'month'
-    
 
 
-def _df_to_csv_mon(df, location):
-    """
-    Saves a pandas DataFrame to a CSV file at the specified location.
 
-    Args:
-        df (pandas DataFrame): The DataFrame to be saved.
-        location (str): The file path and name for the CSV file, including the ".csv" extension.
 
-    Returns:
-        None
-    """
-    df.to_csv(location)
 
-location_m1 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel.csv'
-
-    
 
 #### TRYING TO PUT EVERYTHING INSIDE A FUNCTION ####
 
+location_m1 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel.csv'
+
+
 def monthlypanel_1(df, 
                    var_cond_ext,
-                   new_var, var1, var_sub,
                    var_gen, cond_var,
                    var_cond_ext2,
                    ori_variables, fixed_variable,
                    new_gen_variable, list_ext_variables,
                    list_gen_var, list_ori_var, fixed_var,
                    NEW_var, ORI_var,
-                   list_sort,
                    var_complex_cond,
-                   location):
+                   location,
+                   list_sort=['observ', 'month'],
+                   new_var='jewish_inst_one_block_away_1', var1='jewish_inst_one_block_away', var_sub='jewish_inst'):
     df = _clean_column_names_mon(df)
     df = _gen_rep_var_fixed_extension_mon(df, var_cond_ext)
-    df = _gen_var_difference_mon(df, new_var, var1, var_sub)
+    df[new_var] = df[var1] - df[var_sub]
     df = _gen_rep_var_single_cond_biggerthan_mon(df, var_gen, cond_var)
     df = _gen_rep_var_fixed_extension_mon2(df, var_cond_ext2)
     df = _gen_var_cond_list_similar_mon(df, ori_variables, fixed_variable)
     df = _gen_rep_var_various_cond_equality_mon(df, new_gen_variable, list_ext_variables)
     df = _gen_var_double_listed_mon(df, list_gen_var, list_ori_var, fixed_var)
     df = _gen_rep_var_various_cond_equality_listedvalues_mon(df, NEW_var, ORI_var)
-    df = _sort_mon(df, list_sort)
+    df = df.sort_values(list_sort)
     df = _gen_rep_total_thefts2_mon(df, var_complex_cond)
-    _df_to_csv_mon(df, location)
+    df.to_csv(location)
 
 
 ### FUNCTION ###
 
 MonthlyPanel = monthlypanel_1(df=df_m1, 
                               var_cond_ext=var_cond_ext_m1,
-                              new_var=new_var_m1, var1=var1_m1, var_sub=var_sub_m1,
                               var_gen=var_gen_m1, cond_var=cond_var_m1,
                               var_cond_ext2=var_cond_ext2_m1,
                               ori_variables=ori_variables_m1, fixed_variable=fixed_variable_m1,
                               new_gen_variable=new_gen_variable_m1, list_ext_variables=list_ext_variables_m1,
                               list_gen_var=list_gen_var_m1, list_ori_var=list_ori_var_m1, fixed_var=fixed_var_m1,
                               NEW_var=NEW_var_m1, ORI_var=ORI_var_m1,
-                              list_sort=list_sort_m1, 
                               var_complex_cond=var_complex_cond_m1,
                               location=location_m1)
 
    
 
+
+
+
 ############################################## PART 2 ########################################################################################################################
-
-def _reading_data_csv(location_origin):
-    """
-    Reads a CSV file located at the specified `location_origin` using pandas.
-
-    Args:
-    - location_origin (str): Path to the CSV file.
-
-    Returns:
-    - pandas.DataFrame: A pandas DataFrame containing the data read from the CSV file.
-    """
-    df = pd.read_csv(location_origin)
-    return df
-
-location_origin_m2 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel.csv'
-
-   
-    
-    
-def _drop_if_simple_mon2(df, var_drop, drop1=72, drop2=73):    
-    """    Drops rows from a dataframe based on two conditions.
-
-    Args:
-    - df (pandas.DataFrame): The input dataframe.
-    - var_drop (str): The name of the column that will be used to apply the conditions.
-    - drop1 (int): The first value of `var_drop` for which rows will be dropped. Default value is 72.
-    - drop2 (int): The second value of `var_drop` for which rows will be dropped. Default value is 73.
-
-    Returns:
-    - pandas.DataFrame: A new dataframe with the specified rows dropped.
-    """    
-    df.drop(df.loc[(df[var_drop]==drop1) | (df[var_drop]==drop2)].index, inplace=True)
-    return df
-
-var_drop_m2 = 'month'
-
-
-
 
 def _gen_rep_various_cond_mon2(df, new_var_v_cond, ori_var_v_cond, var_con_v_cond, con_v_cond1=7, con_v_cond2=5, con_v_cond3=8, con_v_cond4=10, con_v_cond5=12, multiple1_v_cond=(30/17), multiple2_v_cond=(30/31)):
     """    
@@ -512,25 +401,6 @@ var_con_NA_m2 = 'month'
 fixed_var_NA_m2 = 'total_thefts'
 
     
-
-
-
-def _sort_mon2(df, list_sort):
-    """Sorts the rows of a dataframe (df) based on the values of the columns specified in the list (list_sort).
-
-    Args:
-        df (pandas.DataFrame): The input dataframe.
-        list_sort (list): A list of column names to use for sorting the dataframe.
-
-    Returns:
-        pandas.DataFrame: The sorted dataframe.
-    """
-    df = df.sort_values(list_sort)
-    return df
-
-list_sort_m2 = ['observ', 'month']
-
-
 
 
 
@@ -599,70 +469,6 @@ var_egen_sup2_m2 = 'posthefts'
 cond_ege_var2_m2 = 'month'
 ege_var_change2_m2 = 'theftscoll'
 
-
-
-
-
-
-def _gen_simplebased_mon2(df, new_generated_var, existing_var, scalar_gen=4):
-    """Generate a new variable (new_generated_var) in a Pandas DataFrame (df) based on an existing variable (existing_var) 
-    in the same dataframe multiplied by a scalar value (scalar_gen).
-
-    Args:
-        df (Pandas DataFrame): The input dataframe containing the existing variable and where the new variable will be created
-        new_generated_var (str): The name of the new variable to be created
-        existing_var (str): The name of the existing variable in the dataframe to use as the basis for the new variable
-        scalar_gen (int or float, optional): The scalar value to multiply the existing variable with. Defaults to 4.
-
-    Returns:
-        Pandas DataFrame: The input dataframe with a new column (new_generated_var) added based on the existing variable
-        multiplied by the scalar value.
-    """
-    df[new_generated_var] = df[existing_var] * scalar_gen
-    return df
-    
-new_generated_var_m2 = 'total_thefts_q' 
-existing_var_m2 = 'total_thefts'
-
-
-
-
-
-def _gen_simple_mon2(df, new_gen_var_sim, value_sim=0.25):
-    """Generate a new variable (new_gen_var_sim) in a dataframe (df) with a constant scalar value (value_sim).
-
-    Args:
-        df (pandas.DataFrame): The input dataframe.
-        new_gen_var_sim (str): The name of the new variable to be generated.
-        value_sim (float, optional): The scalar value to assign to the new variable. Defaults to 0.25.
-
-    Returns:
-        pandas.DataFrame: The input dataframe with the new variable added.
-    """
-    df[new_gen_var_sim] = value_sim
-    return df
-
-new_gen_var_sim_m2 = 'w'  
-
-
-
-
-
-def _gen_simple2_mon2(df, new_gen_var_sim2, value_sim2=0):
-    """Generate a new variable (new_gen_var_sim) in a dataframe (df) with a constant scalar value (value_sim).
-
-    Args:
-        df (pandas.DataFrame): The input dataframe.
-        new_gen_var_sim3 (str): The name of the new variable to be generated.
-        value_sim2 (float, optional): The scalar value to assign to the new variable. Defaults to 0.
-
-    Returns:
-        pandas.DataFrame: The input dataframe with the new variable added.
-    """
-    df[new_gen_var_sim2] = value_sim2
-    return df
-
-new_gen_var_sim2_m2 = 'n_neighborhood'  
 
 
 
@@ -794,69 +600,47 @@ list_names_variouslists_m2 = ['belgrano', 'once', 'vcrespo']
 
 
 
-
-def _df_to_csv_mon2(df, location):
-    """
-    This function saves the input dataframe (df) as a CSV file at the specified location (location).
-
-    Args:
-    df: pandas.DataFrame
-        The DataFrame to be saved as a CSV file.
-    location: str
-        The file path including the file name and extension, where the CSV file will be saved.
-        
-    Returns:
-    None
-    """
-    df.to_csv(location)
-    
-location_m2 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel2.csv'
-
-
-
 #### TRYING TO PUT EVERYTHING INSIDE A FUNCTION ####
 
+location_origin_m2 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel.csv'
+location_m2 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel2.csv'
+
 def monthlypanel_2(location_origin,
-                   var_drop,
                    new_var_v_cond, ori_var_v_cond, var_con_v_cond,
                    list_for_NA, var_con_NA, fixed_var_NA,
-                   list_sort,
                    new_egen_var, by_var, var_egen_sup, cond_ege_var, ege_var_change,
                    new_egen_var2, by_var2, var_egen_sup2, cond_ege_var2, ege_var_change2,
-                   new_generated_var, existing_var,
-                   new_gen_var_sim, 
-                   new_gen_var_sim2,
                    list_names_complex, var_rep_cond_complex, var_rep_complex, gen_var_complex, var_cond_complex, list_names_complexb,
                    var_gen_simple, var_cond_simple,
                    list_names_place, list_names_month, list_names_variouslists,
-                   location):
-    df = _reading_data_csv(location_origin)
-    df = _drop_if_simple_mon2(df, var_drop)
+                   location,
+                   new_gen_var_sim='w', value_sim=0.25,
+                   new_gen_var_sim2='n_neighborhood', value_sim2=0,
+                   new_generated_var='total_thefts_q' , existing_var='total_thefts', scalar_gen=4,
+                   list_sort=['observ', 'month'],
+                   var_drop='month', drop1=72, drop2=73,):
+    df = pd.read_csv(location_origin)
+    df.drop(df.loc[(df[var_drop]==drop1) | (df[var_drop]==drop2)].index, inplace=True)
     df = _gen_rep_various_cond_mon2(df, new_var_v_cond, ori_var_v_cond, var_con_v_cond)
     df = _genNA_rep_two_cond_mon2(df, list_for_NA, var_con_NA, fixed_var_NA)
-    df = _sort_mon2(df, list_sort)
+    df = df.sort_values(list_sort)
     df = _egen_rep_mon2(df, new_egen_var, by_var, var_egen_sup, cond_ege_var, ege_var_change)
     df = _egen_rep2_mon2(df, new_egen_var2, by_var2, var_egen_sup2, cond_ege_var2, ege_var_change2)
-    df = _gen_simplebased_mon2(df, new_generated_var, existing_var)
-    df = _gen_simple_mon2(df, new_gen_var_sim)
-    df = _gen_simple2_mon2(df, new_gen_var_sim2)
+    df[new_generated_var] = df[existing_var] * scalar_gen
+    df[new_gen_var_sim] = value_sim
+    df[new_gen_var_sim2] = value_sim2
     df = _complex_gen_rep_mon2(df, list_names_complex, var_rep_cond_complex, var_rep_complex, gen_var_complex, var_cond_complex, list_names_complexb)
     df = _gen_rep_simple_mon2(df, var_gen_simple, var_cond_simple)
     df = _gen_based_variouslists_mon2(df, list_names_place, list_names_month, list_names_variouslists)
-    _df_to_csv_mon2(df, location) 
+    df.to_csv(location)
     
 ### FUNCTION ###
 
 MonthlyPanel2 = monthlypanel_2(location_origin=location_origin_m2, 
-                   var_drop=var_drop_m2,
                    new_var_v_cond=new_var_v_cond_m2, ori_var_v_cond=ori_var_v_cond_m2, var_con_v_cond=var_con_v_cond_m2,
                    list_for_NA=list_for_NA_m2, var_con_NA=var_con_NA_m2, fixed_var_NA=fixed_var_NA_m2,
-                   list_sort=list_sort_m2,
                    new_egen_var=new_egen_var_m2, by_var=by_var_m2, var_egen_sup=var_egen_sup_m2, cond_ege_var=cond_ege_var_m2, ege_var_change=ege_var_change_m2,
                    new_egen_var2=new_egen_var2_m2, by_var2=by_var2_m2, var_egen_sup2=var_egen_sup2_m2, cond_ege_var2=cond_ege_var2_m2, ege_var_change2=ege_var_change2_m2,
-                   new_generated_var=new_generated_var_m2, existing_var=existing_var_m2,
-                   new_gen_var_sim=new_gen_var_sim_m2,
-                   new_gen_var_sim2= new_gen_var_sim2_m2,
                    list_names_complex=list_names_complex_m2, var_rep_cond_complex=var_rep_cond_complex_m2, var_rep_complex=var_rep_complex_m2, gen_var_complex=gen_var_complex_m2, var_cond_complex=var_cond_complex_m2, list_names_complexb=list_names_complexb_m2,
                    var_gen_simple=var_gen_simple_m2, var_cond_simple=var_cond_simple_m2,
                    list_names_place=list_names_place_m2, list_names_month=list_names_month_m2, list_names_variouslists=list_names_variouslists_m2,
@@ -864,50 +648,10 @@ MonthlyPanel2 = monthlypanel_2(location_origin=location_origin_m2,
 
 
 
+
+
+
 ############################################## PART 3 ########################################################################################################################
-
-
-def _reading_data_csv(location_origin):
-    """
-    Reads a CSV file located at the specified `location_origin` using pandas.
-
-    Args:
-    - location_origin (str): Path to the CSV file.
-
-    Returns:
-    - pandas.DataFrame: A pandas DataFrame containing the data read from the CSV file.
-    """
-    df = pd.read_csv(location_origin)
-    return df
-
-location_origin_m3 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel2.csv'
-    
-
-
-
-
-
-def _single_drop(df, column_to_drop):
-    """
-    This function drops a single column (column_to_drop) from a pandas dataframe (df) and returns a new dataframe
-    with the dropped column.
-    
-    Inputs:
-    - df: pandas dataframe to drop a column from
-    - column_to_drop: string representing the name of the column to be dropped
-    
-    Output:
-    - df: pandas dataframe with the specified column removed
-    """
-
-    df = df.drop(columns=column_to_drop)
-    return df
-
-column_to_drop_m3 = 'month4'
-
-
-
-
 
 
 def _gen_rep_3cond_mon3(df, gen_var_3cond, col1_3cond, col2_3cond, col3_3cond, initial_val_3cond=0, global_replace_val_3cond=1):
@@ -936,9 +680,6 @@ gen_var_3cond_m3 = 'all_locations'
 col1_3cond_m3 = 'public_building_or_embassy'
 col2_3cond_m3 = 'gas_station'
 col3_3cond_m3 = 'bank'
-
-
-
 
 
 
@@ -985,44 +726,25 @@ list_names_data3_general_m3 = ['jewish_inst_p', 'jewish_inst_one_block_away_1_p'
 
 
 
-
-
-def _df_to_csv_mon3(df, location):
-    """
-    This function saves the input dataframe (df) as a CSV file at the specified location (location).
-
-    Args:
-    df: pandas.DataFrame
-        The DataFrame to be saved as a CSV file.
-    location: str
-        The file path including the file name and extension, where the CSV file will be saved.
-        
-    Returns:
-    None
-    """
-    df.to_csv(location)
-    
-location_m3 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel3.csv'
-
-
-
 #### TRYING TO PUT EVERYTHING INSIDE A FUNCTION ####
 
+location_origin_m3 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel2.csv'
+location_m3 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel3.csv'
+
 def monthlypanel_3(location_origin, 
-                   column_to_drop,
                    gen_var_3cond, col1_3cond, col2_3cond, col3_3cond,
                    list_values, list_names_3_variables, list_names_data3_general,
-                   location):
-    df = _reading_data_csv(location_origin)
-    df = _single_drop(df, column_to_drop)
+                   location,
+                   column_to_drop='month4'):
+    df = pd.read_csv(location_origin)
+    df.drop(columns=column_to_drop)
     df = _gen_rep_3cond_mon3(df, gen_var_3cond, col1_3cond, col2_3cond, col3_3cond)
     df = _gen_multiplevariables_listbased(df, list_values, list_names_3_variables, list_names_data3_general)
-    _df_to_csv_mon3(df, location)
+    df.to_csv(location)
 
 ### FUNCTION ###
 
 MonthlyPanel3 = monthlypanel_3(location_origin=location_origin_m3, 
-                               column_to_drop=column_to_drop_m3,
                                gen_var_3cond=gen_var_3cond_m3, col1_3cond=col1_3cond_m3, col2_3cond=col2_3cond_m3, col3_3cond=col3_3cond_m3,
                                list_values=[list_value1_m3, list_value2_m3, list_value3_m3, list_value4_m3], list_names_3_variables=list_names_3_variables_m3, list_names_data3_general=list_names_data3_general_m3,
                                location=location_m3) 
@@ -1070,78 +792,6 @@ df_m4 = MonthlyPanel_new
 
 
 
-def _gen_var_difference_mon4(df, new_var_new, var1_new, var_sub_new):
-    """Generate a new variable (new_var_new) in a dataframe (df) by subtracting two existing columns (var1_new and var_sub_new).
-    
-    Args:
-    df (pandas dataframe): The dataframe to add the new variable to.
-    new_var_new (str): The name of the new variable to be created.
-    var1_new (str): The name of the first column to be used for subtraction.
-    var_sub_new (str): The name of the second column to be used for subtraction.
-    
-    Returns:
-    pandas dataframe: The updated dataframe with the new variable.
-    """
-    df[new_var_new] = df[var1_new] - df[var_sub_new]
-    return df
-
-new_var_new_m4 = 'jewish_inst_one_block_away_1'
-var1_new_m4 = 'jewish_inst_one_block_away'
-var_sub_new_m4 = 'jewish_inst'
-
-
-
-
-
-
-def _gen_variouslisted_var_mon4(df, list_various_gen, original_val_various_list=0):
-    """
-    Generates a set of new variables specified by a list (list_various_gen) in a dataframe (df), 
-    and assigns an initial value (original_val_various_list) to each variable.
-
-    Args:
-    - df: Pandas DataFrame.
-    - list_various_gen: list of new variable names to generate.
-    - original_val_various_list: scalar or list of initial values to assign to the new variables. Default value set to 0.
-
-    Returns:
-    - df: Pandas DataFrame with the new variables added.
-    """
-    df[[col for col in list_various_gen]] = original_val_various_list
-    return df
-
-list_various_gen_m4 = ['cuad2', 'month5', 'month6', 'month7']
-
-    
-
-
-
-
-
-def _rep_simple_mon4(df, cond_var_simple, var_simple_rep, cond_val_simple=2, val_assigned_simple=1):
-    """
-    Replace values in a single variable of a DataFrame (df) based on a condition. 
-    
-    Args:
-    - df (pandas.DataFrame): The input DataFrame.
-    - cond_var_simple (str): The name of the variable in the DataFrame on which the conditional check is performed.
-    - var_simple_rep (str): The name of the variable in the DataFrame that will be replaced if the condition is met.
-    - cond_val_simple (int, optional): The value that the condition variable must meet to proceed with the replacement. Default value is 2.
-    - val_assigned_simple (int, optional): The value to be assigned to the replacement variable if the condition is met. Default value is 1.
-    
-    Returns:
-    - pandas.DataFrame: The modified DataFrame with the variable values replaced according to the condition.
-    """
-    df.loc[df[cond_var_simple]==cond_val_simple, var_simple_rep] = val_assigned_simple
-    return df
-
-cond_var_simple_m4 = 'distance_to_jewish_inst'
-var_simple_rep_m4 = 'cuad2'
-
-    
-
-
-
 
 def _rep_various_mon4(df, cond_var_simple_v, range_replace=range (5,8), val_assigned_various=1):
     """
@@ -1175,26 +825,6 @@ def _rep_various_mon4(df, cond_var_simple_v, range_replace=range (5,8), val_assi
 cond_var_simple_v_m4 = 'month'
 
     
-
-
-
-
-def _drop_conditional(df, var_drop_cond, drop_condition_list=[72, 73, 8, 9, 10, 11, 12]):
-    """This function drops rows from a dataframe (df) for which a specific variable (var_drop_cond) meets a condition given by a list of values (drop_condition_list).
-    
-    Args:
-    - df: a pandas dataframe.
-    - var_drop_cond (str): the variable/column name in the dataframe to be used for conditional dropping.
-    - drop_condition_list (list): a list of values for the conditional dropping. Default is [72, 73, 8, 9, 10, 11, 12].
-    
-    Returns:
-    - df: the updated pandas dataframe without the rows that meet the specified condition.
-    """ 
-    df.drop(df[df[var_drop_cond].isin(drop_condition_list)].index, inplace=True)
-    return df
-
-var_drop_cond_m4 = 'month'
-
 
 
 
@@ -1255,76 +885,39 @@ def _gen_specificrule_list(df, list_var_gen_spec, list_var_ext_spec, list_new_va
 list_var_gen_spec_m4 = ['jewish_inst', 'jewish_inst_one_block_away_1', 'cuad2'] 
 list_var_ext_spec_m4 = ['post1', 'post2', 'post3']
 list_new_var_spec_m4 = ['one_jewish_inst_1_p', 'one_jewish_inst_one_block_away_1_p', 'one_cuad2p', 'two_jewish_inst_1_p', 'two_jewish_inst_one_block_away_1_p', 'two_cuad2p', 'three_jewish_inst_1_p', 'three_jewish_inst_one_block_away_1_p', 'three_cuad2p']
-    
 
 
 
-
-def _dropna_mon4(df):
-    """
-    Parameters:
-    df : pandas DataFrame
-    The DataFrame to be cleaned from missing values.
-
-    Returns:
-    pandas DataFrame
-    The cleaned DataFrame with no missing values.
-    """
-    df = df.dropna()
-    return df
-
-
-
-
-
-def _df_to_csv_mon4(df, location):
-    """
-    This function saves the input dataframe (df) as a CSV file at the specified location (location).
-
-    Args:
-    df: pandas.DataFrame
-        The DataFrame to be saved as a CSV file.
-    location: str
-        The file path including the file name and extension, where the CSV file will be saved.
-        
-    Returns:
-    None
-    """
-    df.to_csv(location)
-    
-location_m4 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel_new.csv'
 
 
 #### TRYING TO PUT EVERYTHING INSIDE A FUNCTION ####
 
+location_m4 = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Last whole_updated/Clean_Data/MonthlyPanel_new.csv'
+
 def monthlypanel_4(df,
-                   new_var_new, var1_new, var_sub_new,
-                   list_various_gen,
-                   cond_var_simple, var_simple_rep,
-                   cond_var_simple_v,
-                   var_drop_cond, 
+                   cond_var_simple_v, 
                    list_gen_var_cond, cond_var_cond,
                    list_var_gen_spec, list_var_ext_spec, list_new_var_spec,
-                   location):
+                   location,
+                   new_var_new='jewish_inst_one_block_away_1', var1_new='jewish_inst_one_block_away', var_sub_new='jewish_inst',
+                   list_various_gen=['cuad2', 'month5', 'month6', 'month7'], original_val_various_list=0,
+                   cond_var_simple='distance_to_jewish_inst', var_simple_rep='cuad2', cond_val_simple=2, val_assigned_simple=1,
+                   var_drop_cond='month', drop_condition_list=[72, 73, 8, 9, 10, 11, 12]):
     df = _clean_column_names_mon4(df)
-    df = _gen_var_difference_mon4(df, new_var_new, var1_new, var_sub_new)
-    df = _gen_variouslisted_var_mon4(df, list_various_gen)
-    df = _rep_simple_mon4(df, cond_var_simple, var_simple_rep)
+    df[new_var_new] = df[var1_new] - df[var_sub_new]
+    df[[col for col in list_various_gen]] = original_val_various_list
+    df.loc[df[cond_var_simple]==cond_val_simple, var_simple_rep] = val_assigned_simple
     df = _rep_various_mon4(df, cond_var_simple_v)
-    df = _drop_conditional(df, var_drop_cond)
+    df.drop(df[df[var_drop_cond].isin(drop_condition_list)].index, inplace=True)
     df = _gen_rep_var_various_cond_biggerthan_mon4(df, list_gen_var_cond, cond_var_cond)
     df = _gen_specificrule_list(df, list_var_gen_spec, list_var_ext_spec, list_new_var_spec)
-    df = _dropna_mon4(df)
-    _df_to_csv_mon4(df, location)
+    df.dropna()
+    df.to_csv(location)
     
 ### FUNCTION ###
 
 MonthlyPanel_new = monthlypanel_4(df = MonthlyPanel_new,
-                   new_var_new = new_var_new_m4, var1_new=var1_new_m4, var_sub_new=var_sub_new_m4,
-                   list_various_gen=list_various_gen_m4,
-                   cond_var_simple=cond_var_simple_m4, var_simple_rep=var_simple_rep_m4,
                    cond_var_simple_v=cond_var_simple_v_m4,
-                   var_drop_cond=var_drop_cond_m4,
                    list_gen_var_cond=list_gen_var_cond_m4, cond_var_cond=cond_var_cond_m4,
                    list_var_gen_spec=list_var_gen_spec_m4, list_var_ext_spec=list_var_ext_spec_m4, list_new_var_spec=list_new_var_spec_m4,
                    location=location_m4)
