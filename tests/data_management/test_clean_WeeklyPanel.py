@@ -12,7 +12,6 @@ from di_tella_2004_replication.data_management.clean_WeeklyPanel import (
 @pytest.fixture()
 def original_data():
     return {
-        "monthly_panel": pyread.read_dta(SRC / "data" / "MonthlyPanel.dta"),
         "weekly_panel": pyread.read_dta(SRC / "data" / "WeeklyPanel.dta"), 
     }
 
@@ -97,7 +96,7 @@ def input_data_gen_rep_variables_fixedlistcomplex_we():
 "Tests"
 
 
-def test_clean_column_names_we(input_data_clean_column_names_we):
+def test_clean_column_names_we(original_data):
     # Call the function being tested
     new_df = _clean_column_names_we(original_data["weekly_panel"])
 
