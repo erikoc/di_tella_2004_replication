@@ -1123,6 +1123,8 @@ regression_new2 = areg_clus(Data_clu_new, y_clu_new, x_clu_new2)
 regression_new3 = areg_clus(Data_clu_new, y_clu_new, x_clu_new3)
 
 
+"""WEEKLY"""
+
 # Generate a function that will get us the regression results
 
 

@@ -3,6 +3,9 @@ import numpy as np
 import pandas as pd
 import pyreadstat  as pyread
 
+
+
+
 """ Weekly Panel """
 
 WeeklyPanel, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data/WeeklyPanel.dta')
@@ -46,25 +49,6 @@ def _clean_column_names_we(df):
 
 df_we = WeeklyPanel
 
-
-
-
-def _drop_variables_we(df, list_drop):
-    """
-    Drops columns from a Pandas DataFrame.
-
-    Args:
-        df (pandas.DataFrame): The DataFrame from which to drop columns.
-        list_drop (list): A list of column names to drop from the DataFrame.
-
-    Returns:
-        pandas.DataFrame: The input DataFrame with the specified columns dropped.
-
-    """
-    df.drop(columns=list_drop, inplace=True)
-    return df
-
-list_drop_we = ['street', 'street_nr', 'public_building_or_embassy', 'gas_station', 'bank']
 
 
 
@@ -132,6 +116,7 @@ var_fix_we = 'cuad2'
 
 
 
+
         
 def _rep_variables_we(df, type_of_condition, var_cond_rep, replace_var, condition_num=18, value_replace=1):
     
@@ -172,82 +157,6 @@ replace_var_we = 'post'
 
 
 
-    
-def _gen_diff_diff_variables_we(df, new_var_d, var1_d, var2_d, factor1_d=1, factor2_d=1):
-    """
-    Creates a new variable in a DataFrame based on the difference between two existing variables, optionally scaled by factors.
-
-    Args:
-        df (pandas.DataFrame): The DataFrame in which to create the new variable.
-        new_var_d (str): The name of the new variable to create.
-        var1_d (str): The name of the first existing variable to use in the difference.
-        var2_d (str): The name of the second existing variable to use in the difference.
-        factor1_d (float or int): A scaling factor for var1_d. Default is 1.
-        factor2_d (float or int): A scaling factor for var2_d. Default is 1.
-
-    Returns:
-        pandas.DataFrame: The input DataFrame with the new variable added.
-
-    """
-    df[new_var_d] = (factor1_d*df[var1_d]) - (factor2_d*df[var2_d])
-    return df
-
-new_var_d_we = 'jewish_int_one_block_away_1'
-var1_d_we = 'jewish_inst_one_block_away'
-var2_d_we = 'jewish_inst'
-
-
-
-
-def _gen_diff_sum_variables_we(df, new_var_s, var1_s, var2_s, factor1_s=1, factor2_s=1000):
-    """
-    Creates a new variable in a DataFrame based on the sum of two existing variables, optionally scaled by factors.
-
-    Args:
-        df (pandas.DataFrame): The DataFrame in which to create the new variable.
-        new_var_s (str): The name of the new variable to create.
-        var1_s (str): The name of the first existing variable to use in the sum.
-        var2_s (str): The name of the second existing variable to use in the sum.
-        factor1_s (float or int): A scaling factor for var1_s. Default is 1.
-        factor2_s (float or int): A scaling factor for var2_s. Default is 1000.
-
-    Returns:
-        pandas.DataFrame: The input DataFrame with the new variable added.
-
-    """
-    df[new_var_s] = (factor1_s*df[var1_s]) + (factor2_s*df[var2_s])
-    return df
-
-new_var_s_we = 'code2'
-var1_s_we = 'week'
-var2_s_we = 'n_neighborhood'
-
-
-
-
-
-def _gen_simple_we(df, new_var_sim, var_sim, factor_sim=(365/12)/7 ):
-    """
-    Creates a new variable in a DataFrame by multiplying an existing variable by a scaling factor.
-
-    Args:
-        df (pandas.DataFrame): The DataFrame in which to create the new variable.
-        new_var_sim (str): The name of the new variable to create.
-        var_sim (str): The name of the existing variable to use.
-        factor_sim (float or int): A scaling factor to multiply var_sim with. 
-            The default value corresponds to converting monthly values to weekly values.
-
-    Returns:
-        pandas.DataFrame: The input DataFrame with the new variable added.
-
-    """
-    df[new_var_sim] = df[var_sim]*factor_sim
-    return df
-
-new_var_sim_we = 'n_total_thefts'
-var_sim_we = 'total_thefts'
-
-
 
 
 
@@ -281,54 +190,40 @@ list_rep_fix_com_we = ["Belgrano", "Once", "V. Crespo"]
 
 
 
-def _df_to_csv(df, location):
-    """
-    Saves a pandas DataFrame to a CSV file at the specified location.
 
-    Args:
-        df (pandas DataFrame): The DataFrame to be saved.
-        location (str): The file path and name for the CSV file, including the ".csv" extension.
-
-    Returns:
-        None
-    """
-    df.to_csv(location)  
-
-location_we = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/WeeklyPanel.csv'
 
 
 
 
 """Everything inside a function"""
 
-def weeklypanel(df, 
-                list_drop,
+location_we = '/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/WeeklyPanel.csv'
+
+def weeklypanel(df,
                 var_cond_ext,
                 list_fixed, var_cond_fix, var_fix,
                 type_of_condition, var_cond_rep, replace_var,
-                new_var_d, var1_d, var2_d,
-                new_var_s, var1_s, var2_s,
-                new_var_sim, var_sim,
                 list1_fix_com, list2_fix_com, var_fix_comp_mul, list_rep_fix_com,
-                location):
+                location,
+                list_drop=['street', 'street_nr', 'public_building_or_embassy', 'gas_station', 'bank'],
+                new_var_d='jewish_int_one_block_away_1', var1_d='jewish_inst_one_block_away', var2_d='jewish_inst',
+                new_var_s='code2', var1_s='week', var2_s='n_neighborhood',
+                new_var_sim='n_total_thefts', var_sim='total_thefts',
+                ):
     df = _clean_column_names_we(df)
-    df = _drop_variables_we(df, list_drop)
+    df.drop(columns=list_drop, inplace=True)
     df = _gen_rep_variables_fixedextension_we(df, var_cond_ext)
     df = _gen_rep_variables_fixedlistsimple_we(df, list_fixed, var_cond_fix, var_fix)
     df = _rep_variables_we(df, type_of_condition, var_cond_rep, replace_var)
-    df = _gen_diff_diff_variables_we(df, new_var_d, var1_d, var2_d)
-    df = _gen_diff_sum_variables_we(df, new_var_s, var1_s, var2_s)
-    df = _gen_simple_we(df, new_var_sim, var_sim)
+    df[new_var_d] = df[var1_d] - df[var2_d]
+    df[new_var_s] = 1*df[var1_s] + 1000*df[var2_s]
+    df[new_var_sim] = df[var_sim]*((365/12)/7)
     df = _gen_rep_variables_fixedlistcomplex_we(df, list1_fix_com, list2_fix_com, var_fix_comp_mul, list_rep_fix_com)
-    _df_to_csv(df, location)
+    df.to_csv(location)
     
 WeeklyPanel = weeklypanel(df=WeeklyPanel,
-                list_drop=list_drop_we,
                 var_cond_ext=var_cond_ext_we,
                 list_fixed=list_fixed_we, var_cond_fix=var_cond_fix_we, var_fix=var_fix_we,           
                 type_of_condition=type_of_condition_we, var_cond_rep=var_cond_rep_we, replace_var=replace_var_we,
-                new_var_d=new_var_d_we, var1_d=var1_d_we, var2_d=var2_d_we,
-                new_var_s=new_var_s_we, var1_s=var1_s_we, var2_s=var2_s_we,
-                new_var_sim=new_var_sim_we, var_sim=var_sim_we,
                 list1_fix_com=list1_fix_com_we, list2_fix_com=list2_fix_com_we, var_fix_comp_mul=var_fix_comp_mul_we, list_rep_fix_com=list_rep_fix_com_we,
                 location=location_we)
