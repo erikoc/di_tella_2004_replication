@@ -6,6 +6,8 @@ import statsmodels.formula.api as sm
 from linearmodels.panel import PanelOLS
 from scipy import stats
 
+"""MONTHLY"""
+
 
 def WelchTest(Data, code1, code2):
     """Conducts a Welch test to compare the mean values of two specified variables in a
@@ -397,6 +399,8 @@ def poisson_reg(
         irr_predictions = np.exp(predictions)
         return reg, params, predictions, irr_predictions
 
+
+############################################## PART 1 ########################################################################################################################
 
 # Calling the required dataframe
 MonthlyPanel = pd.read_csv(
@@ -1122,6 +1126,14 @@ x_clu_new3 = [
 regression_new1 = areg_clus(Data_clu_new, y_clu_new, x_clu_new1)
 regression_new2 = areg_clus(Data_clu_new, y_clu_new, x_clu_new2)
 regression_new3 = areg_clus(Data_clu_new, y_clu_new, x_clu_new3)
+
+
+
+
+
+
+
+
 
 
 """WEEKLY"""
