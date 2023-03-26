@@ -7,7 +7,7 @@ from di_tella_2004_replication.data_management.clean_WeeklyPanel import (
 )
 
 
-"FIXTURES"
+"Fixtures"
 
 @pytest.fixture()
 def original_data():
@@ -94,7 +94,7 @@ def input_data_gen_rep_variables_fixedlistcomplex_we():
 
 
 
-"TESTS"
+"Tests"
 
 
 def test_clean_column_names_we(input_data_clean_column_names_we):

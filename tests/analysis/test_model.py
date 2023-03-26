@@ -1,20 +1,19 @@
-"""Tests for the regression model."""
-
 import numpy as np
 import pandas as pd
 import pytest
 
 import numpy as np
 import pandas as pd
-import pyreadstat  as pyread
-from pandas import DataFrame as df
-from linearmodels.panel import PanelOLS
 import scipy as scy
-from scipy import stats
 import statsmodels.api as smm
 import statsmodels.formula.api as sm
-from statsmodels.formula.api import ols
-from linearmodels.panel import FirstDifferenceOLS
+from linearmodels.panel import PanelOLS
+from scipy import stats
+
+from di_tella_2004_replication.config import SRC
+from di_tella_2004_replication.analysis.model import (
+    regression_WeeklyPanel # for WeeklyPanel   
+)
 
 """""
 from di_tella_2004_replication.analysis.model import fit_logit_model
@@ -57,38 +56,9 @@ def test_fit_logit_model_error_model_type(data, data_info):
 """""
 
 
-"""Test WEEKLY MODEL"""
+"""WEEKLY PANEL"""
 
-# from model import regression_WeeklyPanel
-
-def regression_WeeklyPanel(Data, y_variable, type_of_regression):
-    """This is just a simple fixed effects regression which performs two different actions depending on  whether we want a clustered or an unclustered regression.
-    This is input via (type_of_regression) input. As fixed effects we know that 'observ' is normally used. Therefore, it is embedded in the function.
-    We have our Data set (Data), our exogenous variable (variable_x) and our endogenous variable(variable_y)."""
-    
-    # Creating a list (using list comprehension) of the columns to be created
-    list_names = ["week1"]
-    #list_names.extend([list_names] + [f"month{i}" for i in range(6,13)])
-    list_names.extend([f"week{i}" for i in range(2,40)])
-    
-    WeeklyP = Data[(Data['week']!=16) & (Data['week']!=17)]
-    y = WeeklyP[y_variable]
-    x = WeeklyP[['jewish_inst_p', 'jewish_int_one_block_away_1_p', 'cuad2p']] # inst1p = jewish_inst_p, inst3_1p = jewish_int_one_block_away_1_p
-    x = list(x.columns) + list_names 
-    x_1 = WeeklyP[x]
-    if type_of_regression == "unclustered":
-        # Check if the modified MonthlyPanel_new is a pandas DataFrame
-        X = smm.add_constant(x_1)
-        reg = smm.OLS(y, X)
-        result = reg.fit(cov_type='cluster', cov_kwds={'groups': WeeklyP['observ']}, hasconst=True)
-        params = result.params
-        return params
-    elif type_of_regression == "clustered":    
-        dummies = pd.get_dummies(WeeklyP['code2']) # to capture the fixed efefcts by codigo2
-        X = pd.concat([x_1, dummies], axis=1)
-        result = smm.OLS(y, X).fit(cov_type='cluster', cov_kwds={'groups': WeeklyP['observ']}, use_t=True) # with cluster for observ
-        params = result.params
-        return params
+"Fixtures"
         
 @pytest.fixture
 def input_data_regression_WeeklyPanel():
@@ -101,15 +71,23 @@ def input_data_regression_WeeklyPanel():
         'code2': [1, 1, 2, 2],
         'y_variable': [10, 20, 30, 40]
     }) # using a reference DataFrame because the function is more complex to grasp
+    
+    
+
+"Tests"
 
 def test_regression_WeeklyPanel(input_data_regression_WeeklyPanel):
     params = regression_WeeklyPanel(input_data_regression_WeeklyPanel, 'y_variable', 'clustered')
     assert len(params) == 46 # There are 43 weeks plus the 3 fixed effects variables
     assert params[0] == pytest.approx(2.238, abs=1e-3) # Check first parameter with tolerance
     
+ 
+ 
+ 
     
     
-    """Test MONTHLY MODEL"""
+
+"""MONTHLY PANEL"""
     
 # from model import WelchTest
     
