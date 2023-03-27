@@ -12,17 +12,13 @@ from di_tella_2004_replication.data_management.clean_WeeklyPanel import (
 @pytest.fixture()
 def original_data():
     return {
-        "weekly_panel": pyread.read_dta(SRC / "data" / "WeeklyPanel.dta"), 
+        "weekly_panel": pyread.read_dta(SRC / "di_tella_2004_replication" / "data" / "WeeklyPanel.dta"),
     }
 
-
-### For the new test this will be used --------------
-WeeklyPanel = _clean_column_names_we(original_data["weekly_panel"]) # for the test we need to use the new dataframe with the new column names
-####-------------------------------------------------
     
 @pytest.fixture()
 def input_data_gen_rep_variables_fixedextension_we():
-    df = WeeklyPanel
+    df = _clean_column_names_we(original_data["weekly_panel"])
     list_names_ext = ["week1"]
     range_ext = range(2, 40)
     original_value_var = 0
@@ -41,7 +37,7 @@ def input_data_gen_rep_variables_fixedextension_we():
 
 @pytest.fixture()
 def input_data_gen_rep_variables_fixedlistsimple_we():
-    df = WeeklyPanel
+    df = _clean_column_names_we(original_data["weekly_panel"])
     list_fixed = ["cuad2", "post", "n_neighborhood"]
     var_cond_fix = "distance_to_jewish_inst"
     cond_fix = 2
@@ -52,7 +48,7 @@ def input_data_gen_rep_variables_fixedlistsimple_we():
 
 @pytest.fixture()
 def input_data_rep_variables_we():
-    df = WeeklyPanel
+    df = _clean_column_names_we(original_data["weekly_panel"])
     type_of_condition = "bigger than"
     var_cond_rep = "week"
     condition_num = 18
@@ -69,7 +65,7 @@ def input_data_rep_variables_we():
     
 @pytest.fixture()
 def input_data_gen_rep_variables_fixedlistcomplex_we():
-    df = WeeklyPanel
+    df = _clean_column_names_we(original_data["weekly_panel"])
     list1_fix_com = ["jewish_inst_p", "jewish_int_one_block_away_1_p", "cuad2p"]
     list2_fix_com = ["jewish_inst", "jewish_int_one_block_away_1", "cuad2"]
     var_fix_comp_mul = "post"

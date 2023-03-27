@@ -4,9 +4,9 @@ import pyreadstat  as pyread
 import pytest
 from di_tella_2004_replication.config import SRC
 from di_tella_2004_replication.data_management.clean_MonthlyPanel import (
-    _clean_column_names_mon, _gen_rep_var_fixed_extension_mon, _gen_rep_var_single_cond_biggerthan_mon, _gen_var_cond_list_similar_mon, _gen_rep_var_various_cond_equality_mon, _gen_var_double_listed_mon, _gen_rep_var_various_cond_equality_listedvalues_mon, _gen_rep_total_thefts2_mon,
-    _gen_rep_various_cond_mon2, _egen_rep_mon2, _complex_gen_rep_mon2, _gen_rep_simple_mon2, _gen_based_variouslists_mon2,
-    _gen_rep_3cond_mon3, _gen_multiplevariables_listbased
+    _clean_column_names_mon, _gen_rep_var_fixed_extension_mon, _gen_rep_var_single_cond_biggerthan_mon, _gen_var_cond_list_similar_mon, _gen_rep_var_various_cond_equality_mon, _gen_var_double_listed_mon, _gen_rep_var_various_cond_equality_listedvalues_mon, _gen_rep_total_thefts2_mon, # Part1
+    _gen_rep_various_cond_mon2, _egen_rep_mon2, _complex_gen_rep_mon2, _gen_rep_simple_mon2, _gen_based_variouslists_mon2, # Part 2
+    _gen_rep_3cond_mon3, _gen_multiplevariables_listbased # Part 3
 )
 
 
@@ -17,16 +17,13 @@ from di_tella_2004_replication.data_management.clean_MonthlyPanel import (
 @pytest.fixture()
 def original_data():
     return {
-        "monthly_panel": pyread.read_dta(SRC / "data" / "MonthlyPanel.dta"),
+        "monthly_panel": pyread.read_dta(SRC / "di_tella_2004_replication" / "data" / "MonthlyPanel.dta"),
     }
 
-### For the new test this will be used --------------
-MonthlyPanel = _clean_column_names_mon(original_data["monthly_panel"])
-####-------------------------------------------------
 
 @pytest.fixture() # Test using our own data set
 def input_data_gen_rep_var_fixed_extension_mon():
-    df = MonthlyPanel
+    df = _clean_column_names_mon(original_data["monthly_panel"])
     range_ext = range(6, 13)
     list_names_ext = ["month5"]
     original_value_var = 0
@@ -46,7 +43,7 @@ def input_data_gen_rep_var_fixed_extension_mon():
     
 @pytest.fixture() # Test using our own data set
 def input_data_gen_rep_var_single_cond_biggerthan_mon():
-    df = MonthlyPanel
+    df = _clean_column_names_mon(original_data["monthly_panel"])
     var_gen = "post"
     original_value = 0
     cond_var = "month"
@@ -63,7 +60,7 @@ def input_data_gen_rep_var_single_cond_biggerthan_mon():
 
 @pytest.fixture() # Test using our own data set
 def input_data_gen_var_cond_list_similar_mon():
-    df = MonthlyPanel
+    df = _clean_column_names_mon(original_data["monthly_panel"])
     ori_variables = [
         "cuad0",
         "cuad1",
@@ -86,7 +83,7 @@ def input_data_gen_var_cond_list_similar_mon():
     
 @pytest.fixture() # Test using our own data set
 def input_data_gen_rep_var_various_cond_equality_mon():
-    df = MonthlyPanel
+    df = _clean_column_names_mon(original_data["monthly_panel"])
     new_gen_variable = "code"
     new_original_value = 4
     list_ext_variables = ["jewish_inst", "jewish_inst_one_block_away_1", "cuad2"]
@@ -104,7 +101,7 @@ def input_data_gen_rep_var_various_cond_equality_mon():
   
 @pytest.fixture() # Test using our own data set
 def input_data_gen_var_double_listed_mon():
-    df = MonthlyPanel
+    df = _clean_column_names_mon(original_data["monthly_panel"])
     list_gen_var = ["jewish_inst_p", "jewish_inst_one_block_away_1_p"]
     list_ori_var = ["jewish_inst", "jewish_inst_one_block_away_1"]
     fixed_var = "post"
@@ -117,7 +114,7 @@ def input_data_gen_var_double_listed_mon():
  
 @pytest.fixture() # Test using our own data set
 def input_data_gen_rep_var_various_cond_equality_listedvalues_mon():
-    df = MonthlyPanel
+    df = _clean_column_names_mon(original_data["monthly_panel"])
     NEW_var = "othermonth1"
     ORI_var = "month"
     list_a = [72, 73]
@@ -151,10 +148,12 @@ def input_data_gen_rep_total_thefts2_mon():
     
 
 ############################################## PART 2 ########################################################################################################################
-### For the new test this will be used --------------
-MonthlyPanel2 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel.csv')
-####-------------------------------------------------
-
+@pytest.fixture()
+def monthly2_data():
+    return {
+        "monthly_panel": pd.read_csv(SRC / "di_tella_2004_replication" / "data_management" / "Clean_Data" / "MonthlyPanel.csv"),
+    }
+    
 @pytest.fixture
 def input_data_gen_rep_various_cond_mon2():
     df = pd.DataFrame({
@@ -183,7 +182,7 @@ def input_data_complex_gen_rep_mon2():
 
 @pytest.fixture()
 def input_data_gen_rep_simple_mon2(): # Test using our own data set
-    df = MonthlyPanel2
+    df = monthly2_data["monthly_panel"]
     var_gen_simple = 'month4'
     var_cond_simple = 'month'
     original_val_simple=0
@@ -201,7 +200,7 @@ def input_data_gen_rep_simple_mon2(): # Test using our own data set
 
 @pytest.fixture()
 def input_data_gen_based_variouslists_mon2(): # Test using our own data set
-    df = MonthlyPanel2
+    df = monthly2_data["monthly_panel"]
     list_names_place = ["mbelgapr"]
     list_names_month = ["month4"]      
     list_names_variouslists = ['belgrano', 'once', 'vcrespo']
@@ -213,9 +212,11 @@ def input_data_gen_based_variouslists_mon2(): # Test using our own data set
     )
 
 ############################################## PART 3 ########################################################################################################################
-### For the new test this will be used --------------
-MonthlyPanel3 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel2.csv')
-####-------------------------------------------------
+@pytest.fixture()
+def monthly3_data():
+    return {
+        "monthly_panel": pd.read_csv(SRC / "di_tella_2004_replication" / "data_management" / "Clean_Data" / "MonthlyPanel2.csv"),
+    }
 
 @pytest.fixture
 def input_data_gen_rep_3cond_mon3():
@@ -242,7 +243,7 @@ def input_data_gen_rep_3cond_mon3():
 
 @pytest.fixture
 def input_data_gen_multiplevariables_listbased():  # Test using our own data set
-    df= MonthlyPanel3
+    df= monthly3_data["monthly_panel"]
     list_value1 = ['public_building_or_embassy_p', 'public_building_or_embassy_1_p', 'public_building_or_embassy_cuad2p', 'n_public_building_or_embassy_p', 'n_public_building_or_embassy_1_p', 'n_public_building_or_embassy_cuad2p']
     list_value2 = ['gas_station_p', 'gas_station_1_p', 'gas_station_cuad2p', 'n_gas_station_p', 'n_gas_station_1_p', 'n_gas_station_cuad2p']
     list_value3 = ['bank_p', 'bank_1_p', 'bank_cuad2p', 'n_bank_p', 'n_bank_1_p', 'n_bank_cuad2p']
