@@ -556,6 +556,8 @@ def _gen_rep_simple_mon2(df, var_gen_simple, var_cond_simple, original_val_simpl
 var_gen_simple_m2 = 'month4'
 var_cond_simple_m2 = 'month'
 
+
+
     
 
 

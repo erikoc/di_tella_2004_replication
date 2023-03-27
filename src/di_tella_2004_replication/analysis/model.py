@@ -39,7 +39,9 @@ def WelchTest(Data, code1, code2):
     cod_1 = code_1["total_thefts"].astype("int")
     cod_2 = code_2["total_thefts"].astype("int")
     t, p = stats.ttest_ind(cod_1, cod_2, equal_var=False)
-    return t, p
+    print("code: ", [code1,  code2])
+    print("t-statistic: ", t)
+    print("p-value: ", p)
 
 
 def testings(regression, variable_test, testing_number):

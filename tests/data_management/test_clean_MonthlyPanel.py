@@ -1,10 +1,12 @@
 import pandas as pd
+import numpy as np
 import pyreadstat  as pyread
 import pytest
 from di_tella_2004_replication.config import SRC
 from di_tella_2004_replication.data_management.clean_MonthlyPanel import (
-    _clean_column_names_mon, _gen_rep_var_fixed_extension_mon, _gen_rep_var_single_cond_biggerthan_mon, _gen_var_cond_list_similar_mon, _gen_rep_var_various_cond_equality_mon, _gen_var_double_listed_mon, _gen_rep_var_various_cond_equality_listedvalues_mon, _gen_rep_total_thefts2_mon,
-    _gen_rep_various_cond_mon2, _genNA_rep_two_cond_mon2
+    _clean_column_names_mon, _gen_rep_var_fixed_extension_mon, _gen_rep_var_single_cond_biggerthan_mon, _gen_var_cond_list_similar_mon, _gen_rep_var_various_cond_equality_mon, _gen_var_double_listed_mon, _gen_rep_var_various_cond_equality_listedvalues_mon, _gen_rep_total_thefts2_mon, # Part1
+    _gen_rep_various_cond_mon2, _egen_rep_mon2, _complex_gen_rep_mon2, _gen_rep_simple_mon2, _gen_based_variouslists_mon2, # Part 2
+    _gen_rep_3cond_mon3, _gen_multiplevariables_listbased # Part 3
 )
 
 
@@ -15,16 +17,13 @@ from di_tella_2004_replication.data_management.clean_MonthlyPanel import (
 @pytest.fixture()
 def original_data():
     return {
-        "monthly_panel": pyread.read_dta(SRC / "data" / "MonthlyPanel.dta"),
+        "monthly_panel": pyread.read_dta(SRC / "di_tella_2004_replication" / "data" / "MonthlyPanel.dta"),
     }
 
-### For the new test this will be used --------------
-MonthlyPanel = _clean_column_names_mon(original_data["monthly_panel"])
-####-------------------------------------------------
 
-@pytest.fixture()
+@pytest.fixture() # Test using our own data set
 def input_data_gen_rep_var_fixed_extension_mon():
-    df = MonthlyPanel
+    df = _clean_column_names_mon(original_data["monthly_panel"])
     range_ext = range(6, 13)
     list_names_ext = ["month5"]
     original_value_var = 0
@@ -42,9 +41,9 @@ def input_data_gen_rep_var_fixed_extension_mon():
     )
     
     
-@pytest.fixture()
+@pytest.fixture() # Test using our own data set
 def input_data_gen_rep_var_single_cond_biggerthan_mon():
-    df = MonthlyPanel
+    df = _clean_column_names_mon(original_data["monthly_panel"])
     var_gen = "post"
     original_value = 0
     cond_var = "month"
@@ -59,9 +58,9 @@ def input_data_gen_rep_var_single_cond_biggerthan_mon():
     )
     
 
-@pytest.fixture()
+@pytest.fixture() # Test using our own data set
 def input_data_gen_var_cond_list_similar_mon():
-    df = MonthlyPanel
+    df = _clean_column_names_mon(original_data["monthly_panel"])
     ori_variables = [
         "cuad0",
         "cuad1",
@@ -82,9 +81,9 @@ def input_data_gen_var_cond_list_similar_mon():
     )
     
     
-@pytest.fixture()
+@pytest.fixture() # Test using our own data set
 def input_data_gen_rep_var_various_cond_equality_mon():
-    df = MonthlyPanel
+    df = _clean_column_names_mon(original_data["monthly_panel"])
     new_gen_variable = "code"
     new_original_value = 4
     list_ext_variables = ["jewish_inst", "jewish_inst_one_block_away_1", "cuad2"]
@@ -100,9 +99,9 @@ def input_data_gen_rep_var_various_cond_equality_mon():
     )
 
   
-@pytest.fixture()
+@pytest.fixture() # Test using our own data set
 def input_data_gen_var_double_listed_mon():
-    df = MonthlyPanel
+    df = _clean_column_names_mon(original_data["monthly_panel"])
     list_gen_var = ["jewish_inst_p", "jewish_inst_one_block_away_1_p"]
     list_ori_var = ["jewish_inst", "jewish_inst_one_block_away_1"]
     fixed_var = "post"
@@ -113,9 +112,9 @@ def input_data_gen_var_double_listed_mon():
         fixed_var
     )
  
-@pytest.fixture()
+@pytest.fixture() # Test using our own data set
 def input_data_gen_rep_var_various_cond_equality_listedvalues_mon():
-    df = MonthlyPanel
+    df = _clean_column_names_mon(original_data["monthly_panel"])
     NEW_var = "othermonth1"
     ORI_var = "month"
     list_a = [72, 73]
@@ -146,69 +145,131 @@ def input_data_gen_rep_total_thefts2_mon():
         cond1, 
         cond2
     )
+    
 
 ############################################## PART 2 ########################################################################################################################
-### For the new test this will be used --------------
-MonthlyPanel2 = pd.read_csv('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data_management/Clean_Data/MonthlyPanel.csv')
-####-------------------------------------------------
+@pytest.fixture()
+def monthly2_data():
+    return {
+        "monthly_panel": pd.read_csv(SRC / "di_tella_2004_replication" / "data_management" / "Clean_Data" / "MonthlyPanel.csv"),
+    }
+    
+@pytest.fixture
+def input_data_gen_rep_various_cond_mon2():
+    df = pd.DataFrame({
+        'month': [1, 2, 3, 4, 5],
+        'total_thefts': [10, 20, 30, 40, 50]
+    })
+    return df
+
+
+@pytest.fixture
+def input_data_egen_rep_mon2():
+    df = pd.DataFrame({'observ': [1, 1, 1, 1, 1], 
+                       'month': [1, 2, 3, 4, 5],
+                       'prethefts': [1, 2, 3, 4, 5],
+                       'theftscoll': [1, 2, 3, 4, 5]})
+    return df
+
+
+@pytest.fixture
+def input_data_complex_gen_rep_mon2():
+    df = pd.DataFrame({'month': [1, 2, 3, 4, 5],
+            'neighborhood': ['Belgrano', 'Once', 'V. Crespo', 'Belgrano', 'Once'],
+            'n_neighborhood': [0, 0, 0, 0, 0]})
+    return df
+
 
 @pytest.fixture()
-def input_data_gen_rep_various_cond_mon2():
-    df = pd.DataFrame(
-        {
-            "var_con_v_cond": [7, 5, 8, 10, 12],
-            "ori_var_v_cond": [1, 2, 3, 4, 5],
-        }
-    )
-    new_var_v_cond = "new_var"
-    con_v_cond1 = 7
-    con_v_cond2 = 5
-    con_v_cond3 = 8
-    con_v_cond4 = 10
-    con_v_cond5 = 12
-    multiple1_v_cond = 30/17
-    multiple2_v_cond = 30/31
+def input_data_gen_rep_simple_mon2(): # Test using our own data set
+    df = monthly2_data["monthly_panel"]
+    var_gen_simple = 'month4'
+    var_cond_simple = 'month'
+    original_val_simple=0
+    cond_simple=4 
+    value_final_simple=1
     return (
         df, 
-        new_var_v_cond, 
-        "ori_var_v_cond", 
-        "var_con_v_cond", 
-        con_v_cond1, 
-        con_v_cond2, 
-        con_v_cond3, 
-        con_v_cond4, 
-        con_v_cond5, 
-        multiple1_v_cond, 
-        multiple2_v_cond
+        var_gen_simple, 
+        var_cond_simple,
+        original_val_simple,
+        cond_simple,
+        value_final_simple
     )
- 
+
+
 @pytest.fixture()
-def input_data_genNA_rep_two_cond_mon2():
-    df = pd.DataFrame(
-        {
-            "month": [72, 73, 74, 75, 76, 77],
-            "theft1": [10, 20, 30, 40, 50, 60],
-            "theft2": [11, 21, 31, 41, 51, 61],
-            "theft3": [12, 22, 32, 42, 52, 62],
-        }
-    )  # using a reference DataFrame because the function is more complex to grasp
-    list_for_NA = ["theft2_NA", "theft3_NA"]
-    var_con_NA = "month"
-    fixed_var_NA = "theft1"
-    NA_value = 73
+def input_data_gen_based_variouslists_mon2(): # Test using our own data set
+    df = monthly2_data["monthly_panel"]
+    list_names_place = ["mbelgapr"]
+    list_names_month = ["month4"]      
+    list_names_variouslists = ['belgrano', 'once', 'vcrespo']
+    return (
+        df, 
+        list_names_place, 
+        list_names_month,
+        list_names_variouslists
+    )
+
+############################################## PART 3 ########################################################################################################################
+@pytest.fixture()
+def monthly3_data():
+    return {
+        "monthly_panel": pd.read_csv(SRC / "di_tella_2004_replication" / "data_management" / "Clean_Data" / "MonthlyPanel2.csv"),
+    }
+
+@pytest.fixture
+def input_data_gen_rep_3cond_mon3():
+    df= pd.DataFrame({'public_building_or_embassy': [0, 1, 0, 0],
+            'gas_station': [1, 0, 0, 1],
+            'bank': [0, 1, 0, 0]})
+    initial_val_3cond = 0
+    global_replace_val_3cond = 1
+    gen_var_3cond = 'all_locations'
+    col1_3cond = 'public_building_or_embassy'
+    col2_3cond = 'gas_station'
+    col3_3cond = 'bank'
+        
     return (
         df,
-        list_for_NA,
-        var_con_NA,
-        fixed_var_NA,
-        NA_value,
+        initial_val_3cond,
+        global_replace_val_3cond,
+        gen_var_3cond,
+        col1_3cond,
+        col2_3cond,
+        col3_3cond
     )
     
+
+@pytest.fixture
+def input_data_gen_multiplevariables_listbased():  # Test using our own data set
+    df= monthly3_data["monthly_panel"]
+    list_value1 = ['public_building_or_embassy_p', 'public_building_or_embassy_1_p', 'public_building_or_embassy_cuad2p', 'n_public_building_or_embassy_p', 'n_public_building_or_embassy_1_p', 'n_public_building_or_embassy_cuad2p']
+    list_value2 = ['gas_station_p', 'gas_station_1_p', 'gas_station_cuad2p', 'n_gas_station_p', 'n_gas_station_1_p', 'n_gas_station_cuad2p']
+    list_value3 = ['bank_p', 'bank_1_p', 'bank_cuad2p', 'n_bank_p', 'n_bank_1_p', 'n_bank_cuad2p']
+    list_value4 = ['all_locations_p', 'all_locations_1_p', 'all_locations_cuad2p', 'n_all_locations_p', 'n_all_locations_1_p', 'n_all_locations_cuad2p']
+    list_values = [list_value1, list_value2, list_value3, list_value4]
+    list_names_3_variables = ['public_building_or_embassy', 'gas_station', 'bank', 'all_locations']
+    list_names_data3_general = ['jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p', 'jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p'] 
+    return (
+        df,
+        list_values,
+        list_names_3_variables,
+        list_names_data3_general,
+    )
+
+
+
+
+
+
+
+
 "Tests"
 
 ############################################## PART 1 ########################################################################################################################
 
-def test_clean_column_names_mon(original_data):
+def test_clean_column_names_mon(original_data): # Test using our own data set
     # Call the function being tested
     new_df = _clean_column_names_mon(original_data["monthly_panel"])
 
@@ -233,7 +294,7 @@ def test_clean_column_names_mon(original_data):
     
  
     
-def test_gen_rep_variables_fixedextension_mon(
+def test_gen_rep_variables_fixedextension_mon( # Test using our own data set
     input_data_gen_rep_var_fixed_extension_mon,
 ):
     (
@@ -270,7 +331,7 @@ def test_gen_rep_variables_fixedextension_mon(
         
 
         
-def test_gen_rep_var_single_cond_biggerthan_mon(
+def test_gen_rep_var_single_cond_biggerthan_mon( # Test using our own data set
     input_data_gen_rep_var_single_cond_biggerthan_mon,
 ):
     (
@@ -297,7 +358,7 @@ def test_gen_rep_var_single_cond_biggerthan_mon(
 
 
 
-def test_gen_var_cond_list_similar_mon(input_data_gen_var_cond_list_similar_mon):
+def test_gen_var_cond_list_similar_mon(input_data_gen_var_cond_list_similar_mon): # Test using our own data set
     (
         df,
         ori_variables,
@@ -328,7 +389,7 @@ def test_gen_var_cond_list_similar_mon(input_data_gen_var_cond_list_similar_mon)
 
 
 
-def test_gen_rep_var_various_cond_equality_mon(
+def test_gen_rep_var_various_cond_equality_mon( # Test using our own data set
     input_data_gen_rep_var_various_cond_equality_mon,
 ):
     (
@@ -359,7 +420,7 @@ def test_gen_rep_var_various_cond_equality_mon(
         
 
 
-def test_gen_var_double_listed_mon(input_data_gen_var_double_listed_mon
+def test_gen_var_double_listed_mon(input_data_gen_var_double_listed_mon # Test using our own data set
 ):
     (
      df, 
@@ -384,7 +445,7 @@ def test_gen_var_double_listed_mon(input_data_gen_var_double_listed_mon
 
 
 
-def test_gen_rep_var_various_cond_equality_listedvalues_mon(
+def test_gen_rep_var_various_cond_equality_listedvalues_mon( # Test using our own data set
     input_data_gen_rep_var_various_cond_equality_listedvalues_mon,
 ):
     (
@@ -439,35 +500,165 @@ def test_gen_rep_total_thefts2_mon(input_data_gen_rep_total_thefts2_mon):
 ############################################## PART 2 ########################################################################################################################
 
 def test_gen_rep_various_cond_mon2(input_data_gen_rep_various_cond_mon2):
-    df, new_var_v_cond, ori_var_v_cond, var_con_v_cond, con_v_cond1, con_v_cond2, con_v_cond3, con_v_cond4, con_v_cond5, multiple1_v_cond, multiple2_v_cond = input_data_gen_rep_various_cond_mon2
-
-    # Call the function being tested
-    new_df = _gen_rep_various_cond_mon2(df, new_var_v_cond, ori_var_v_cond, var_con_v_cond, con_v_cond1, con_v_cond2, con_v_cond3, con_v_cond4, con_v_cond5, multiple1_v_cond, multiple2_v_cond)
-
-    # Test that new columns were added
-    expected_output = pd.DataFrame(
-        {
-            "var_con_v_cond": [7, 5, 8, 10, 12],
-            "ori_var_v_cond": [1, 2, 3, 4, 5],
-            "new_var": [30/17, 60/31, 90/31, 120/31, 150/31],
-        }
+    df = _gen_rep_various_cond_mon2(
+        input_data_gen_rep_various_cond_mon2, 
+        new_var_v_cond='total_thefts_c', 
+        ori_var_v_cond='total_thefts', 
+        var_con_v_cond='month'
     )
-    pd.testing.assert_frame_equal(new_df, expected_output)
+    assert list(df['total_thefts_c']) == [10, 20, 30, 40, 50] # assert that in the beginning it takes the values of the original variables
 
-
+    df = _gen_rep_various_cond_mon2(
+        input_data_gen_rep_various_cond_mon2, 
+        new_var_v_cond='total_thefts_c', 
+        ori_var_v_cond='total_thefts', 
+        var_con_v_cond='month', 
+        con_v_cond1=2, 
+        multiple1_v_cond=2, 
+        multiple2_v_cond=3
+    )
+    assert list(df['total_thefts_c']) == [10, 40, 90, 120, 150] # asserting that with conditions it takes the appropiate values
     
-def test_genNA_rep_two_cond_mon2(input_data_genNA_rep_two_cond_mon2):
-    df, list_for_NA, var_con_NA, fixed_var_NA, NA_value = input_data_genNA_rep_two_cond_mon2
+def test__egen_rep_mon2(input_data_egen_rep_mon2):
+    new_egen_var_m2 = 'totalpre'
+    by_var_m2 = 'observ' 
+    var_egen_sup_m2 = 'prethefts'
+    cond_ege_var_m2 = 'month'
+    ege_var_change_m2 = 'theftscoll'
+    cond_ege_val_m2 = 4
+    ege_scale_factor_m2 = 4
+    
+    expected_output = pd.DataFrame({'observ': [1, 1, 1, 1, 1],
+                                    'month': [1, 2, 3, 4, 5],
+                                    'prethefts': [1, 2, 3, 4, 5],
+                                    'theftscoll': [1, 2, 3, 1.25, 5], # modified as necesarily
+                                    'totalpre': [15, 15, 15, 15, 15]}) # created as per the cum sum of observ
+
+    # Test the function output against the expected output
+    assert expected_output.equals(_egen_rep_mon2(input_data_egen_rep_mon2, new_egen_var_m2, by_var_m2, var_egen_sup_m2, 
+                                                 cond_ege_var_m2, ege_var_change_m2, cond_ege_val_m2, 
+                                                 ege_scale_factor_m2))
+    
+def test_complex_gen_rep_mon2(input_data_complex_gen_rep_mon2):
+    
+    list_names_complex_m2 = ['Belgrano', 'Once', 'V. Crespo']
+    var_rep_cond_complex_m2 = 'neighborhood'
+    var_rep_complex_m2 = 'n_neighborhood'
+    gen_var_complex_m2 = 'code2'
+    var_cond_complex_m2 = 'month'
+    list_names_complexb_m2 = ['belgrano', 'once', 'vcrespo']
+    
+    df = _complex_gen_rep_mon2(input_data_complex_gen_rep_mon2, list_names_complex_m2, var_rep_cond_complex_m2, var_rep_complex_m2, gen_var_complex_m2, var_cond_complex_m2, list_names_complexb_m2)
+    
+    # Assert the values in the 'n_neighborhood' column have been replaced based on the 'neighborhood' column and 'list_names_complex_m2' and 'range_complex'.
+    assert np.array_equal(df['n_neighborhood'], [1, 2, 3, 1, 2])
+    
+    # Assert the new 'code2' column has been generated correctly based on the 'month', 'n_neighborhood', and 'scale_complex'.
+    assert np.array_equal(df['code2'], [0, 0, 0, 1000, 2000])
+    
+    # Assert the values in the 'belgrano', 'once', and 'vcrespo' columns have been correctly replaced based on the 'n_neighborhood' column and 'list_names_complex_m2'.
+    assert np.array_equal(df['belgrano'], [1, 0, 0, 1, 0])
+    assert np.array_equal(df['once'], [0, 1, 0, 0, 1])
+    assert np.array_equal(df['vcrespo'], [0, 0, 1, 0, 0])
+    
+
+def test_gen_rep_simple_mon2( # Test using our own data set
+    input_data_gen_rep_simple_mon2,
+):
+    (
+        df, 
+        var_gen_simple, 
+        var_cond_simple,
+        original_val_simple,
+        cond_simple,
+        value_final_simple
+    ) = input_data_gen_rep_simple_mon2
 
     # Call the function being tested
-    new_df = _genNA_rep_two_cond_mon2(df, list_for_NA, var_con_NA, fixed_var_NA, NA_value)
+    new_df = _gen_rep_simple_mon2(
+        df, 
+        var_gen_simple, 
+        var_cond_simple,
+        original_val_simple,
+        cond_simple,
+        value_final_simple
+    )
 
-    # Test that new columns were added
-    expected_output = pd.DataFrame({
-            "month": [1, 2, 3, 4, 5, 6],
-            "var1": [5, 10, 3, 4, 9, 2],
-            "var2": [20, 5, 15, 8, 10, 12],
-            "var1_NA": [pd.NA, pd.NA, 3, 4, pd.NA, 2],
-            "var2_NA": [20, pd.NA, pd.NA, pd.NA, pd.NA, pd.NA],
-        })
-    pd.testing.assert_frame_equal(new_df, expected_output)
+    # Test that the values were replaced as we wanted
+    assert all(new_df.loc[new_df[var_cond_simple]==cond_simple, var_gen_simple]==value_final_simple)
+
+
+
+def test_gen_based_variouslists_mon2( # Test using our own data set
+        input_data_gen_based_variouslists_mon2,
+):
+    (
+        df, 
+        list_names_place, 
+        list_names_month,
+        list_names_variouslists
+    ) = input_data_gen_based_variouslists_mon2
+
+    # Define the new data frame
+    new_df = _gen_based_variouslists_mon2(df, list_names_place, list_names_month, list_names_variouslists)
+
+    # Declare the columns to be changed
+    expected_columns = ["mbelgapr", "mbelgmay", "mbelgjun", "mbelgjul", "mbelgago", "mbelgsep", "mbelgoct", "mbelgnov", "mbelgdec", 
+                        "monceapr", "moncemay", "moncejun", "moncejul", "monceago", "moncesep", "monceoct", "moncenov", "moncedec", 
+                        "mvcreapr", "mvcremay", "mvcrejun", "mvcrejul", "mvcreago", "mvcressep", "mvcreoct", "mvcrenov", "mvcredec"]
+    
+    # Assert that these new columns exist in the new_df
+    assert all(col in new_df.columns for col in expected_columns)
+
+############################################## PART 3 ########################################################################################################################
+
+def test_gen_rep_3cond_mon3(
+    input_data_gen_rep_3cond_mon3                         
+):
+    (
+        df,
+        initial_val_3cond,
+        global_replace_val_3cond,
+        gen_var_3cond,
+        col1_3cond,
+        col2_3cond,
+        col3_3cond
+    ) = input_data_gen_rep_3cond_mon3
+
+
+    # Apply the function to the sample dataframe
+    new_df = _gen_rep_3cond_mon3(df, gen_var_3cond, col1_3cond, col2_3cond, col3_3cond, initial_val_3cond, global_replace_val_3cond)
+
+    # Check if the new column has been added
+    assert gen_var_3cond in new_df.columns
+
+    # Check if the new column has been assigned the correct values
+    expected_output = pd.Series([1, 1, 0, 1])
+    pd.testing.assert_series_equal(new_df[gen_var_3cond], expected_output, check_dtype=False)
+    
+
+def test_gen_multiplevariables_listbased( # Test using our own data set
+        input_data_gen_multiplevariables_listbased,
+):
+    (
+        df,
+        list_values,
+        list_names_3_variables,
+        list_names_data3_general
+    ) = input_data_gen_multiplevariables_listbased
+
+    # Define the new data frame
+    new_df = _gen_multiplevariables_listbased(df, list_values, list_names_3_variables, list_names_data3_general)
+
+    # Declare the columns to be changed
+    expected_columns = ['public_building_or_embassy_p', 'public_building_or_embassy_1_p', 'public_building_or_embassy_cuad2p', 'n_public_building_or_embassy_p', 'n_public_building_or_embassy_1_p', 'n_public_building_or_embassy_cuad2p',
+                        'gas_station_p', 'gas_station_1_p', 'gas_station_cuad2p', 'n_gas_station_p', 'n_gas_station_1_p', 'n_gas_station_cuad2p',
+                        'bank_p', 'bank_1_p', 'bank_cuad2p', 'n_bank_p', 'n_bank_1_p', 'n_bank_cuad2p',
+                        'all_locations_p', 'all_locations_1_p', 'all_locations_cuad2p', 'n_all_locations_p', 'n_all_locations_1_p', 'n_all_locations_cuad2p']
+    
+    # Assert that these new columns exist in the new_df
+    assert all(col in new_df.columns for col in expected_columns)
+
+
+
+
