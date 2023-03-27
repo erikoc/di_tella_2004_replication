@@ -636,7 +636,6 @@ def test_gen_rep_3cond_mon3(
     pd.testing.assert_series_equal(new_df[gen_var_3cond], expected_output, check_dtype=False)
     
 
-
 def test_gen_multiplevariables_listbased( # Test using our own data set
         input_data_gen_multiplevariables_listbased,
 ):
