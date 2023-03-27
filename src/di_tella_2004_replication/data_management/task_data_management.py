@@ -11,7 +11,7 @@ from di_tella_2004_replication.data_management.clean_crime_by_block import (
 
 @pytask.mark.depends_on(
     {
-        "scripts": ["clean_data.py"],
+        "scripts": ["clean_crime_by_block.py"],
         "CrimeByBlock": SRC / "data" / "CrimebyBlock.dta",
     },
 )
