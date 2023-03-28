@@ -1,7 +1,5 @@
 """Tasks running the core analyses."""
-
-import pandas as pd
-import pytask
+"""Import pandas as pd import pytask.
 
 from di_tella_2004_replication.config import BLD
 
@@ -31,3 +29,5 @@ def task_fit_model_python(depends_on, produces):
         data = pd.read_csv(depends_on["data"])
         predicted_prob = predict_prob_by_age(data, model, group)
         predicted_prob.to_csv(produces, index=False)
+
+"""

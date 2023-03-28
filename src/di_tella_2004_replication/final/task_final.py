@@ -1,5 +1,6 @@
 """Tasks running the results formatting (tables, figures)."""
 
+"""
 
 from di_tella_2004_replication.analysis.model import load_model
 from di_tella_2004_replication.config import BLD, GROUPS, SRC
@@ -36,3 +37,4 @@ def task_create_results_table_python(depends_on, produces):
     table = model.summary().as_latex()
     with open(produces, "w") as f:
         f.writelines(table)
+"""

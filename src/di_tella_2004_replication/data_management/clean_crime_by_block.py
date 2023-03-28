@@ -23,7 +23,7 @@ def _clean_column_names_block(df):
     df.columns = (
         df.columns.str.replace("rob", "theft")
         .str.replace("day", "week_day")
-        .str.replace("dia", "dd")
+        .str.replace("dia", "day")
         .str.replace("mes", "month")
         .str.replace("hor", "hour")
         .str.replace("mak", "brand")
@@ -359,9 +359,6 @@ def process_crime_by_block(df, maxrange=24):
     theft_data = df.loc[:, df.columns.str.startswith("theft")]
     ind_char_data = df[[col for col in df.columns if not col.startswith("theft")]]
 
-    ind_char_testig_data = _create_new_variables_ind(ind_char_data)
-    ind_char_testig_data = _drop_repated_obs(ind_char_testig_data)
-
     for i in range(1, maxrange):
         theft_data.loc[theft_data[f"theft{i}corner"] == 1, f"theft{i}"] = 0.25
 
@@ -383,6 +380,18 @@ def process_crime_by_block(df, maxrange=24):
     crime_by_block_panel = crime_by_block_panel.set_index(["block", "month"])
 
     return crime_by_block_panel
+
+
+def process_ind_char_data(df):
+    df = _clean_column_names_block(df)
+    df = _convert_dtypes(df)
+
+    ind_char_data = df[[col for col in df.columns if not col.startswith("theft")]]
+
+    ind_char_data = _create_new_variables_ind(ind_char_data)
+    ind_char_data = _drop_repated_obs(ind_char_data)
+
+    return ind_char_data
 
 
 def process_weekly_panel(df):
