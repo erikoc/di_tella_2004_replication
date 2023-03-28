@@ -1,9 +1,6 @@
 """Function(s) for cleaning the data set(s)."""
 import pandas as pd
 
-"""Function(s) for cleaning the data set(s)."""
-
-
 def _clean_column_names_we(df):
     """This function takes a pandas DataFrame and standardizes the column names to a
     specified format.
@@ -39,18 +36,13 @@ def _clean_column_names_we(df):
     return df
 
 
-def _generate_dummy_variables(
-    df,
-    variable_dummy
-):
-
-    """
-    Generate dummy variables from a categorical variable in a Pandas DataFrame.
+def _generate_dummy_variables(df, variable_dummy):
+    """Generate dummy variables from a categorical variable in a Pandas DataFrame.
 
     Args:
     df (pandas.DataFrame): The DataFrame containing the variable to be converted into dummy variables.
     variable (str): The name of the categorical variable to be converted into dummy variables.
-    
+
     Returns:
     pandas.DataFrame: The input DataFrame with an additional column containing the original variable, and with new columns corresponding to the dummy variables.
 
@@ -61,8 +53,7 @@ def _generate_dummy_variables(
     return df
 
 
-
-
+def _gen_new_variables():
 def _generate_variables_from_list(
     df,
     list_fixed,
@@ -70,10 +61,10 @@ def _generate_variables_from_list(
     variable_to_change,
     conditional_variable_value=2,
     original_value_list=0,
-    final_value=1
+    final_value=1,
 ):
-    """
-    Generates a set of variables based on a fixed list, and replaces their values in a Pandas DataFrame based on a condition.
+    """Generates a set of variables based on a fixed list, and replaces their values in
+    a Pandas DataFrame based on a condition.
 
     Args:
     df (pandas.DataFrame): The input DataFrame in which to generate and replace variables.
@@ -103,8 +94,7 @@ def _rep_variables_based_on_condition(
     conditional_number=18,
     final_value_replace=1,
 ):
-    """
-    Replaces values of a variable in a Pandas DataFrame based on a condition.
+    """Replaces values of a variable in a Pandas DataFrame based on a condition.
 
     Args:
     df (pandas.DataFrame): The DataFrame in which to replace variables.
@@ -141,8 +131,7 @@ def _generate_variables_from_list_complex(
     fixed_variable_to_change="n_neighborhood",
     range_of_replace=range(1, 4),
 ):
-    """
-    Replaces values of a variable in a Pandas DataFrame based on a condition.
+    """Replaces values of a variable in a Pandas DataFrame based on a condition.
 
     Args:
     df (pandas.DataFrame): The DataFrame in which to replace variables.
@@ -178,14 +167,14 @@ def weeklypanel(
     list_for_replace,
     list_drop,
     location,
-    new_variable_diff='jewish_int_one_block_away_1', 
-    var1_d='jewish_inst_one_block_away', 
-    var2_d='jewish_inst',
-    new_variable_sum='code2', 
-    var1_s='week', 
-    var2_s='n_neighborhood',
-    new_variable_simple='n_total_thefts', 
-    var_sim='total_thefts',
+    new_variable_diff="jewish_int_one_block_away_1",
+    var1_d="jewish_inst_one_block_away",
+    var2_d="jewish_inst",
+    new_variable_sum="code2",
+    var1_s="week",
+    var2_s="n_neighborhood",
+    new_variable_simple="n_total_thefts",
+    var_sim="total_thefts",
 
 ):
     df = _clean_column_names_we(df)

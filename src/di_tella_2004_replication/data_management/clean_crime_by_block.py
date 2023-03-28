@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 
-def _clean_column_names(df):
+def _clean_column_names_block(df):
     """This function takes a pandas DataFrame and standardizes the column names to a
     specified format.
 
@@ -23,7 +23,7 @@ def _clean_column_names(df):
     df.columns = (
         df.columns.str.replace("rob", "theft")
         .str.replace("day", "week_day")
-        .str.replace("dia", "day")
+        .str.replace("dia", "dd")
         .str.replace("mes", "month")
         .str.replace("hor", "hour")
         .str.replace("mak", "brand")
@@ -40,17 +40,51 @@ def _clean_column_names(df):
         .str.replace("edpub", "public_building_or_embassy")
         .str.replace("estserv", "gas_station")
         .str.replace("banco", "bank")
-        .str.replace("district", "census_district")
+        .str.replace("distrito", "census_district")
         .str.replace("frcensal", "census_tract")
         .str.replace("edad", "av_age")
         .str.replace("mujer", "female_rate")
         .str.replace("propiet", "ownership_rate")
         .str.replace("tamhogar", "av_hh_size")
         .str.replace("nohacinado", "non_overcrowd_rate")
-        .str.replace("nobi", "non_unmet_basic_needs_rate")
+        .str.replace("nonbi", "non_unmet_basic_needs_rate")
         .str.replace("educjefe", "av_hh_head_schooling")
         .str.replace("ocupado", "employment_rate")
     )
+    return df
+
+
+def _clean_column_names_weekly(df):
+    """This function takes a pandas DataFrame and standardizes the column names to a
+    specified format.
+
+    The function renames the columns by replacing certain substrings with standardized terms such as "rob" with "theft",
+    "day" with "week_day", "dia" with "day", "mes" with "month", "hor" with "hour", "mak" with "brand", and "esq" with "corner".
+
+    In addition, the function replaces specific column names with more meaningful and descriptive names, as specified in the
+    'replacements' dictionary.
+
+    Parameters:
+    df (pandas.DataFrame): The pandas DataFrame containing the data to be standardized.
+
+    Returns:
+    pandas.DataFrame: The input DataFrame with the columns standardized to the specified format.
+
+    """
+    df.columns = (
+        df.columns.str.replace("observ", "block")
+        .str.replace("barrio", "neighborhood")
+        .str.replace("calle", "street")
+        .str.replace("altura", "street_nr")
+        .str.replace("institu1", "jewish_inst")
+        .str.replace("institu3", "jewish_inst_one_block_away")
+        .str.replace("distanci", "distance_to_jewish_inst")
+        .str.replace("edpub", "public_building_or_embassy")
+        .str.replace("estserv", "gas_station")
+        .str.replace("banco", "bank")
+        .str.replace("totrob", "total_thefts")
+    )
+
     return df
 
 
@@ -256,7 +290,7 @@ def _create_panel_data(ind_char_data, theft_data):
     return pd.merge(ind_char_data, theft_data, how="left", on=["block"])
 
 
-def _create_new_variables(df):
+def _create_new_variables(df, time_variable, event_time):
     """This function takes a pandas DataFrame as input and creates new variables based
     on the existing columns of the DataFrame.
 
@@ -276,12 +310,32 @@ def _create_new_variables(df):
     df["jewish_inst_only_one_block_away"] = (
         df["jewish_inst_one_block_away"] - df["jewish_inst"]
     )
-    df["month_dummy"] = df["month"]
-    df = pd.get_dummies(df, columns=["month_dummy"], drop_first=False)
-    df["post"] = np.where(df["month"] > 7, 1, 0)
+    df[f"{time_variable}_dummy"] = df[time_variable]
+    df = pd.get_dummies(df, columns=[f"{time_variable}_dummy"], drop_first=False)
+    df["post"] = np.where(df[time_variable] > event_time, 1, 0)
     df["treatment"] = df["jewish_inst"] * df["post"]
     df["treatment_1d"] = df["jewish_inst_only_one_block_away"] * df["post"]
     df["treatment_2d"] = np.where(df["distance_to_jewish_inst"] == 2, 1, 0) * df["post"]
+
+    return df
+
+
+def _neighborhood_numbering(df):
+    """Assigns a unique integer to each neighborhood in the DataFrame `df`, based on its
+    name.
+
+    Args:
+        df (pandas.DataFrame): A DataFrame containing the 'neighborhood' column.
+
+    Returns:
+        pandas.DataFrame: A copy of the input DataFrame, with an additional column named
+        'n_neighborhood' that contains the integer code for each neighborhood.
+
+    """
+    df["n_neighborhood"] = 0
+    df.loc[df["neighborhood"] == "Belgrano", "n_neighborhood"] = 1
+    df.loc[df["neighborhood"] == "Once", "n_neighborhood"] = 2
+    df.loc[df["neighborhood"] == "V. Crespo", "n_neighborhood"] = 3
 
     return df
 
@@ -299,7 +353,7 @@ def process_crime_by_block(df, maxrange=24):
         individual characteristics by block and month.
 
     """
-    df = _clean_column_names(df)
+    df = _clean_column_names_block(df)
     df = _convert_dtypes(df)
 
     theft_data = df.loc[:, df.columns.str.startswith("theft")]
@@ -321,7 +375,38 @@ def process_crime_by_block(df, maxrange=24):
     theft_data = theft_data.reset_index(names=["block"])
 
     crime_by_block_panel = _create_panel_data(ind_char_data, theft_data)
-    crime_by_block_panel = _create_new_variables(crime_by_block_panel)
+    crime_by_block_panel = _create_new_variables(
+        crime_by_block_panel,
+        time_variable="month",
+        event_time=7,
+    )
     crime_by_block_panel = crime_by_block_panel.set_index(["block", "month"])
 
-    return crime_by_block_panel, ind_char_testig_data
+    return crime_by_block_panel
+
+
+def process_weekly_panel(df):
+    """The process_weekly_panel function takes a pandas DataFrame as input, cleans and
+    processes the data, and returns the processed DataFrame.
+
+    Args:
+    df (pandas.DataFrame): The input DataFrame containing the raw data.
+
+    Returns:
+    pandas.DataFrame: A processed DataFrame containing the following new columns:
+    - Cleaned column names.
+    - Converted data types.
+    - New variables created based on the time variable and event time.
+    - Neighborhood numbering.
+    - A column that combines the week and block variables.
+    - A column that calculates the average weekly thefts based on the total thefts.
+
+    """
+    df = _clean_column_names_weekly(df)
+    df = df.convert_dtypes()
+    df = _create_new_variables(df, time_variable="week", event_time=18)
+    df = _neighborhood_numbering(df)
+    df["neighborhood_week"] = 1 * df["week"] + 1000 * df["block"]
+    df["av_weekly_thefts"] = df["total_thefts"] * ((365 / 12) / 7)
+
+    return df
