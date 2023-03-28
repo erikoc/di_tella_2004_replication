@@ -176,14 +176,16 @@ def weeklypanel(
     list2,
     fixed_variable,
     list_for_replace,
-    fixed_variable_to_use="neighborhood",
-    fixed_variable_to_change="n_neighborhood",
-    range_of_replace=range(1, 4),
-    conditional_number=18,
-    final_value_replace=1,
-    conditional_variable_value=2,
-    original_value_list=0,
-    final_value=1
+    list_drop,
+    location,
+    new_variable_diff='jewish_int_one_block_away_1', 
+    var1_d='jewish_inst_one_block_away', 
+    var2_d='jewish_inst',
+    new_variable_sum='code2', 
+    var1_s='week', 
+    var2_s='n_neighborhood',
+    new_variable_simple='n_total_thefts', 
+    var_sim='total_thefts',
 
 ):
     df = _clean_column_names_we(df)
