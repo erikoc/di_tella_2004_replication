@@ -1,33 +1,49 @@
 """Tasks running the core analyses."""
-"""Import pandas as pd import pytask.
+import pickle
 
+import pandas as pd
+import pytask
+
+from di_tella_2004_replication.analysis.crime_by_block_regression import (
+    abs_regression_models_dif,
+    abs_regression_models_totals,
+    fe_regression_models_dif,
+    fe_regression_models_totals,
+)
 from di_tella_2004_replication.config import BLD
 
 
-@pytask.mark.depends_on(
-    {
-        "scripts": ["crime_by_block_analysis.py", "predict.py"],
-        "CrimeByBlock": BLD / "python" / "data" / "CrimeByBlock_Panel.pkl",
-    },
-)
-@pytask.mark.produces(BLD / "python" / "models" / "model.pickle")
-def task_fit_model_python(depends_on, produces):
-    data_info = read_yaml(depends_on["data_info"])
-    data = pd.read_csv(depends_on["data"])
-    model = fit_logit_model(data, data_info, model_type="linear")
-    model.save(produces)
+@pytask.mark.depends_on(BLD / "python" / "data" / "CrimeByBlockPanel.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "fe_tot_models.pickle")
+def task_fit_fe_totals_python(depends_on, produces):
+    data = pd.read_pickle(depends_on)
+    model = fe_regression_models_totals(data)
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
 
-    @pytask.mark.depends_on(
-        {
-            "data": BLD / "python" / "data" / "data_clean.csv",
-            "model": BLD / "python" / "models" / "model.pickle",
-        },
-    )
-    @pytask.mark.task(id=group, kwargs=kwargs)
-    def task_predict_python(depends_on, group, produces):
-        model = load_model(depends_on["model"])
-        data = pd.read_csv(depends_on["data"])
-        predicted_prob = predict_prob_by_age(data, model, group)
-        predicted_prob.to_csv(produces, index=False)
 
-"""
+@pytask.mark.depends_on(BLD / "python" / "data" / "CrimeByBlockPanel.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "fe_dif_models.pickle")
+def task_fit_fe_dif_python(depends_on, produces):
+    data = pd.read_pickle(depends_on)
+    model = fe_regression_models_dif(data)
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "CrimeByBlockPanel.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "abs_tot_models.pickle")
+def task_fit_abs_tot_python(depends_on, produces):
+    data = pd.read_pickle(depends_on)
+    model = abs_regression_models_totals(data)
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "CrimeByBlockPanel.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "abs_dif_models.pickle")
+def task_fit_abs_dif_python(depends_on, produces):
+    data = pd.read_pickle(depends_on)
+    model = abs_regression_models_dif(data)
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
