@@ -82,6 +82,48 @@ def _convert_dtypes(df, float_cols=None, maxrange=24):
     return df
 
 
+def _create_new_variables_ind(df):
+    """Creates new variables in the input DataFrame based on existing variables.
+
+    Args:
+        df (pandas.DataFrame): The input DataFrame.
+
+    Returns:
+        pandas.DataFrame: The input DataFrame with additional columns for unmet basic needs rate,
+        overcrowding rate, and unemployment rate.
+
+    """
+    df["no_jewish_inst"] = 1 - df["jewish_inst"]
+    df["unmet_basic_needs_rate"] = 1 - df["non_unmet_basic_needs_rate"]
+    df["overcrowd_rate"] = 1 - df["non_overcrowd_rate"]
+    df["unemployment_rate"] = 1 - df["employment_rate"]
+    df.sort_values(
+        by=["census_district", "census_tract", "no_jewish_inst"],
+        ascending=[True, True, True],
+        na_position="first",
+    )
+
+    return df
+
+
+def _drop_repated_obs(df):
+    """Drops duplicate observations from a DataFrame based on the "census_district" and
+    "census_tract" variables.
+
+    Args:
+        df (pandas.DataFrame): The input DataFrame.
+
+    Returns:
+        pandas.DataFrame: A new DataFrame that contains only the unique combinations of "census_district" and
+        "census_tract" variables.
+
+    """
+    df = df.loc[df["census_district"].shift() != df["census_district"]]
+    df = df.loc[df["census_tract"].shift() != df["census_tract"]]
+
+    return df
+
+
 def _split_theft_data(theft_data, month, maxrange=24):
     """Splits the theft data into different categories based on specific conditions for
     a given month.
@@ -263,6 +305,9 @@ def process_crime_by_block(df, maxrange=24):
     theft_data = df.loc[:, df.columns.str.startswith("theft")]
     ind_char_data = df[[col for col in df.columns if not col.startswith("theft")]]
 
+    ind_char_testig_data = _create_new_variables_ind(ind_char_data)
+    ind_char_testig_data = _drop_repated_obs(ind_char_testig_data)
+
     for i in range(1, maxrange):
         theft_data.loc[theft_data[f"theft{i}corner"] == 1, f"theft{i}"] = 0.25
 
@@ -279,4 +324,4 @@ def process_crime_by_block(df, maxrange=24):
     crime_by_block_panel = _create_new_variables(crime_by_block_panel)
     crime_by_block_panel = crime_by_block_panel.set_index(["block", "month"])
 
-    return crime_by_block_panel
+    return crime_by_block_panel, ind_char_testig_data

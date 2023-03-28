@@ -17,9 +17,15 @@ from di_tella_2004_replication.data_management.clean_crime_by_block import (
         "WeeklyPanel": SRC / "data" / "WeeklyPanel.dta",
     },
 )
-@pytask.mark.produces(BLD / "python" / "data" / "CrimeByBlock_Panel.pkl")
+@pytask.mark.produces(
+    {
+        "CrimeByBlockPanel": BLD / "python" / "data" / "CrimeByBlockPanel.pkl",
+        "CrimeByBlockIndChar": BLD / "python" / "data" / "CrimeByBlockIndChar",
+    },
+)
 def task_process_crime_by_bloc_python(depends_on, produces):
     """Clean the data (Python version)."""
     data, meta = pyreadstat.read_dta(depends_on["CrimeByBlock"])
-    data = process_crime_by_block(data)
-    data.to_pickle(produces)
+    crime_data, ind_data = process_crime_by_block(data)
+    crime_data.to_pickle(produces["CrimeByBlockPanel"])
+    ind_data.to_pickle(produces["CrimeByBlockIndChar"])
