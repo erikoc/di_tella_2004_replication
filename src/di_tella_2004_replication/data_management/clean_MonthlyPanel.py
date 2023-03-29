@@ -5,6 +5,42 @@ import pyreadstat  as pyread
 
 """GENERAL FUNCTIONS MONTHLY"""
 
+def _clean_column_names_mon(df):
+    """This function takes a pandas DataFrame and standardizes the column names to a
+    specified format.
+
+    The function renames the columns by replacing certain substrings with standardized terms such as "rob" with "theft",
+    "day" with "week_day", "dia" with "day", "mes" with "month", "hor" with "hour", "mak" with "brand", and "esq" with "corner".
+
+    In addition, the function replaces specific column names with more meaningful and descriptive names, as specified in the
+    'replacements' dictionary.
+
+    Parameters:
+    df (pandas.DataFrame): The pandas DataFrame containing the data to be standardized.
+
+    Returns:
+    pandas.DataFrame: The input DataFrame with the columns standardized to the specified format.
+
+    """
+    df.columns = (
+        df.columns.str.replace("observ", "observ")
+        .str.replace("barrio", "neighborhood")
+        .str.replace("calle", "street")
+        .str.replace("altura", "street_nr")
+        .str.replace("institu1", "jewish_inst")
+        .str.replace("institu3", "jewish_inst_one_block_away")
+        .str.replace("distanci", "distance_to_jewish_inst")
+        .str.replace("edpub", "public_building_or_embassy")
+        .str.replace("estserv", "gas_station")
+        .str.replace("banco", "bank")
+        .str.replace("totrob", "total_thefts")
+        .str.replace("mes", "month")
+    )
+
+    return df
+
+
+
 
 def _generate_dummy_variables_fixed_extension(
     df, 
@@ -52,7 +88,7 @@ def _rep_variables_based_on_condition(
     type_of_condition,
     conditional_variable_replace,
     variable_to_replace,
-    conditional_number=18,
+    conditional_number=7,
     final_value_replace=1,
 ):
     """
@@ -86,40 +122,6 @@ def _rep_variables_based_on_condition(
         return df
     
     
-    
-def _clean_column_names_mon(df):
-    """This function takes a pandas DataFrame and standardizes the column names to a
-    specified format.
-
-    The function renames the columns by replacing certain substrings with standardized terms such as "rob" with "theft",
-    "day" with "week_day", "dia" with "day", "mes" with "month", "hor" with "hour", "mak" with "brand", and "esq" with "corner".
-
-    In addition, the function replaces specific column names with more meaningful and descriptive names, as specified in the
-    'replacements' dictionary.
-
-    Parameters:
-    df (pandas.DataFrame): The pandas DataFrame containing the data to be standardized.
-
-    Returns:
-    pandas.DataFrame: The input DataFrame with the columns standardized to the specified format.
-
-    """
-    df.columns = (
-        df.columns.str.replace("observ", "observ")
-        .str.replace("barrio", "neighborhood")
-        .str.replace("calle", "street")
-        .str.replace("altura", "street_nr")
-        .str.replace("institu1", "jewish_inst")
-        .str.replace("institu3", "jewish_inst_one_block_away")
-        .str.replace("distanci", "distance_to_jewish_inst")
-        .str.replace("edpub", "public_building_or_embassy")
-        .str.replace("estserv", "gas_station")
-        .str.replace("banco", "bank")
-        .str.replace("totrob", "total_thefts")
-        .str.replace("mes", "month")
-    )
-
-    return df
 
 
 
@@ -209,7 +211,8 @@ def _generate_variables_based_on_list_and_loop(
 def _generate_variable_basedon_doublelist(df, 
     list_generated_variable,
     list_original_variable, 
-    fixed_variable):
+    fixed_variable
+    ):
     """This function generates new variables listed on a list {list_generated_variable} in a dataframe {df} 
     using a multiplication rule by a fixed variable {fixed_variable} that already exists in the data frame by another list
     of variables already present in the data frame {list_original_variable}.
@@ -233,7 +236,10 @@ def _generate_variable_basedon_doublelist(df,
 
 
 
-def _generate_total_thefts2_mon(df, variable_complex_condition, cond1=72, cond2=73):
+def _generate_total_thefts2_mon(df, 
+    variable_complex_condition, 
+    cond1=72, 
+    cond2=73):
     """This function is generating a a new variable by observation "total_thefts2" in a
     dataframe (df).
 
@@ -269,8 +275,8 @@ def _generate_variables_different_conditions(
     new_variable_v_cond,
     ori_variable_v_cond,
     variable_conditional_v_cond,
-    condition_v1=7,
-    condition_v2=5,
+    condition_v1=5,
+    condition_v2=7,
     condition_v3=8,
     condition_v4=10,
     condition_v5=12,
@@ -690,7 +696,8 @@ def monthlypanel_1(
         conditional_variable_replace,
         variable_to_replace,
         conditional_number,
-        final_value_replace)
+        final_value_replace
+    )
     df = _generate_dummy_variables_fixed_extension(
         df, 
         variable_conditional_extension='distance_to_jewish_inst',
