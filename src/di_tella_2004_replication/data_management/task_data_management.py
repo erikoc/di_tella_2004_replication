@@ -52,36 +52,36 @@ from di_tella_2004_replication.data_management.clean_MonthlyPanel import (
 )
 
 
-@pytask.mark.produces(BLD / "python" / "data" / "MonthlyPanel.csv")
+@pytask.mark.produces(BLD / "python" / "data" / "MonthlyPanel.pkl")
 @pytask.mark.depends_on(SRC / "data" / "MonthlyPanel.dta")
 def task_monthlypanel_1(depends_on, produces):
     """Clean the data (Python version)."""
     data, meta = pyreadstat.read_dta(depends_on)
     MonthlyPanel = monthlypanel_1(data)
-    MonthlyPanel.to_csv(produces)
+    MonthlyPanel.to_pickle(produces)
  
     
-@pytask.mark.produces(BLD / "python" / "data" / "MonthlyPanel2.csv")
-@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel.csv")
-def task_monthlypanel_1(depends_on, produces):
+@pytask.mark.produces(BLD / "python" / "data" / "MonthlyPanel2.pkl")
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel.pkl")
+def task_monthlypanel_2(depends_on, produces):
     """Clean the data (Python version)."""
-    data = pd.read_csv(depends_on)
+    data = pd.read_pickle(depends_on)
     MonthlyPanel2 = monthlypanel_2(data)
-    MonthlyPanel2.to_csv(produces)
+    MonthlyPanel2.to_pickle(produces)
 
 
-@pytask.mark.produces(BLD / "python" / "data" / "MonthlyPanel3.csv")
-@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.csv")
-def task_monthlypanel_1(depends_on, produces):
+@pytask.mark.produces(BLD / "python" / "data" / "MonthlyPanel3.pkl")
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
+def task_monthlypanel_3(depends_on, produces):
     """Clean the data (Python version)."""
-    data = pd.read_csv(depends_on)
+    data = pd.read_pickle(depends_on)
     MonthlyPanel3 = monthlypanel_3(data)
-    MonthlyPanel3.to_csv(produces)
+    MonthlyPanel3.to_pickle(produces)
 
-@pytask.mark.produces(BLD / "python" / "data" / "MonthlyPanel_new.csv")
+@pytask.mark.produces(BLD / "python" / "data" / "MonthlyPanel_new.pkl")
 @pytask.mark.depends_on(SRC / "data" / "MonthlyPanel.dta")
-def task_monthlypanel_1(depends_on, produces):
+def task_monthlypanel_new(depends_on, produces):
     """Clean the data (Python version)."""
     data, meta = pyreadstat.read_dta(depends_on)
     MonthlyPanel_new = monthlypanel_new(data)
-    MonthlyPanel_new.to_csv(produces)
+    MonthlyPanel_new.to_pickle(produces)
