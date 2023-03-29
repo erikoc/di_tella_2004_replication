@@ -653,9 +653,9 @@ def _generate_variables_specificrule_list(
 
 """ENVELOPE FUNCTIONS MONTHLY"""
 
-pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data/MonthlyPanel.dta')
 
 def monthlypanel_1(
+    df,
     original_variables=["cuad0", "cuad1", "cuad2", "cuad3", "cuad4", "cuad5", "cuad6", "cuad7"], 
     fixed_variable="post", 
     list_generated_variable=["jewish_inst_p", "jewish_inst_one_block_away_1_p"],
@@ -672,9 +672,9 @@ def monthlypanel_1(
     var1="jewish_inst_one_block_away",
     var_sub="jewish_inst",
     variable_complex_condition='month',
-    location='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel.csv'
+    #location='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel.csv'
 ):
-    df, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data/MonthlyPanel.dta')
+    #df, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data/MonthlyPanel.dta')
     df = _clean_column_names_mon(df)
     df = _generate_dummy_variables_fixed_extension(
         df, 
@@ -730,13 +730,15 @@ def monthlypanel_1(
         df, 
         variable_complex_condition, 
     )
-    df.to_csv(location)
+    #df.to_csv(location)
+    return df
 
 
 
 
 def monthlypanel_2(
-    location_origin='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel.csv',
+    df,
+    #location_origin='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel.csv',
     var_drop="month",
     drop1=72,
     drop2=73,
@@ -766,9 +768,9 @@ def monthlypanel_2(
     conditional_variable_replace='month',
     variable_to_replace='month4',
     list_names_variouslists=['belgrano', 'once', 'vcrespo'],
-    location='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel2.csv'
+    #location='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel2.csv'
 ):
-    df = pd.read_csv(location_origin)
+    #df = pd.read_csv(location_origin)
     df.drop(
         df.loc[(df[var_drop] == drop1) | (df[var_drop] == drop2)].index,
         inplace=True,
@@ -821,22 +823,24 @@ def monthlypanel_2(
         df,
         list_names_variouslists,
     )
-    df.to_csv(location)
+    #df.to_csv(location)
+    return df
 
 
 
 def monthlypanel_3(
-    location_origin='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel2.csv',
+    df,
+    #location_origin='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel2.csv',
     generate_variable_three_conditions='all_locations',
     column1_three_conditions='public_building_or_embassy',
     column2_three_conditions='gas_station',
     column3_three_conditions='bank',
     list_names_multi_variables=['public_building_or_embassy', 'gas_station', 'bank', 'all_locations'],
     list_names_multi_general=['jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p', 'jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p'] ,
-    location='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel3.csv',
+    #location='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel3.csv',
     column_to_drop="month4",
 ):
-    df = pd.read_csv(location_origin)
+    #df = pd.read_csv(location_origin)
     df.drop(columns=column_to_drop)
     df = _generate_variable_based_on_three_or_conditions(
         df,
@@ -850,12 +854,14 @@ def monthlypanel_3(
         list_names_multi_variables,
         list_names_multi_general
     )
-    df.to_csv(location)
+    #df.to_csv(location)
+    return df
     
 
 
 
-def monthlypanel_4(
+def monthlypanel_new(
+    df,
     new_variable='jewish_inst_one_block_away_1', 
     variable_original='jewish_inst_one_block_away', 
     variable_original_substract='jewish_inst',
@@ -872,9 +878,9 @@ def monthlypanel_4(
     list_variable_generate_specific=['jewish_inst', 'jewish_inst_one_block_away_1', 'cuad2'],
     list_variable_extisting_specific=['post1', 'post2', 'post3'],
     list_new_variable_specific=['one_jewish_inst_1_p', 'one_jewish_inst_one_block_away_1_p', 'one_cuad2p', 'two_jewish_inst_1_p', 'two_jewish_inst_one_block_away_1_p', 'two_cuad2p', 'three_jewish_inst_1_p', 'three_jewish_inst_one_block_away_1_p', 'three_cuad2p'],
-    location='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel_new.csv'
+    #location='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel_new.csv'
 ):
-    df, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data/MonthlyPanel.dta')
+    #df, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data/MonthlyPanel.dta')
     df = _clean_column_names_mon(df)
     df[new_variable] = df[variable_original] - df[variable_original_substract]
     df[[col for col in list_various_generate]] = original_value_various_list
@@ -892,11 +898,12 @@ def monthlypanel_4(
         list_variable_extisting_specific,
         list_new_variable_specific,
     )
-    df.to_csv(location)
+    #df.to_csv(location)
+    return df
     
-monthlypanel_1()
-monthlypanel_2()
-monthlypanel_3()
-monthlypanel_4()
+#monthlypanel_1()
+#monthlypanel_2()
+#monthlypanel_3()
+#monthlypanel_new()
     
 
