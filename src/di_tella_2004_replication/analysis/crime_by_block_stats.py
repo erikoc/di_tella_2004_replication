@@ -41,12 +41,6 @@ def t_tests_crime_by_block(df):
     return results
 
 
-Yes, the function can be modified to return a pandas DataFrame instead of a dictionary by using the pd.DataFrame() function to convert the grouped data to a DataFrame. Here's the modified function:
-
-python
-Copy code
-import pandas as pd
-
 def neighborhood_comparison_tables(df, variables=None):
     """Calculates mean and standard deviation for the given variables in the DataFrame
     `df`, by grouping them based on the values in the `neighborhood` column.
