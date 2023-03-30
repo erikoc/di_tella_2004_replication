@@ -1,9 +1,6 @@
 """Function(s) for cleaning the data set(s)."""
 import pandas as pd
-import pyreadstat  as pyread
 
-
-"""GENERAL FUNCTIONS MONTHLY"""
 
 def _clean_column_names_mon(df):
     """This function takes a pandas DataFrame and standardizes the column names to a
@@ -40,26 +37,26 @@ def _clean_column_names_mon(df):
     return df
 
 
-
-
 def _generate_dummy_variables_fixed_extension(
-    df, 
+    df,
     variable_conditional_extension,
     variable_name,
-    range_loop, 
-    original_value_variable=0, 
-    final_value_variable=1):
-    
-    """
-    This function is just generating new variables for our dataframe {df} based on a list extension which has a range of extension {range_loop}. 
-    The extension of the list follows a condition of extension with a format(i). In the end we give a value to all these 
-    variables {original_value_variable}. After that we replace the values of the variable given the condition that another variable
-    {variable_conditional_extension} in the data frame has a certain value "i" which is part of a loop range {range_loop}. 
-    The columns to be replaced are also the same as the extension condition that we used to extend the list to generate the variables. 
+    range_loop,
+    original_value_variable=0,
+    final_value_variable=1,
+):
+    """This function is just generating new variables for our dataframe {df} based on a
+    list extension which has a range of extension {range_loop}. The extension of the
+    list follows a condition of extension with a format(i). In the end we give a value
+    to all these variables {original_value_variable}. After that we replace the values
+    of the variable given the condition that another variable.
+
+    {variable_conditional_extension} in the data frame has a certain value "i" which is part of a loop range {range_loop}.
+    The columns to be replaced are also the same as the extension condition that we used to extend the list to generate the variables.
     In the end, all the columns have a fixed replaced variable {final_value_variable}
-    
+
     Generate new variables based on a condition and replace values of the variable based on another condition.
-    
+
     Args:
     - df: pandas dataframe
     - variable_conditional_extension: name of the column in the dataframe to use as condition for replacing the variable
@@ -67,20 +64,19 @@ def _generate_dummy_variables_fixed_extension(
     - range_loop: range of values to use for generating and replacing the variable (default: range(5, 13))
     - original_value_var: value to be assigned to the generated variable (default: 0)
     - final_value_var: value to replace the variable with (default: 1)
-    
+
     Returns:
     - df: pandas dataframe with new variables generated and specified variable replaced based on conditions
+
     """
-    
     for i in range_loop:
         list_names_ext = []
-        list_names_ext.extend([variable_name.format(i)])  
-        df[[col for col in list_names_ext]] = original_value_variable
-        df.loc[df[variable_conditional_extension]==i, variable_name.format(i)]= final_value_variable
+        list_names_ext.extend([variable_name.format(i)])
+        df[list(list_names_ext)] = original_value_variable
+        df.loc[
+            df[variable_conditional_extension] == i, variable_name.format(i),
+        ] = final_value_variable
     return df
-
-
-
 
 
 def _rep_variables_based_on_condition(
@@ -91,12 +87,13 @@ def _rep_variables_based_on_condition(
     conditional_number=7,
     final_value_replace=1,
 ):
-    """
-    This function is replacing variables based on a condition with three possible values {"bigger than", "smaller than", "equal to"}. 
-    Depending on the condition chosen, a variable {variable_to_replace} in the data frame {df} is replaced with the condition that another variable 
-    in the data frame {conditional_variable_replace} has a certain value {conditional_number}. In the end, the variable {variable_to_replace}
+    """This function is replacing variables based on a condition with three possible
+    values {"bigger than", "smaller than", "equal to"}. Depending on the condition
+    chosen, a variable {variable_to_replace} in the data frame {df} is replaced with the
+    condition that another variable in the data frame {conditional_variable_replace} has
+    a certain value {conditional_number}. In the end, the variable {variable_to_replace}
     gets a final value {final_value_replace} if the condition was accomplished.
-    
+
     Replaces values of a variable in a Pandas DataFrame based on a condition.
 
     Args:
@@ -112,27 +109,28 @@ def _rep_variables_based_on_condition(
 
     """
     if type_of_condition == "bigger than":
-        df.loc[df[conditional_variable_replace] > conditional_number, variable_to_replace] = final_value_replace
+        df.loc[
+            df[conditional_variable_replace] > conditional_number, variable_to_replace,
+        ] = final_value_replace
         return df
     elif type_of_condition == "smaller than":
-        df.loc[df[conditional_variable_replace] < conditional_number, variable_to_replace] = final_value_replace
+        df.loc[
+            df[conditional_variable_replace] < conditional_number, variable_to_replace,
+        ] = final_value_replace
         return df
     elif type_of_condition == "equal to":
-        df.loc[df[conditional_variable_replace] == conditional_number, variable_to_replace] = final_value_replace
+        df.loc[
+            df[conditional_variable_replace] == conditional_number, variable_to_replace,
+        ] = final_value_replace
         return df
-    
-    
-
 
 
 def _generate_similar_named_variables(
-    df, 
-    original_variables, 
-    fixed_variable, 
-    name_change="p"):
-    
-    """
-    This functions is generating a list of variables that have a quite similar name compared to an already existing set of variables 
+    df, original_variables, fixed_variable, name_change="p",
+):
+    """This functions is generating a list of variables that have a quite similar name
+    compared to an already existing set of variables.
+
     {original_variables} in a dataframe {df} and it is generated by giving them a similar name with a new added condition to the original ones
     {name_change} and by multiplying the original columns of the data frame on a loop by a fixed column {fixed_variable} in the dataframe
 
@@ -151,8 +149,6 @@ def _generate_similar_named_variables(
     return df
 
 
-
-
 def _generate_variables_based_on_list_and_loop(
     df,
     condition_type,
@@ -162,9 +158,10 @@ def _generate_variables_based_on_list_and_loop(
     new_original_value,
     value_originallist=1,
 ):
-    """
-    Generates a new variable {new_generated_variable} with an original value {new_original_value} in a pandas DataFrame {df} based on conditions 
-    {"condition from another variable", "condition from original variable"} on a list of variables {list_a} and a range of values {list_b}, 
+    """Generates a new variable {new_generated_variable} with an original value
+    {new_original_value} in a pandas DataFrame {df} based on conditions.
+
+    {"condition from another variable", "condition from original variable"} on a list of variables {list_a} and a range of values {list_b},
     replacing the values of the new variable with different values based on a loop.
 
     Parameters:
@@ -185,37 +182,44 @@ def _generate_variables_based_on_list_and_loop(
     range_new_gen : range object, optional (default=range(1,4))
         The range of values to replace the new generated variable with based on the conditions.
     value_originallist : int, optional (default=1)
-        The condition for the original variables to meet for the new generated variable to be replaced with a 
+        The condition for the original variables to meet for the new generated variable to be replaced with a
         value from the range, in the case of "condition from another variable".
 
     Returns:
     --------
     pandas.DataFrame
         The DataFrame with the new generated variable added based on the conditions.
+
     """
     if condition_type == "condition from another variable":
-        df[new_generated_variable] = new_original_value # in this case new_original_value is a number
-        for col, i in zip(list_a, list_b): # first list is a list of variables, second is a range
-            df.loc[df[col] == value_originallist, new_generated_variable] = i # we need a varible original list
+        df[
+            new_generated_variable
+        ] = new_original_value  # in this case new_original_value is a number
+        for col, i in zip(
+            list_a, list_b,
+        ):  # first list is a list of variables, second is a range
+            df.loc[
+                df[col] == value_originallist, new_generated_variable,
+            ] = i  # we need a variable original list
         return df
     if condition_type == "condition from original variable":
-        df[new_generated_variable] = df[new_original_value] # in this case new_original_value is a column of the dataframe
-        for i, j in zip(list_a, list_b): # first list is a range of number, second is also one
+        df[new_generated_variable] = df[
+            new_original_value
+        ]  # in this case new_original_value is a column of the dataframe
+        for i, j in zip(
+            list_a, list_b,
+        ):  # first list is a range of number, second is also one
             df.loc[df[new_original_value] == i, new_generated_variable] = j
         return df
 
 
-
-
-
-def _generate_variable_basedon_doublelist(df, 
-    list_generated_variable,
-    list_original_variable, 
-    fixed_variable
-    ):
-    """This function generates new variables listed on a list {list_generated_variable} in a dataframe {df} 
-    using a multiplication rule by a fixed variable {fixed_variable} that already exists in the data frame by another list
-    of variables already present in the data frame {list_original_variable}.
+def _generate_variable_basedon_doublelist(
+    df, list_generated_variable, list_original_variable, fixed_variable,
+):
+    """This function generates new variables listed on a list {list_generated_variable}
+    in a dataframe {df} using a multiplication rule by a fixed variable {fixed_variable}
+    that already exists in the data frame by another list of variables already present
+    in the data frame {list_original_variable}.
 
     Args:
     - df (pandas.DataFrame): the dataframe where the new variables will be created
@@ -232,14 +236,7 @@ def _generate_variable_basedon_doublelist(df,
     return df
 
 
-
-
-
-
-def _generate_total_thefts2_mon(df, 
-    variable_complex_condition, 
-    cond1=72, 
-    cond2=73):
+def _generate_total_thefts2_mon(df, variable_complex_condition, cond1=72, cond2=73):
     """This function is generating a a new variable by observation "total_thefts2" in a
     dataframe (df).
 
@@ -262,12 +259,12 @@ def _generate_total_thefts2_mon(df,
         ):
             df["total_thefts2"].loc[i] == df["total_thefts"].iloc[i].cumsum()
     df.loc[
-        (df[variable_complex_condition] != cond1) & (df[variable_complex_condition] != cond2),
+        (df[variable_complex_condition] != cond1)
+        & (df[variable_complex_condition] != cond2),
         "total_thefts2",
     ] = df["total_thefts"]
     df["total_thefts2"] = pd.Series(df["total_thefts2"])
     return df
-
 
 
 def _generate_variables_different_conditions(
@@ -283,8 +280,9 @@ def _generate_variables_different_conditions(
     multiple1_v_cond=(30 / 17),
     multiple2_v_cond=(30 / 31),
 ):
-    """Generates a new variable {new_variable_v_cond} in a dataframe based on the values of another existing
-    variable {ori_variable_v_cond} and a condition on a variable {variable_conditional_v_cond} in the data frame {df}.
+    """Generates a new variable {new_variable_v_cond} in a dataframe based on the values
+    of another existing variable {ori_variable_v_cond} and a condition on a variable
+    {variable_conditional_v_cond} in the data frame {df}.
 
     Args:
     - df (pandas.DataFrame): The input dataframe.
@@ -315,21 +313,22 @@ def _generate_variables_different_conditions(
         new_variable_v_cond,
     ] = (
         df[ori_variable_v_cond] * multiple2_v_cond
-    ) 
+    )
     return df
 
 
-
-
 def _generate_variables_original_with_no_value_after_replace(
-    df, 
-    list_variables_original_novalue, 
-    conditional_variable_for_novalue, 
-    equalizing_variable, 
-    condition_change_value=7):
-    """Generates a set of variables with no values {list_variables_original_novalue} in a dataframe {df}. 
-    The value of some of the variables on the list are replaced with values of an original variable in the dataframe {equalizing_variable} 
-    if a condition for another variable {conditional_variable_for_novalue} in the data frame is met {condition_change_value}
+    df,
+    list_variables_original_novalue,
+    conditional_variable_for_novalue,
+    equalizing_variable,
+    condition_change_value=7,
+):
+    """Generates a set of variables with no values {list_variables_original_novalue} in
+    a dataframe {df}. The value of some of the variables on the list are replaced with
+    values of an original variable in the dataframe {equalizing_variable} if a condition
+    for another variable {conditional_variable_for_novalue} in the data frame is met
+    {condition_change_value}.
 
     Args:
         df (pandas.DataFrame): The input dataframe.
@@ -345,11 +344,15 @@ def _generate_variables_original_with_no_value_after_replace(
     """
     for col in list_variables_original_novalue:
         df[col] = pd.NA
-    df.loc[df[conditional_variable_for_novalue] < condition_change_value + 1, list_variables_original_novalue[0]] = df[equalizing_variable]
-    df.loc[df[conditional_variable_for_novalue] > condition_change_value, list_variables_original_novalue[1]] = df[equalizing_variable]
+    df.loc[
+        df[conditional_variable_for_novalue] < condition_change_value + 1,
+        list_variables_original_novalue[0],
+    ] = df[equalizing_variable]
+    df.loc[
+        df[conditional_variable_for_novalue] > condition_change_value,
+        list_variables_original_novalue[1],
+    ] = df[equalizing_variable]
     return df
-
-
 
 
 def _egenerator_sum(
@@ -362,9 +365,13 @@ def _egenerator_sum(
     conditon_egenerator_value=4,
     egenerator_scale_factor=4,
 ):
-    """Generates a new variable {new_egenerator_variable} in a dataframe {df} based on the sum of an existing variable {by_variable}
-    filtered by {variable_egenerator_filter}. Then, replaces the values of an existing variable {egenerator_variable_tochange} 
-    in the data frame with the new variable {new_egenerator_variable} scaled by a given factor {egenerator_scale_facto} if an existing variable
+    """Generates a new variable {new_egenerator_variable} in a dataframe {df} based on
+    the sum of an existing variable {by_variable} filtered by
+    {variable_egenerator_filter}. Then, replaces the values of an existing variable
+    {egenerator_variable_tochange} in the data frame with the new variable
+    {new_egenerator_variable} scaled by a given factor {egenerator_scale_facto} if an
+    existing variable.
+
     {condional_egenerator_variable} meets a certain condition {conditon_egenerator_value}.
 
     Args:
@@ -381,13 +388,16 @@ def _egenerator_sum(
         pandas.DataFrame: The modified dataframe.
 
     """
-    df[new_egenerator_variable] = df.groupby(by_variable)[variable_egenerator_filter].transform("sum")
-    df.loc[df[condional_egenerator_variable] == conditon_egenerator_value, egenerator_variable_tochange] = (
+    df[new_egenerator_variable] = df.groupby(by_variable)[
+        variable_egenerator_filter
+    ].transform("sum")
+    df.loc[
+        df[condional_egenerator_variable] == conditon_egenerator_value,
+        egenerator_variable_tochange,
+    ] = (
         df[new_egenerator_variable] / egenerator_scale_factor
     )
     return df
-
-
 
 
 def _complex_variable_generator(
@@ -402,11 +412,12 @@ def _complex_variable_generator(
     range_complex=range(1, 4),
     final_value_complex=1,
 ):
-    """
-    Replaces the values of a variable { variable_replace_complex} in a dataframe {df} based on a condition on another variable
+    """Replaces the values of a variable { variable_replace_complex} in a dataframe {df}
+    based on a condition on another variable.
+
     {variable_replace_condition_com}. Adter that, it generates a new variable {generate_var_complex}
-    based on two existing variables {variable_condition_complex, variable_replace_complex}, one of them scaled by a factor {scale_complex}, 
-    and generates two new variables based on a list of names {list_names_complexa, list_names_complexb}, and replaces their values 
+    based on two existing variables {variable_condition_complex, variable_replace_complex}, one of them scaled by a factor {scale_complex},
+    and generates two new variables based on a list of names {list_names_complexa, list_names_complexb}, and replaces their values
     based on a condition on an existing variable {variable_replace_condition_complex} which is based on the loops of the lists.
 
     Parameters:
@@ -438,24 +449,30 @@ def _complex_variable_generator(
     --------
     df : pandas DataFrame
         The dataframe with the new generated variables and the modified values of the existing ones.
+
     """
     for col, i in zip(list_names_complexa, range_complex):
-        df.loc[df[variable_replace_condition_complex] == col, variable_replace_complex] = i
-    df[generate_var_complex] = df[variable_condition_complex] + scale_complex * df[variable_replace_complex]
+        df.loc[
+            df[variable_replace_condition_complex] == col, variable_replace_complex,
+        ] = i
+    df[generate_var_complex] = (
+        df[variable_condition_complex] + scale_complex * df[variable_replace_complex]
+    )
     for col1, col2 in zip(list_names_complexb, list_names_complexa):
         df[col1] = 0
-        df.loc[df[variable_replace_condition_complex] == col2, col1] = final_value_complex
+        df.loc[
+            df[variable_replace_condition_complex] == col2, col1,
+        ] = final_value_complex
     return df
-
-
 
 
 def _generate_variables_based_on_various_lists(
     df,
     list_names_variouslists,
 ):
-    """This function is firstly extending two lists (list_names_place, list_names_month) which in turn by using a fixed loop
-    and using the multiplication rule, will be used to create new variables on a list {list_names_variouslists}
+    """This function is firstly extending two lists (list_names_place, list_names_month)
+    which in turn by using a fixed loop and using the multiplication rule, will be used
+    to create new variables on a list {list_names_variouslists}.
 
     Args:
     - df: Pandas DataFrame to generate the variables on.
@@ -465,10 +482,10 @@ def _generate_variables_based_on_various_lists(
     - df: Pandas DataFrame with the newly created variables.
 
     """
-    list_names_place=[]
+    list_names_place = []
     list_names_place.extend(
         [
-            f"mbelg{i}" 
+            f"mbelg{i}"
             for i in ["apr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]
         ],
     )
@@ -484,8 +501,8 @@ def _generate_variables_based_on_various_lists(
             for i in ["apr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]
         ],
     )
-    
-    list_names_month=[]
+
+    list_names_month = []
     list_names_month.extend([f"month{i}" for i in range(4, 13)])
 
     """ This is making a loop over the three different elements of list_names_variouslists_m2. Ity is usimng an index to go through thje 27 elements in list_names_place
@@ -509,12 +526,13 @@ def _generate_variable_based_on_three_or_conditions(
     initial_value_three_conditions=0,
     global_replace_value_three_conditions=1,
 ):
-    """
-    This function is generating a variable {generate_variable_three_conditions} in a dataframe {df} with an initial value 
-    {initial_value_three_conditions}. Then it is replacing the value of this variable if any of three condition on three variables are met 
+    """This function is generating a variable {generate_variable_three_conditions} in a
+    dataframe {df} with an initial value.
+
+    {initial_value_three_conditions}. Then it is replacing the value of this variable if any of three condition on three variables are met
     {column1_three_conditions, column2_three_conditions, column3_three_conditions}.
     The values need to meet a condition which in turns is also the final value of the generated variable {global_replace_value_three_conditions}
-    
+
     Args:
     - df: pandas DataFrame to work on.
     - gen_var_3cond (str): name of the new variable to generate.
@@ -523,11 +541,11 @@ def _generate_variable_based_on_three_or_conditions(
     - col3_3cond (str): name of the third column to consider for the conditions.
     - initial_val_3cond (int): initial value for the new variable (default=0).
     - global_replace_val_3cond (int): value to use when replacing the new variable (default=1).
-    
+
     Returns:
     - pandas DataFrame with the new variable generated and potentially replaced.
+
     """
-    
     df[generate_variable_three_conditions] = initial_value_three_conditions
     df.loc[
         (df[column1_three_conditions] == global_replace_value_three_conditions)
@@ -543,8 +561,10 @@ def _generate_multiplevariables_listbased(
     list_names_multi_variables,
     list_names_multi_general,
 ):
-    """This function is list based. Given some list entries. Given an inbuilt list {list_value}, it generates different values
-    based on a multiplication rule with for two nested loops using two lists {list_names_multi_variables, list_names_multi_general}
+    """This function is list based. Given some list entries. Given an inbuilt list
+    {list_value}, it generates different values based on a multiplication rule with for
+    two nested loops using two lists {list_names_multi_variables,
+    list_names_multi_general}.
 
     Parameters:
     -----------
@@ -566,12 +586,40 @@ def _generate_multiplevariables_listbased(
         The input dataframe with additional columns added based on the values in the input lists.
 
     """
-    list_value1_m3 = ['public_building_or_embassy_p', 'public_building_or_embassy_1_p', 'public_building_or_embassy_cuad2p', 'n_public_building_or_embassy_p', 'n_public_building_or_embassy_1_p', 'n_public_building_or_embassy_cuad2p']
-    list_value2_m3 = ['gas_station_p', 'gas_station_1_p', 'gas_station_cuad2p', 'n_gas_station_p', 'n_gas_station_1_p', 'n_gas_station_cuad2p']
-    list_value3_m3 = ['bank_p', 'bank_1_p', 'bank_cuad2p', 'n_bank_p', 'n_bank_1_p', 'n_bank_cuad2p']
-    list_value4_m3 = ['all_locations_p', 'all_locations_1_p', 'all_locations_cuad2p', 'n_all_locations_p', 'n_all_locations_1_p', 'n_all_locations_cuad2p']
-    
-    list_values=[list_value1_m3, list_value2_m3, list_value3_m3, list_value4_m3]
+    list_value1_m3 = [
+        "public_building_or_embassy_p",
+        "public_building_or_embassy_1_p",
+        "public_building_or_embassy_cuad2p",
+        "n_public_building_or_embassy_p",
+        "n_public_building_or_embassy_1_p",
+        "n_public_building_or_embassy_cuad2p",
+    ]
+    list_value2_m3 = [
+        "gas_station_p",
+        "gas_station_1_p",
+        "gas_station_cuad2p",
+        "n_gas_station_p",
+        "n_gas_station_1_p",
+        "n_gas_station_cuad2p",
+    ]
+    list_value3_m3 = [
+        "bank_p",
+        "bank_1_p",
+        "bank_cuad2p",
+        "n_bank_p",
+        "n_bank_1_p",
+        "n_bank_cuad2p",
+    ]
+    list_value4_m3 = [
+        "all_locations_p",
+        "all_locations_1_p",
+        "all_locations_cuad2p",
+        "n_all_locations_p",
+        "n_all_locations_1_p",
+        "n_all_locations_cuad2p",
+    ]
+
+    list_values = [list_value1_m3, list_value2_m3, list_value3_m3, list_value4_m3]
 
     for i, values in enumerate(list_values):
         for j in range(3):
@@ -585,7 +633,6 @@ def _generate_multiplevariables_listbased(
     return df
 
 
-
 def _generate_various_variables_conditional(
     df,
     list_genenerate_variables_conditional,
@@ -594,9 +641,11 @@ def _generate_various_variables_conditional(
     range_variable_conditional=range(4, 7),
     final_value_conditional=1,
 ):
-    """Generates a set of new variables from a list {list_genenerate_variables_conditional} in a data frame {df} with an original value
+    """Generates a set of new variables from a list
+    {list_genenerate_variables_conditional} in a data frame {df} with an original value.
+
     {original_value_conditional}. After that, using the numbers of elements of the list and also a range {range_variable_conditional}
-    for a loop, the values of these new variables are replaced if the condition of another existing variable on teh data frame is met 
+    for a loop, the values of these new variables are replaced if the condition of another existing variable on the data frame is met
     {conditional_variable} and if the condition is met, it is given a final value {final_value_conditional}
 
     Args:
@@ -613,7 +662,9 @@ def _generate_various_variables_conditional(
     """
     for col in list_genenerate_variables_conditional:
         df[col] = original_value_conditional
-    for col, i in zip(list_genenerate_variables_conditional, range_variable_conditional):
+    for col, i in zip(
+        list_genenerate_variables_conditional, range_variable_conditional,
+    ):
         df.loc[df[conditional_variable] > i, col] = final_value_conditional
     return df
 
@@ -623,11 +674,13 @@ def _generate_variables_specificrule_list(
     list_variable_generate_specific,
     list_variable_extisting_specific,
     list_new_variable_specific,
-    range_specific_loop=[0,3,6],
+    range_specific_loop=[0, 3, 6],
 ):
-    """This function is generating specific new variables {list_variable_generate_specific} in a dataframe {df} based on 
-    an already existing set of variables in the data frame {list_variable_extisting_specific, list_new_variable_specific} 
-    and this is done over a loop specifically designed by use to be used here in this function with range {range_specific_loop}.
+    """This function is generating specific new variables
+    {list_variable_generate_specific} in a dataframe {df} based on an already existing
+    set of variables in the data frame {list_variable_extisting_specific,
+    list_new_variable_specific} and this is done over a loop specifically designed by
+    use to be used here in this function with range {range_specific_loop}.
 
     Inputs:
 
@@ -646,47 +699,46 @@ def _generate_variables_specificrule_list(
         for col1, col2, col3 in zip(
             list_variable_generate_specific,
             list_variable_extisting_specific,
-            list_new_variable_specific[i:i+3],
+            list_new_variable_specific[i : i + 3],
         ):
             df[col3] = df[col1] * df[col2]
     return df
 
 
-
-
-
-
-
-"""ENVELOPE FUNCTIONS MONTHLY"""
-
-
 def monthlypanel_1(
     df,
-    original_variables=["cuad0", "cuad1", "cuad2", "cuad3", "cuad4", "cuad5", "cuad6", "cuad7"], 
-    fixed_variable="post", 
+    original_variables=[
+        "cuad0",
+        "cuad1",
+        "cuad2",
+        "cuad3",
+        "cuad4",
+        "cuad5",
+        "cuad6",
+        "cuad7",
+    ],
+    fixed_variable="post",
     list_generated_variable=["jewish_inst_p", "jewish_inst_one_block_away_1_p"],
-    list_original_variable=["jewish_inst",  "jewish_inst_one_block_away_1"], 
-    variable_generated = 'post',
-    original_value = 0,
-    type_of_condition='bigger than',
-    conditional_variable_replace='month',
-    variable_to_replace='post',
+    list_original_variable=["jewish_inst", "jewish_inst_one_block_away_1"],
+    variable_generated="post",
+    original_value=0,
+    type_of_condition="bigger than",
+    conditional_variable_replace="month",
+    variable_to_replace="post",
     conditional_number=7,
     final_value_replace=1,
     list_sort=["observ", "month"],
     new_variable="jewish_inst_one_block_away_1",
     var1="jewish_inst_one_block_away",
     var_sub="jewish_inst",
-    variable_complex_condition='month',
-    #location='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel.csv'
+    variable_complex_condition="month",
 ):
-    #df, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data/MonthlyPanel.dta')
     df = _clean_column_names_mon(df)
     df = _generate_dummy_variables_fixed_extension(
-        df, 
-        variable_conditional_extension='month',
+        df,
+        variable_conditional_extension="month",
         variable_name="month{}",
-        range_loop=range(5,13)
+        range_loop=range(5, 13),
     )
     df[new_variable] = df[var1] - df[var_sub]
     df[variable_generated] = original_value
@@ -696,66 +748,60 @@ def monthlypanel_1(
         conditional_variable_replace,
         variable_to_replace,
         conditional_number,
-        final_value_replace
+        final_value_replace,
     )
     df = _generate_dummy_variables_fixed_extension(
-        df, 
-        variable_conditional_extension='distance_to_jewish_inst',
+        df,
+        variable_conditional_extension="distance_to_jewish_inst",
         variable_name="cuad{}",
-        range_loop=range(0,8)
+        range_loop=range(0, 8),
     )
     df = _generate_similar_named_variables(
-        df, 
-        original_variables, 
-        fixed_variable, 
+        df,
+        original_variables,
+        fixed_variable,
     )
     df = _generate_variables_based_on_list_and_loop(
         df,
         condition_type="condition from another variable",
-        new_generated_variable='code',
-        list_a=['jewish_inst', 'jewish_inst_one_block_away_1', 'cuad2'],
-        list_b=range(1,4),
+        new_generated_variable="code",
+        list_a=["jewish_inst", "jewish_inst_one_block_away_1", "cuad2"],
+        list_b=range(1, 4),
         new_original_value=4,
         value_originallist=1,
     )
     df = _generate_variable_basedon_doublelist(
-        df, 
-        list_generated_variable, 
-        list_original_variable, 
-        fixed_variable)
+        df, list_generated_variable, list_original_variable, fixed_variable,
+    )
     df = _generate_variables_based_on_list_and_loop(
         df,
         condition_type="condition from original variable",
-        new_generated_variable='othermonth1',
-        list_a=[72,73],
-        list_b=[7.2,7.3],
-        new_original_value='month',
+        new_generated_variable="othermonth1",
+        list_a=[72, 73],
+        list_b=[7.2, 7.3],
+        new_original_value="month",
         value_originallist=1,
     )
     df = df.sort_values(list_sort)
     df = _generate_total_thefts2_mon(
-        df, 
-        variable_complex_condition, 
+        df,
+        variable_complex_condition,
     )
-    #df.to_csv(location)
     return df
-
-
 
 
 def monthlypanel_2(
     df,
-    #location_origin='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel.csv',
     var_drop="month",
     drop1=72,
     drop2=73,
-    new_variable_v_cond='total_thefts_c',
-    ori_variable_v_cond='total_thefts',
-    variable_conditional_v_cond='month',
-    list_variables_original_novalue=['prethefts', 'posthefts', 'theftscoll'], 
-    conditional_variable_for_novalue='month', 
-    equalizing_variable='total_thefts',
-    list_sort=["observ", "month"], 
+    new_variable_v_cond="total_thefts_c",
+    ori_variable_v_cond="total_thefts",
+    variable_conditional_v_cond="month",
+    list_variables_original_novalue=["prethefts", "posthefts", "theftscoll"],
+    conditional_variable_for_novalue="month",
+    equalizing_variable="total_thefts",
+    list_sort=["observ", "month"],
     new_generated_var_sim="w",
     value_sim=0.25,
     new_generated_var_sim2="n_neighborhood",
@@ -763,47 +809,53 @@ def monthlypanel_2(
     new_generated_var="total_thefts_q",
     existing_variable="total_thefts",
     scalar_gen=4,
-    list_names_complexa=['Belgrano', 'Once', 'V. Crespo'],   
-    variable_replace_condition_complex='neighborhood',
-    variable_replace_complex='n_neighborhood',
-    generate_var_complex='code2',
-    variable_condition_complex='month',
-    list_names_complexb=['belgrano', 'once', 'vcrespo'],
-    variable_gen_simple='month4',
+    list_names_complexa=["Belgrano", "Once", "V. Crespo"],
+    variable_replace_condition_complex="neighborhood",
+    variable_replace_complex="n_neighborhood",
+    generate_var_complex="code2",
+    variable_condition_complex="month",
+    list_names_complexb=["belgrano", "once", "vcrespo"],
+    variable_gen_simple="month4",
     original_val_simple=0,
     type_of_condition="equal to",
-    conditional_variable_replace='month',
-    variable_to_replace='month4',
-    list_names_variouslists=['belgrano', 'once', 'vcrespo'],
-    #location='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel2.csv'
+    conditional_variable_replace="month",
+    variable_to_replace="month4",
+    list_names_variouslists=["belgrano", "once", "vcrespo"],
 ):
-    #df = pd.read_csv(location_origin)
+
     df.drop(
         df.loc[(df[var_drop] == drop1) | (df[var_drop] == drop2)].index,
         inplace=True,
     )
-    df = _generate_variables_different_conditions(df, new_variable_v_cond, ori_variable_v_cond, variable_conditional_v_cond)
-    df = _generate_variables_original_with_no_value_after_replace(df, list_variables_original_novalue, conditional_variable_for_novalue, equalizing_variable)
+    df = _generate_variables_different_conditions(
+        df, new_variable_v_cond, ori_variable_v_cond, variable_conditional_v_cond,
+    )
+    df = _generate_variables_original_with_no_value_after_replace(
+        df,
+        list_variables_original_novalue,
+        conditional_variable_for_novalue,
+        equalizing_variable,
+    )
     df = df.sort_values(list_sort)
     df = _egenerator_sum(
         df,
-        new_egenerator_variable='totalpre',
-        by_variable='observ',
-        variable_egenerator_filter='prethefts',
-        condional_egenerator_variable='month',
-        egenerator_variable_tochange='theftscoll',
+        new_egenerator_variable="totalpre",
+        by_variable="observ",
+        variable_egenerator_filter="prethefts",
+        condional_egenerator_variable="month",
+        egenerator_variable_tochange="theftscoll",
         conditon_egenerator_value=4,
         egenerator_scale_factor=4,
     )
     df = _egenerator_sum(
         df,
-        new_egenerator_variable='totalpos',
-        by_variable='observ',
-        variable_egenerator_filter='posthefts',
-        condional_egenerator_variable='month',
-        egenerator_variable_tochange='theftscoll',
+        new_egenerator_variable="totalpos",
+        by_variable="observ",
+        variable_egenerator_filter="posthefts",
+        condional_egenerator_variable="month",
+        egenerator_variable_tochange="theftscoll",
         conditon_egenerator_value=8,
-        egenerator_scale_factor=5
+        egenerator_scale_factor=5,
     )
     df[new_generated_var] = df[existing_variable] * scalar_gen
     df[new_generated_var_sim] = value_sim
@@ -824,80 +876,94 @@ def monthlypanel_2(
         conditional_variable_replace,
         variable_to_replace,
         conditional_number=4,
-        final_value_replace=1,    
+        final_value_replace=1,
     )
     df = _generate_variables_based_on_various_lists(
         df,
         list_names_variouslists,
     )
-    #df.to_csv(location)
     return df
-
 
 
 def monthlypanel_3(
     df,
-    #location_origin='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel2.csv',
-    generate_variable_three_conditions='all_locations',
-    column1_three_conditions='public_building_or_embassy',
-    column2_three_conditions='gas_station',
-    column3_three_conditions='bank',
-    list_names_multi_variables=['public_building_or_embassy', 'gas_station', 'bank', 'all_locations'],
-    list_names_multi_general=['jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p', 'jewish_inst_p', 'jewish_inst_one_block_away_1_p', 'cuad2p'] ,
-    #location='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel3.csv',
+    generate_variable_three_conditions="all_locations",
+    column1_three_conditions="public_building_or_embassy",
+    column2_three_conditions="gas_station",
+    column3_three_conditions="bank",
+    list_names_multi_variables=[
+        "public_building_or_embassy",
+        "gas_station",
+        "bank",
+        "all_locations",
+    ],
+    list_names_multi_general=[
+        "jewish_inst_p",
+        "jewish_inst_one_block_away_1_p",
+        "cuad2p",
+        "jewish_inst_p",
+        "jewish_inst_one_block_away_1_p",
+        "cuad2p",
+    ],
     column_to_drop="month4",
 ):
-    #df = pd.read_csv(location_origin)
     df.drop(columns=column_to_drop)
     df = _generate_variable_based_on_three_or_conditions(
         df,
         generate_variable_three_conditions,
         column1_three_conditions,
         column2_three_conditions,
-        column3_three_conditions
+        column3_three_conditions,
     )
     df = _generate_multiplevariables_listbased(
-        df,
-        list_names_multi_variables,
-        list_names_multi_general
+        df, list_names_multi_variables, list_names_multi_general,
     )
-    #df.to_csv(location)
     return df
-    
-
 
 
 def monthlypanel_new(
     df,
-    new_variable='jewish_inst_one_block_away_1', 
-    variable_original='jewish_inst_one_block_away', 
-    variable_original_substract='jewish_inst',
-    list_various_generate=['cuad2', 'month5', 'month6', 'month7'],
+    new_variable="jewish_inst_one_block_away_1",
+    variable_original="jewish_inst_one_block_away",
+    variable_original_substract="jewish_inst",
+    list_various_generate=["cuad2", "month5", "month6", "month7"],
     original_value_various_list=0,
-    conditional_var_simple='distance_to_jewish_inst', 
-    variable_simple_replace='cuad2',
-    cond_value_simple=2, 
+    conditional_var_simple="distance_to_jewish_inst",
+    variable_simple_replace="cuad2",
+    cond_value_simple=2,
     value_assigned_simple=1,
-    range_replace=range(5,8),
-    conditional_variable='month',
+    range_replace=range(5, 8),
+    conditional_variable="month",
     value_assigned_various=1,
-    list_genenerate_variables_conditional=['post1', 'post2', 'post3'],
-    list_variable_generate_specific=['jewish_inst', 'jewish_inst_one_block_away_1', 'cuad2'],
-    list_variable_extisting_specific=['post1', 'post2', 'post3'],
-    list_new_variable_specific=['one_jewish_inst_1_p', 'one_jewish_inst_one_block_away_1_p', 'one_cuad2p', 'two_jewish_inst_1_p', 'two_jewish_inst_one_block_away_1_p', 'two_cuad2p', 'three_jewish_inst_1_p', 'three_jewish_inst_one_block_away_1_p', 'three_cuad2p'],
-    #location='/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Checking_my_code/Ultimate_before_Erik_changes/Clean_Data/MonthlyPanel_new.csv'
+    list_genenerate_variables_conditional=["post1", "post2", "post3"],
+    list_variable_generate_specific=[
+        "jewish_inst",
+        "jewish_inst_one_block_away_1",
+        "cuad2",
+    ],
+    list_variable_extisting_specific=["post1", "post2", "post3"],
+    list_new_variable_specific=[
+        "one_jewish_inst_1_p",
+        "one_jewish_inst_one_block_away_1_p",
+        "one_cuad2p",
+        "two_jewish_inst_1_p",
+        "two_jewish_inst_one_block_away_1_p",
+        "two_cuad2p",
+        "three_jewish_inst_1_p",
+        "three_jewish_inst_one_block_away_1_p",
+        "three_cuad2p",
+    ],
 ):
-    #df, meta = pyread.read_dta('/Users/bonjour/Documents/Master in Economics Bonn/3rd semester/Programming practices/Final work/Possible papers/Do Police reduce crime/Github/di_tella_2004_replication/src/di_tella_2004_replication/data/MonthlyPanel.dta')
     df = _clean_column_names_mon(df)
     df[new_variable] = df[variable_original] - df[variable_original_substract]
-    df[[col for col in list_various_generate]] = original_value_various_list
-    df.loc[df[conditional_var_simple]==cond_value_simple, variable_simple_replace] = value_assigned_simple
+    df[list(list_various_generate)] = original_value_various_list
+    df.loc[
+        df[conditional_var_simple] == cond_value_simple, variable_simple_replace,
+    ] = value_assigned_simple
     for i in range_replace:
         df.loc[df[conditional_variable] == i, f"month{i}"] = value_assigned_various
     df = _generate_various_variables_conditional(
-        df,
-        list_genenerate_variables_conditional,
-        conditional_variable
+        df, list_genenerate_variables_conditional, conditional_variable,
     )
     df = _generate_variables_specificrule_list(
         df,
@@ -905,12 +971,4 @@ def monthlypanel_new(
         list_variable_extisting_specific,
         list_new_variable_specific,
     )
-    #df.to_csv(location)
     return df
-    
-#monthlypanel_1()
-#monthlypanel_2()
-#monthlypanel_3()
-#monthlypanel_new()
-    
-

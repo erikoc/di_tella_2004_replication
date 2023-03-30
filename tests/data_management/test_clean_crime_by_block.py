@@ -3,17 +3,20 @@ import pyreadstat
 import pytest
 from di_tella_2004_replication.config import SRC
 from di_tella_2004_replication.data_management.clean_crime_by_block import (
-    _clean_column_names,
+    _calculate_theft_differences,
+    _calculate_total_theft_by_suffix,
+    _clean_column_names_block,
     _convert_dtypes,
+    _create_new_variables_ind,
+    _drop_repated_obs,
     _split_theft_data,
 )
 
 
 @pytest.fixture()
 def original_data():
-    return {
-        "crime_by_block": pyreadstat.read_dta(SRC / "data" / "CrimeByBLock.dta"),
-    }
+    data, meta = pyreadstat.read_dta(SRC / "data" / "CrimeByBlock.dta")
+    return data
 
 
 @pytest.fixture()
@@ -26,7 +29,7 @@ def test_df():
             "rob2": [1, 1, 0],
             "rob2val": [300, 250, 200],
             "day": ["Monday", "Tuesday", "Wednesday"],
-            "district": ["A", "B", "C"],
+            "distrito": ["A", "B", "C"],
         },
     )
 
@@ -94,13 +97,44 @@ def theft_df_expected_cols():
     ]
 
 
+@pytest.fixture()
+def expected_total_theft_by_suffix():
+    return {
+        "theft_hv1": 2,
+        "theft_lv1": 1,
+        "theft_night1": 2,
+        "theft_day1": 1,
+        "theft_weekend1": 1,
+        "theft_weekday1": 2,
+    }
+
+
+@pytest.fixture()
+def ind_char_new_variables():
+    return pd.DataFrame(
+        {
+            "jewish_inst": [0, 1, 0],
+            "non_unmet_basic_needs_rate": [0.2, 0.1, 0.3],
+            "non_overcrowd_rate": [0.4, 0.5, 0.3],
+            "employment_rate": [0.8, 0.9, 0.7],
+            "census_district": [1, 1, 2],
+            "census_tract": [1, 2, 1],
+        },
+    )
+
+
 def test_clean_column_names(test_df, expected_df):
-    df_cleaned = _clean_column_names(test_df)
+    df_cleaned = _clean_column_names_block(test_df)
     assert list(df_cleaned.columns) == list(expected_df.columns)
 
 
 def test_clean_column_names_data(test_df, expected_df):
-    pd.testing.assert_frame_equal(_clean_column_names(test_df), expected_df)
+    pd.testing.assert_frame_equal(_clean_column_names_block(test_df), expected_df)
+
+
+def test_clean_colum_names_rob_case(test_df):
+    df_cleaned = _clean_column_names_block(test_df)
+    assert all("rob" not in col_name for col_name in df_cleaned.columns)
 
 
 def test_convert_dtypes(expected_df):
@@ -119,3 +153,67 @@ def test_split_theft_data_shape(theft_df):
 def test_split_theft_data_cols(theft_df, theft_df_expected_cols):
     theft_data = _split_theft_data(theft_df, month=1, maxrange=3)
     assert list(theft_data.columns) == theft_df_expected_cols
+
+
+def test_split_and_calculate_total_theft_by_suffix(
+    theft_df,
+    expected_total_theft_by_suffix,
+):
+    theft_data = _split_theft_data(theft_df, month=1, maxrange=3)
+    theft_data = _calculate_total_theft_by_suffix(theft_data, month=1)
+
+
+def test_create_new_variables_ind(ind_char_new_variables):
+    df_new = _create_new_variables_ind(ind_char_new_variables)
+    tol = 1e-8
+    assert all(abs(df_new["no_jewish_inst"] - [1, 0, 1]) < tol)
+    assert all(abs(df_new["unmet_basic_needs_rate"] - [0.8, 0.9, 0.7]) < tol)
+    assert all(abs(df_new["overcrowd_rate"] - [0.6, 0.5, 0.7]) < tol)
+    assert all(abs(df_new["unemployment_rate"] - [0.2, 0.1, 0.3]) < tol)
+    assert df_new[["census_district", "census_tract"]].values.tolist() == [
+        [1, 1],
+        [1, 2],
+        [2, 1],
+    ]
+
+
+def test__drop_repated_obs_unique_obs(ind_char_new_variables):
+    df_new = _create_new_variables_ind(ind_char_new_variables)
+    df_unique = _drop_repated_obs(df_new)
+    assert not df_unique.duplicated(subset=["census_district", "census_tract"]).any()
+
+
+import pandas as pd
+
+
+def test_calculate_theft_differences():
+    # Create a sample DataFrame for testing
+    data = {
+        "tot_theft_hv3": [10, 20, 30],
+        "tot_theft_lv3": [2, 4, 6],
+        "tot_theft_night3": [6, 12, 18],
+        "tot_theft_day3": [1, 2, 3],
+        "tot_theft_weekday3": [9, 18, 27],
+        "tot_theft_weekend3": [1, 2, 3],
+    }
+    df = pd.DataFrame(data)
+
+    # Call the function being tested
+    result = _calculate_theft_differences(df, 3)
+
+    # Define the expected output
+    expected_output = {
+        "tot_theft_hv3": [10, 20, 30],
+        "tot_theft_lv3": [2, 4, 6],
+        "tot_theft_night3": [6, 12, 18],
+        "tot_theft_day3": [1, 2, 3],
+        "tot_theft_weekday3": [9, 18, 27],
+        "tot_theft_weekend3": [1, 2, 3],
+        "dif_hv_lv3": [8, 16, 24],
+        "dif_night_day3": [5, 10, 15],
+        "dif_weekday_weekend3": [8, 16, 24],
+    }
+    expected_output_df = pd.DataFrame(expected_output)
+
+    # Compare the actual and expected outputs
+    pd.testing.assert_frame_equal(result, expected_output_df)
