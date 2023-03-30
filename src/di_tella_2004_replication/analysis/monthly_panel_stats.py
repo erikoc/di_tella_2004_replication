@@ -60,7 +60,7 @@ def regression_testing(regression, variable_test, testing_number):
         variable_test
     ]
     pvalue = 2 * (1 - scy.stats.t.cdf(np.abs(tvalue), regression.df_resid))
-    """""
+    
     if pvalue < 0.05:
         result = (
             f"The coefficient of {variable_test}] is significantly different from {testing_number} with p-value",
@@ -72,9 +72,8 @@ def regression_testing(regression, variable_test, testing_number):
             f"The coefficient of {variable_test} is not significantly different from {testing_number} with p-value",
             pvalue,
         )
-    """""
-    resulting = {"variable_to_test": "variable_test", "number to be tested": f"{testing_number}", "tvalue": f"{tvalue}", "p-value": f"{pvalue}"}
-    return resulting
+    results = [tvalue, pvalue, result]
+    return results
 
 
 def testings_div(regression, variable_test, testing_number, division_f):
@@ -110,7 +109,8 @@ def testings_div(regression, variable_test, testing_number, division_f):
             f"The coefficient of {variable_test} is not significantly different from {testing_number} with p-value",
             pvalue,
         )
-        return result
+    results = [tvalue, pvalue, result]
+    return results
 
 
 def summarize_data(df):
@@ -135,24 +135,4 @@ def summarize_data(df):
     return summary
 
 
-def various_testings(list_names_data, reg):
-    """This function performs various statistical tests on a linear regression model and
-    returns the results for each test as a dictionary.
 
-    Args:
-    - list_names_data (list): A list containing the names of variables and their corresponding indices in the linear regression model.
-    - reg (statsmodels.regression.linear_model.RegressionResultsWrapper): A linear regression model object obtained using statsmodels.
-
-    Returns:
-    - A dictionary containing the results of various statistical tests performed on the linear regression model.
-      The keys of the dictionary are the variable names, and the values are the results of the corresponding tests.
-
-    """
-    tests = [
-        (list_names_data[0], list_names_data[3]),
-        (list_names_data[1], list_names_data[4]),
-        (list_names_data[2], list_names_data[5]),
-    ]
-    test_res = {}
-    for var, test_num in tests:
-        test_res[var] = regression_testing(reg, var, reg.params[test_num])

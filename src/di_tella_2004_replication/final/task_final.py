@@ -397,7 +397,7 @@ def task_create_MonthlyPanel_WT2(depends_on, produces):
 def task_create_MonthlyPanel_WT3(depends_on, produces):
     with open(depends_on, "rb") as f:
         tests = pickle.load(f)
-        df = pd.DataFrame({"t": [tests[0]], "p": [tests[1]]})
+        df = pd.DataFrame({"t-test": [tests[0]], "p-value": [tests[1]]})
         df.to_latex(produces)
 
 
@@ -407,7 +407,122 @@ def task_create_MonthlyPanel_WT3(depends_on, produces):
 @pytask.mark.produces(BLD / "python" / "tables" / "test_areg_single1_monthly.tex")
 def task_test_areg_single1_monthly(depends_on, produces):
     with open(depends_on, "rb") as f:
-        my_dict = pickle.load(f)
-        my_dict_dict = dict(my_dict)
-        df = pd.DataFrame.from_dict(my_dict_dict, orient="index")
+        tests = pickle.load(f)
+        df = pd.DataFrame({"t-test": [tests[0]], "p-value": [tests[1]], "sentence": [tests[2]]})
+        df.to_latex(produces)
+        
+@pytask.mark.depends_on(BLD / "python" / "stats" / "test_areg_single2_monthly.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "test_areg_single2_monthly.tex")
+def task_test_areg_single2_monthly(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        df = pd.DataFrame({"t-test": [tests[0]], "p-value": [tests[1]], "sentence": [tests[2]]})
+        df.to_latex(produces)
+
+@pytask.mark.depends_on(BLD / "python" / "stats" / "test_areg_double1_monthly.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "test_areg_double1_monthly.tex")
+def task_test_areg_double1_monthly(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        df = pd.DataFrame({"t-test": [tests[0]], "p-value": [tests[1]], "sentence": [tests[2]]})
+        df.to_latex(produces)
+        
+@pytask.mark.depends_on(BLD / "python" / "stats" / "test_areg_double2_monthly.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "test_areg_double2_monthly.tex")
+def task_test_areg_double1_monthly(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        df = pd.DataFrame({"t-test": [tests[0]], "p-value": [tests[1]], "sentence": [tests[2]]})
+        df.to_latex(produces)
+
+@pytask.mark.depends_on(BLD / "python" / "stats" / "test_areg_triple1_monthly.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "test_areg_triple1_monthly.tex")
+def task_test_areg_triple1_monthly(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        df = pd.DataFrame({"t-test": [tests[0]], "p-value": [tests[1]], "sentence": [tests[2]]})
+        df.to_latex(produces)
+        
+@pytask.mark.depends_on(BLD / "python" / "stats" / "test_areg_triple2_monthly.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "test_areg_triple2_monthly.tex")
+def task_test_areg_triple2_monthly(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        df = pd.DataFrame({"t-test": [tests[0]], "p-value": [tests[1]], "sentence": [tests[2]]})
+        df.to_latex(produces)
+        
+
+
+@pytask.mark.depends_on(BLD / "python" / "stats" / "test1_areg_clus1_monthly.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "test1_areg_clus1_monthly.tex")
+def task_test1_areg_clus1_monthly(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        df = pd.DataFrame({"t-test": [tests[0]], "p-value": [tests[1]], "sentence": [tests[2]]})
+        df.to_latex(produces)
+        
+@pytask.mark.depends_on(BLD / "python" / "stats" / "test2_areg_clus1_monthly.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "test2_areg_clus1_monthly.tex")
+def task_test2_areg_clus1_monthly(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        df = pd.DataFrame({"t-test": [tests[0]], "p-value": [tests[1]], "sentence": [tests[2]]})
+        df.to_latex(produces)
+
+@pytask.mark.depends_on(BLD / "python" / "stats" / "test3_areg_clus1_monthly.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "test3_areg_clus1_monthly.tex")
+def task_test3_areg_clus1_monthly(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        df = pd.DataFrame({"t-test": [tests[0]], "p-value": [tests[1]], "sentence": [tests[2]]})
+        df.to_latex(produces)
+        
+
+@pytask.mark.depends_on(BLD / "python" / "stats" / "test1_areg_clus2_monthly.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "test1_areg_clus2_monthly.tex")
+def task_test1_areg_clus2_monthly(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        df = pd.DataFrame({"t-test": [tests[0]], "p-value": [tests[1]], "sentence": [tests[2]]})
+        df.to_latex(produces)
+        
+@pytask.mark.depends_on(BLD / "python" / "stats" / "test2_areg_clus2_monthly.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "test2_areg_clus2_monthly.tex")
+def task_test2_areg_clus2_monthly(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        df = pd.DataFrame({"t-test": [tests[0]], "p-value": [tests[1]], "sentence": [tests[2]]})
+        df.to_latex(produces)
+
+@pytask.mark.depends_on(BLD / "python" / "stats" / "test3_areg_clus2_monthly.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "test3_areg_clus2_monthly.tex")
+def task_test3_areg_clus2_monthly(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        df = pd.DataFrame({"t-test": [tests[0]], "p-value": [tests[1]], "sentence": [tests[2]]})
+        df.to_latex(produces)
+
+
+@pytask.mark.depends_on(BLD / "python" / "stats" / "test1_areg_clus3_monthly.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "test1_areg_clus3_monthly.tex")
+def task_test1_areg_clus3_monthly(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        df = pd.DataFrame({"t-test": [tests[0]], "p-value": [tests[1]], "sentence": [tests[2]]})
+        df.to_latex(produces)
+        
+@pytask.mark.depends_on(BLD / "python" / "stats" / "test2_areg_clus3_monthly.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "test2_areg_clus3_monthly.tex")
+def task_test2_areg_clus3_monthly(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        df = pd.DataFrame({"t-test": [tests[0]], "p-value": [tests[1]], "sentence": [tests[2]]})
+        df.to_latex(produces)
+
+@pytask.mark.depends_on(BLD / "python" / "stats" / "test3_areg_clus3_monthly.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "test3_areg_clus3_monthly.tex")
+def task_test3_areg_clus3_monthly(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        df = pd.DataFrame({"t-test": [tests[0]], "p-value": [tests[1]], "sentence": [tests[2]]})
         df.to_latex(produces)
