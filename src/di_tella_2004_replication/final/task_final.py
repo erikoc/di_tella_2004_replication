@@ -6,6 +6,8 @@ import pytask
 from di_tella_2004_replication.config import BLD
 
 
+"Crime by Block"
+
 @pytask.mark.depends_on(BLD / "python" / "models" / "fe_tot_models.pickle")
 @pytask.mark.produces(
     {
@@ -100,3 +102,19 @@ def task_create_results_group_ind_char_python(depends_on, produces):
     with open(depends_on, "rb") as f:
         tests = pickle.load(f)
         tests.to_latex(produces)
+
+
+
+"WeeklyPanel"
+
+
+"MonthlyPanel"
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_normal_regression1.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_normal_regression1.text")
+def task_create_MonthlyPanel_normal_regression1(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary.as_latex()
+        with open(produces, "w") as f:
+            f.writelines(table)
