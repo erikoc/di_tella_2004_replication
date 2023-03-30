@@ -65,13 +65,14 @@ def regression_testing(regression, variable_test, testing_number):
             f"The coefficient of {variable_test}] is significantly different from {testing_number} with p-value",
             pvalue,
         )
-        return result
+        resulting = {"variable_to_test": f"{variable_test}", "number to be tested": f"{testing_number}", "tvalue": tvalue, "p-value": pvalue}
     else:
         result = (
             f"The coefficient of {variable_test} is not significantly different from {testing_number} with p-value",
             pvalue,
         )
-        return result
+        resulting = {"variable_to_test": f"{variable_test}", "number to be tested": f"{testing_number}", "tvalue": tvalue, "p-value": pvalue}
+    return resulting
 
 
 def testings_div(regression, variable_test, testing_number, division_f):
