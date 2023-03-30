@@ -30,22 +30,8 @@ def original_data():
     return data
 
 
-@pytest.fixture()
-def input_data_clean_column_names_mon():
-    df = original_data["monthly_panel"]  # Test using our own data set
-    return df
-
-
-def test_clean_column_names_mon(
-    input_data_clean_column_names_mon,
-):  # Test using our own data set
-
-    df = input_data_clean_column_names_mon
-
-    # Call the function being tested
-    new_df = _clean_column_names_mon(df)
-
-    # Test that new columns were added
+def test_clean_column_names_mon(original_data):
+    new_df = _clean_column_names_mon(original_data)
     list_var = [
         "observ",
         "neighborhood",
@@ -61,18 +47,12 @@ def test_clean_column_names_mon(
         "month",
     ]
 
-    # Assert that these above are in the columns
-    assert all(list_var) in new_df.columns
-
-
-"_generate_dummy_variables_fixed_extension"
+    assert all(col in list_var for col in new_df.columns)
 
 
 @pytest.fixture()
 def input_data_generate_dummy_variables_fixed_extension():
-    df = (
-        _clean_column_names_mon(original_data["monthly_panel"]),
-    )  # Test using our own data set
+    df = (_clean_column_names_mon(original_data),)  # Test using our own data set
     variable_conditional_extension = ("month",)
     variable_name = ("month{}",)
     range_loop = range(5, 13)
@@ -109,7 +89,7 @@ def test_generate_dummy_variables_fixed_extension(  # Test using our own data se
         "month12",
     ]
     # Assert that these above are in the columns
-    assert all(list_var) in new_df.columns
+    assert all(col in list_var for col in new_df.columns)
 
 
 "_rep_variables_based_on_condition"
@@ -185,7 +165,7 @@ def test_generate_similar_named_variables(input_data_generate_similar_named_vari
     # Test that new columns were added
     list_var = ["cuad0p", "cuad1p", "cuad2p", "cuad3p", "cuad4p"]
     # Assert that these above are in the columns
-    assert all(list_var) in new_df.columns
+    assert all(col in list_var for col in new_df.columns)
 
 
 "_generate_variables_based_on_list_and_loop"
@@ -617,9 +597,6 @@ def test_generate_variable_based_on_three_or_conditions(
         expected_output,
         check_dtype=False,
     )
-
-
-"_generate_multiplevariables_listbased"
 
 
 @pytest.fixture()
