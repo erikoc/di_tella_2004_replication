@@ -408,13 +408,6 @@ def task_create_MonthlyPanel_WT3(depends_on, produces):
 def task_test_areg_single1_monthly(depends_on, produces):
     with open(depends_on, "rb") as f:
         my_dict = pickle.load(f)
-        my_list = [(key, value) for key, value in my_dict.items()]
-        with open(produces, "w") as f_out:
-            f_out.write("\\begin{tabular}{lr}\n")
-            f_out.write("\\toprule\n")
-            f_out.write("Variable & Value \\\\\n")
-            f_out.write("\\midrule\n")
-            for key, value in my_list:
-                f_out.write(f"{key} & {value:.4f} \\\\\n")
-            f_out.write("\\bottomrule\n")
-            f_out.write("\\end{tabular}\n")
+        my_dict_dict = dict(my_dict)
+        df = pd.DataFrame.from_dict(my_dict_dict, orient="index")
+        df.to_latex(produces)

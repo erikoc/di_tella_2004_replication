@@ -60,6 +60,7 @@ def regression_testing(regression, variable_test, testing_number):
         variable_test
     ]
     pvalue = 2 * (1 - scy.stats.t.cdf(np.abs(tvalue), regression.df_resid))
+    """""
     if pvalue < 0.05:
         result = (
             f"The coefficient of {variable_test}] is significantly different from {testing_number} with p-value",
@@ -71,7 +72,8 @@ def regression_testing(regression, variable_test, testing_number):
             f"The coefficient of {variable_test} is not significantly different from {testing_number} with p-value",
             pvalue,
         )
-        resulting = {"variable_to_test": f"{variable_test}", "number to be tested": f"{testing_number}", "tvalue": tvalue, "p-value": pvalue}
+    """""
+    resulting = {"variable_to_test": "variable_test", "number to be tested": f"{testing_number}", "tvalue": f"{tvalue}", "p-value": f"{pvalue}"}
     return resulting
 
 
