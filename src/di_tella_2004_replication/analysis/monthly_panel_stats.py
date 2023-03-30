@@ -78,26 +78,6 @@ def regression_testing(regression, variable_test, testing_number):
 
 
 
-def summarize_data(df):
-    """This function summarizes the total number of thefts in a pandas DataFrame based
-    on certain conditions.
-
-    Args:
-    - df (pandas.DataFrame): The DataFrame containing the data to summarize.
-
-    Returns:
-    - A pandas Series object containing descriptive statistics of the total number of thefts,
-      including count, mean, standard deviation, minimum, and maximum values.
-
-    """
-    summary = df[
-        (df["month"] > 7)
-        & (df["jewish_inst"] == 0)
-        & (df["jewish_inst_one_block_away_1"] == 0)
-        & (df["distance_to_jewish_inst"] == 0)
-        & ((df["totalpre"] != 0) | (df["totalpos"] != 0))
-    ]["total_thefts"].describe()
-    return summary
 
 
 
