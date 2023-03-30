@@ -3,6 +3,8 @@ import pickle
 
 import pytask
 
+import statsmodels.formula.api as sm
+
 from di_tella_2004_replication.config import BLD
 
 
@@ -115,6 +117,7 @@ def task_create_results_group_ind_char_python(depends_on, produces):
 def task_create_MonthlyPanel_normal_regression1(depends_on, produces):
     with open(depends_on, "rb") as f:
         model = pickle.load(f)
-        table = model.summary.as_latex()
+        table = model.summary2().tables[1]
+        latex = table.to_latex()
         with open(produces, "w") as f:
-            f.writelines(table)
+            f.writelines(latex)
