@@ -76,41 +76,6 @@ def regression_testing(regression, variable_test, testing_number):
     return results
 
 
-def testings_div(regression, variable_test, testing_number, division_f):
-    """Performs a t-test to determine if a given variable in a regression model is
-    significantly different from a specified value.
-
-    Parameters
-    ----------
-    regression : statsmodels regression results object
-        The result object obtained from fitting a regression model.
-    variable_test : str
-        The name of the variable to test in the regression model.
-    testing_number : float
-        The value to test the variable against.
-
-    Returns:
-    -------
-    Print string
-
-    """
-    tvalue = ((regression.params[variable_test] / division_f) - (testing_number)) / (
-        regression.bse[variable_test] / division_f
-    )
-    pvalue = 2 * (1 - scy.stats.t.cdf(np.abs(tvalue), regression.df_resid))
-    if pvalue < 0.05:
-        result = (
-            f"The coefficient of {variable_test}] is significantly different from {testing_number} with p-value",
-            pvalue,
-        )
-        return result
-    else:
-        result = (
-            f"The coefficient of {variable_test} is not significantly different from {testing_number} with p-value",
-            pvalue,
-        )
-    results = [tvalue, pvalue, result]
-    return results
 
 
 def summarize_data(df):

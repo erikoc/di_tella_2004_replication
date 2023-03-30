@@ -698,8 +698,6 @@ from di_tella_2004_replication.analysis.monthly_panel_stats import (
     WelchTest,
     regression_testing,
     summarize_data,
-    testings_div,
-    various_testings,
 )
 
 ### WELCH TESTS first part
@@ -844,21 +842,6 @@ def task_testings3_areg_clus1(depends_on, produces):
 
 
 @pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus2.pickle")
-@pytask.mark.produces(BLD / "python" / "stats" / "test1_areg_clus2_monthly.pickle")
-def task_testings1_areg_clus2(depends_on, produces):
-    model = testings_div(
-        regression=pd.read_pickle(depends_on),
-        variable_test="jewish_inst_p",
-        testing_number=-(
-            pd.read_pickle(depends_on).params["jewish_inst_one_block_away_1_p"]
-        ),
-        division_f=161 / 37,
-    )
-    with open(produces, "wb") as f:
-        pickle.dump(model, f)
-
-
-@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus2.pickle")
 @pytask.mark.produces(BLD / "python" / "stats" / "test2_areg_clus2_monthly.pickle")
 def task_testings2_areg_clus2(depends_on, produces):
     model = regression_testing(
@@ -877,19 +860,6 @@ def task_testings3_areg_clus2(depends_on, produces):
         regression=pd.read_pickle(depends_on),
         variable_test="jewish_inst_p",
         testing_number=-0.0124224,
-    )
-    with open(produces, "wb") as f:
-        pickle.dump(model, f)
-
-
-@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus3.pickle")
-@pytask.mark.produces(BLD / "python" / "stats" / "test1_areg_clus3_monthly.pickle")
-def task_testings1_areg_clus3(depends_on, produces):
-    model = testings_div(
-        regression=pd.read_pickle(depends_on),
-        variable_test="jewish_inst_p",
-        testing_number=-(pd.read_pickle(depends_on).params["cuad2p"]),
-        division_f=226 / 37,
     )
     with open(produces, "wb") as f:
         pickle.dump(model, f)
