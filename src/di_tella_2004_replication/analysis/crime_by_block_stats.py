@@ -22,7 +22,7 @@ def t_tests_crime_by_block(df):
         "av_age",
         "female_rate",
         "ownership_rate",
-        'overcrowd_rate"',
+        "overcrowd_rate",
         "unmet_basic_needs_rate",
         "av_hh_head_schooling",
         "unemployment_rate",
@@ -41,6 +41,12 @@ def t_tests_crime_by_block(df):
     return results
 
 
+Yes, the function can be modified to return a pandas DataFrame instead of a dictionary by using the pd.DataFrame() function to convert the grouped data to a DataFrame. Here's the modified function:
+
+python
+Copy code
+import pandas as pd
+
 def neighborhood_comparison_tables(df, variables=None):
     """Calculates mean and standard deviation for the given variables in the DataFrame
     `df`, by grouping them based on the values in the `neighborhood` column.
@@ -50,9 +56,8 @@ def neighborhood_comparison_tables(df, variables=None):
         variables (list): A list of variable names to compute statistics for.
 
     Returns:
-        dict: A dictionary containing the mean and standard deviation for each variable
-        in each neighborhood. The keys are the variable names, and the values are
-        dictionaries containing the mean and standard deviation for each neighborhood.
+        pandas.DataFrame: A DataFrame containing the mean and standard deviation for each variable
+        in each neighborhood.
 
     """
     if variables is None:
@@ -67,9 +72,10 @@ def neighborhood_comparison_tables(df, variables=None):
             "av_hh_size",
         ]
 
-    results = {}
-
+    dfs = []
     for var in variables:
-        results[var] = df.groupby("neighborhood")[var].agg(["mean", "std"]).to_dict()
+        var_df = df.groupby("neighborhood")[var].agg(["mean", "std"]).reset_index()
+        var_df.columns = ["neighborhood", f"{var}_mean", f"{var}_std"]
+        dfs.append(var_df)
 
-    return results
+    return pd.concat(dfs, axis=1)
