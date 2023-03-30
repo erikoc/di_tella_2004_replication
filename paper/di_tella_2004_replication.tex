@@ -72,47 +72,49 @@
 \section{Introduction} % (fold)
 \label{sec:introduction}
 
-If you are using this template, please cite this item from the references:
-\citet{GaudeckerEconProjectTemplates}.
+In their 2004 paper, \citeauthor{di2004police} studied the causal effect of policing on crime rates. When studiying this phenomenon, one faces the issue of reverse casuality since police forces are usually allocated endogenously to areas where crime is rampant. Difference-in-differences estimation could solve this problem via the conditional independence assumption reviewed earlier. Throughout the rest of this section, we conduct a replication exercise of the key results
+form \citet{di2004police} and further review some of the critical assumptions for identification in difference-in-differences estimation.
 
-The data set for the example project is taken from
-\url{https://www.stem.org.uk/resources/elibrary/resource/28452/large-datasets-stats4schools}.
-It contains data on smoking habits in the UK, with 1691 observations and 12 variables.
-We consider only 4 of the 12 features for the prediction of the variable
-\texttt{smoking}: \texttt{marital\_status}, \texttt{highest\_qualification},
-\texttt{gender} and \texttt{age}. We model the dependence using a Logistic model. All
-numerical features are included linearly, while categorical features are expanded into
-dummy variables. Figures below illustrate the model predictions over the lifetime. You
-will find one figure and one estimation summary table for each installed programming
-language.
+ The terrorist attack in July 1994 on the main Jewish centre in Buenos Aires pushed the government to provide police protection to all Jewish institutions in Argentina. This translated to an exogenous allocation of police forces to certain city blocks within the country as forces were deployed to deter further terrorist attacks but not in response to crime rates in Argentinas neighbourhoods. Thus, the occurrence of the terrorist attack and the extended vigilance had no relation to street crime rates. Nonetheless, the policing efforts could have had a general deterrence effect. With this argument, \citeauthor{di2004police} present the allocation of police forces following the terrorist attack as a valid treatment.
+
+The authors set up a difference-in-differences approach comparing the average number of car thefts per a selection of blocks in Buenos Aires, before and after the terrorist attack, and between city blocks with and without a Jewish institution. The document at hand provides an excellent example of a coherent and credibly identified difference-in-differences application through which the theoretical aspects of causal inference can be further put to light and tested in practice.
+
+\section{Replication exercise}
+
+\citeauthor{di2004police} originally estimated the following version of the model:
+
+\begin{equation}\label{did_mode_1}
+\begin{aligned}
+CarTheft_{it} = & \theta_1 (Same Block \times Post)_{it} + \theta_2(One Block \times Post)_{it} \\
+& + \theta_3(Two Block \times Post)_{it} + \tau_t^\prime v + u_i + \varepsilon_{it}
+\end{aligned}
+\end{equation}
+
+where $v$ denotes the month fixed effects and $u_i$ the block fixed effects. Again, $CarTheft_{it}$ represents the average monthly car thefts per block. Further, $(Same Block \times Post)_{it}$ denotes city blocks with a Jewish institution and captures information after the terrorist attack. Similarly, $(One Block \times Post)_{it}$ and $(Two Block \times Post)_{it}$ stand for blocks one and two blocks away from a Jewish institution, respectively, after the terrorist attack.
 
 
-% fe models
-\input{../bld/python/tables/fe_tot_models_results_hv.tex}
-\input{../bld/python/tables/fe_tot_models_results_lv.tex}
-\input{../bld/python/tables/fe_tot_models_results_night.tex}
-\input{../bld/python/tables/fe_tot_models_results_day.tex}
-\input{../bld/python/tables/fe_tot_models_results_weekday.tex}
-\input{../bld/python/tables/fe_tot_models_results_weekend.tex}
+\paragraph{Results}
 
-% abs tot models
-\input{../bld/python/tables/abs_tot_models_results_hv.tex}
-\input{../bld/python/tables/abs_tot_models_results_lv.tex}
-\input{../bld/python/tables/abs_tot_models_results_night.tex}
-\input{../bld/python/tables/abs_tot_models_results_day.tex}
-\input{../bld/python/tables/abs_tot_models_results_weekday.tex}
-\input{../bld/python/tables/abs_tot_models_results_weekend.tex}
+The summary of the obtained results can be found in the Table below. City blocks with a Jewish institution perceived a significant decline in car theft after the terrorist attack and the subsequent allocation of police forces . The estimates in the second column suggest that policing caused a reduction of 0.087 average car thefts per month, a reduction of 77\% with respect to the average before the attack . However, no significant effect was found for the areas one and two blocks away from a Jewish institution.
 
-%fe_dif_models
-\input{../bld/python/tables/fe_dif_models_results_hv_lv.tex}
-\input{../bld/python/tables/fe_dif_models_results_night_day.tex}
-\input{../bld/python/tables/fe_dif_models_results_weekday_weekend.tex}
-%abs_dif_models
-\input{../bld/python/tables/abs_dif_models_results_hv_lv.tex}
-\input{../bld/python/tables/abs_dif_models_results_night_day.tex}
-\input{../bld/python/tables/abs_dif_models_results_weekday_weekend.tex}
+\begin{table}[htbp]
+    \centering
+    \caption{Main Regression Results}
+    \resizebox{\textwidth}{!}{
+\input{../bld/python/tables/MonthlyPanel_areg_clus2.tex}
+%
+}
+\label{tab:logistic_regression_results}%
+\end{table}
 
-% tests_indchar
+
+
+
+
+
+
+
+
 
 
 

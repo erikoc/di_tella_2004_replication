@@ -109,7 +109,7 @@ def task_create_results_group_ind_char_python(depends_on, produces):
 
 
 @pytask.mark.depends_on(BLD / "python" / "models" / "abs_reg_av_weekly.pickle")
-@pytask.mark.produces(BLD / "python" / "tables" / "abs_reg_weekly.pickle.tex")
+@pytask.mark.produces(BLD / "python" / "tables" / "abs_reg_weekly.tex")
 def task_create_results_abs_reg_weekly_python(depends_on, produces):
     with open(depends_on, "rb") as f:
         model = pickle.load(f)
@@ -119,7 +119,7 @@ def task_create_results_abs_reg_weekly_python(depends_on, produces):
 
 
 @pytask.mark.depends_on(BLD / "python" / "models" / "abs_reg_weekly_clustered.pickle")
-@pytask.mark.produces(BLD / "python" / "tables" / "abs_reg_weekly_clustered.pickle.tex")
+@pytask.mark.produces(BLD / "python" / "tables" / "abs_reg_weekly_clustered.tex")
 def task_create_results_abs_reg_weekly_clustered_python(depends_on, produces):
     with open(depends_on, "rb") as f:
         model = pickle.load(f)
@@ -129,7 +129,7 @@ def task_create_results_abs_reg_weekly_clustered_python(depends_on, produces):
 
 
 @pytask.mark.depends_on(BLD / "python" / "models" / "abs_reg_weekly_robust.pickle")
-@pytask.mark.produces(BLD / "python" / "tables" / "abs_reg_weekly_robust.pickle.tex")
+@pytask.mark.produces(BLD / "python" / "tables" / "abs_reg_weekly_robust.tex")
 def task_create_results__abs_reg_weekly_robust__python(depends_on, produces):
     with open(depends_on, "rb") as f:
         model = pickle.load(f)
