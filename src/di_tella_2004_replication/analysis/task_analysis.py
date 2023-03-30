@@ -66,7 +66,7 @@ def task_test_ind_chat_python(depends_on, produces):
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "CrimeByBlockIndChar.pkl")
 @pytask.mark.produces(BLD / "python" / "stats" / "table_ind_char.pickle")
-def task_test_ind_chat_python(depends_on, produces):
+def task_comparison_table_ind_chat_python(depends_on, produces):
     data = pd.read_pickle(depends_on)
     comparison_table = neighborhood_comparison_tables(data)
     comparison_table.to_pickle(produces)
