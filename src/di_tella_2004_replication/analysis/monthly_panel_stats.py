@@ -123,7 +123,7 @@ def summarize_data(df):
         (df["month"] > 7)
         & (df["jewish_inst"] == 0)
         & (df["jewish_inst_one_block_away_1"] == 0)
-        & (df["distance"] == 0)
+        & (df["distance_to_jewish_inst"] == 0)
         & ((df["totalpre"] != 0) | (df["totalpos"] != 0))
     ]["total_thefts"].describe()
     return summary
@@ -149,4 +149,4 @@ def various_testings(list_names_data, reg):
     ]
     test_res = {}
     for var, test_num in tests:
-        test_res[var] = testings(reg, var, reg.params[test_num])
+        test_res[var] = regression_testing(reg, var, reg.params[test_num])

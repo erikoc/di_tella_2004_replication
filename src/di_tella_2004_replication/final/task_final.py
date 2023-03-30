@@ -362,7 +362,7 @@ def task_create_MonthlyPanel_areg_clus10(depends_on, produces):
 
 @pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus11.pickle")
 @pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_clus11.text")
-def task_create_MonthlyPanel_areg_clus11(depends_on, produces):
+def task_create_MonthlyPanel_areg_clus11r(depends_on, produces):
     with open(depends_on, "rb") as f:
         model = pickle.load(f)
         table = model.summary2().tables[1]
