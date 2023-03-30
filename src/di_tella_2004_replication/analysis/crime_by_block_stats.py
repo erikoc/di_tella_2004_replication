@@ -39,7 +39,7 @@ def t_tests_crime_by_block(df):
 
         results[var] = {"t_statistic": t_statistic, "p_value": p_value}
 
-    return pd.DataFrame(results)
+    return results
 
 
 def neighborhood_comparison_tables(df, variables=None):
