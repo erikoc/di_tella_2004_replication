@@ -26,7 +26,7 @@ def regression_WeeklyPanel(Data, y_variable, type_of_regression):
     WeeklyP = Data[(Data["week"] != 16) & (Data["week"] != 17)]
     y = WeeklyP[y_variable]
     x = WeeklyP[
-        ["jewish_inst_p", "jewish_int_one_block_away_1_p", "cuad2p"]
+        ["treatment", "treatment_1d", "treatment_2d"]
     ]  # inst1p = jewish_inst_p, inst3_1p = jewish_int_one_block_away_1_p
     x = list(x.columns) + list_names
     x_1 = WeeklyP[x]
@@ -36,19 +36,19 @@ def regression_WeeklyPanel(Data, y_variable, type_of_regression):
         reg = smm.OLS(y, X)
         result = reg.fit(
             cov_type="cluster",
-            cov_kwds={"groups": WeeklyP["observ"]},
+            cov_kwds={"groups": WeeklyP["block"]},
             hasconst=True,
         )
         params = result.params
         return params
     elif type_of_regression == "clustered":
         dummies = pd.get_dummies(
-            WeeklyP["code2"],
+            WeeklyP["treatment_2d"],
         )  # to capture the fixed efefcts by codigo2
         X = pd.concat([x_1, dummies], axis=1)
         result = smm.OLS(y, X).fit(
             cov_type="cluster",
-            cov_kwds={"groups": WeeklyP["observ"]},
+            cov_kwds={"groups": WeeklyP["block"]},
             use_t=True,
         )  # with cluster for observ
         params = result.params

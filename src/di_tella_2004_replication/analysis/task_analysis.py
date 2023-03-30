@@ -96,7 +96,7 @@ def task_areg_weekly1(depends_on, produces):
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "WeeklyPanel.pkl")
 @pytask.mark.produces(BLD / "python" / "models" / "Weekly_regression2.pickle")
-def areg_weekly2(depends_on, produces):
+def task_areg_weekly2(depends_on, produces):
     model = regression_WeeklyPanel(
         Data=pd.read_pickle(depends_on),
         y_variable="total_thefts",
@@ -108,10 +108,10 @@ def areg_weekly2(depends_on, produces):
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "WeeklyPanel.pkl")
 @pytask.mark.produces(BLD / "python" / "models" / "Weekly_regression3.pickle")
-def areg_weekly3(depends_on, produces):
+def task_areg_weekly3(depends_on, produces):
     model = regression_WeeklyPanel(
         Data=pd.read_pickle(depends_on),
-        y_variable="n_total_thefts",
+        y_variable="av_weekly_thefts",
         type_of_regression="clustered",
     )
     with open(produces, "wb") as f:
@@ -558,7 +558,9 @@ def task_areg_clus5_monthly(depends_on, produces):
     variablex = ["jewish_inst_p", "jewish_inst_one_block_away_1_p", "cuad2p"]
     variablex.extend(list_names_place)
     model = areg_clus(
-        Data=pd.read_pickle(depends_on), variable_y="total_thefts", variable_x=variablex,
+        Data=pd.read_pickle(depends_on),
+        variable_y="total_thefts",
+        variable_x=variablex,
     )
     with open(produces, "wb") as f:
         pickle.dump(model, f)
@@ -700,8 +702,8 @@ def task_areg_clus11_monthly(depends_on, produces):
 # for stats ############################################################
 from di_tella_2004_replication.analysis.monthly_panel_stats import (
     WelchTest,
+    regression_testings,
     summarize_data,
-    testings,
     testings_div,
     various_testings,
 )
@@ -739,7 +741,7 @@ def task_WT_monthly3(depends_on, produces):
 @pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_single.pickle")
 @pytask.mark.produces(BLD / "python" / "models" / "test_areg_single1_monthly.pickle")
 def task_testings_areg1_single_Monthly(depends_on, produces):
-    model = testings(
+    model = regression_testings(
         regression=pd.read_pickle(depends_on),
         variable_test="jewish_inst_p",
         testing_number=-0.08080,
@@ -751,7 +753,7 @@ def task_testings_areg1_single_Monthly(depends_on, produces):
 @pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_single.pickle")
 @pytask.mark.produces(BLD / "python" / "models" / "test_areg_single2_monthly.pickle")
 def task_testings_areg2_single_Monthly(depends_on, produces):
-    model = testings(
+    model = regression_testings(
         regression=pd.read_pickle(depends_on),
         variable_test="jewish_inst_p",
         testing_number=-0.0727188,
@@ -763,7 +765,7 @@ def task_testings_areg2_single_Monthly(depends_on, produces):
 @pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_double.pickle")
 @pytask.mark.produces(BLD / "python" / "models" / "test_areg_double1_monthly.pickle")
 def task_testings_areg1_double_Monthly(depends_on, produces):
-    model = testings(
+    model = regression_testings(
         regression=pd.read_pickle(depends_on),
         variable_test="jewish_inst_one_block_away_1_p",
         testing_number=-0.01398,
@@ -947,7 +949,8 @@ def task_joint_tests_areg_clus5(depends_on, produces):
         "n_public_building_or_embassy_cuad2p",
     ]
     model = various_testings(
-        list_names_data=list_names_data3, reg=pd.read_pickle(depends_on),
+        list_names_data=list_names_data3,
+        reg=pd.read_pickle(depends_on),
     )
     with open(produces, "wb") as f:
         pickle.dump(model, f)
@@ -967,7 +970,8 @@ def task_joint_tests_areg_clus6(depends_on, produces):
         "n_gas_station_cuad2p",
     ]
     model = various_testings(
-        list_names_data=list_names_data3, reg=pd.read_pickle(depends_on),
+        list_names_data=list_names_data3,
+        reg=pd.read_pickle(depends_on),
     )
     with open(produces, "wb") as f:
         pickle.dump(model, f)
@@ -987,7 +991,8 @@ def task_joint_tests_areg_clus7(depends_on, produces):
         "n_bank_cuad2p",
     ]
     model = various_testings(
-        list_names_data=list_names_data3, reg=pd.read_pickle(depends_on),
+        list_names_data=list_names_data3,
+        reg=pd.read_pickle(depends_on),
     )
     with open(produces, "wb") as f:
         pickle.dump(model, f)
@@ -1007,7 +1012,8 @@ def task_joint_tests_areg_clus8(depends_on, produces):
         "n_all_locations_cuad2p",
     ]
     model = various_testings(
-        list_names_data=list_names_data3, reg=pd.read_pickle(depends_on),
+        list_names_data=list_names_data3,
+        reg=pd.read_pickle(depends_on),
     )
     with open(produces, "wb") as f:
         pickle.dump(model, f)
