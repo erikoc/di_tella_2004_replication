@@ -83,7 +83,7 @@ from di_tella_2004_replication.analysis.weekly_panel_regression import (
 
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "WeeklyPanel.pkl")
-@pytask.mark.produces(BLD / "python" / "model" / "abs_reg_weekly_clustered.pickle")
+@pytask.mark.produces(BLD / "python" / "models" / "abs_reg_weekly_clustered.pickle")
 def task_abs_reg_weekly_clustered(depends_on, produces):
     data = pd.read_pickle(depends_on)
     model = abs_regression_models_weekly(data, "clustered")
@@ -92,7 +92,7 @@ def task_abs_reg_weekly_clustered(depends_on, produces):
 
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "WeeklyPanel.pkl")
-@pytask.mark.produces(BLD / "python" / "model" / "abs_reg_weekly_robust.pickle")
+@pytask.mark.produces(BLD / "python" / "models" / "abs_reg_weekly_robust.pickle")
 def task_abs_reg_weekly_robust(depends_on, produces):
     data = pd.read_pickle(depends_on)
     model = abs_regression_models_weekly(data, "robust")
@@ -101,7 +101,7 @@ def task_abs_reg_weekly_robust(depends_on, produces):
 
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "WeeklyPanel.pkl")
-@pytask.mark.produces(BLD / "python" / "model" / "abs_reg_av_weekly.pickle")
+@pytask.mark.produces(BLD / "python" / "models" / "abs_reg_av_weekly.pickle")
 def task_abs_reg_av_weekly(depends_on, produces):
     data = pd.read_pickle(depends_on)
     model = abs_regression_models_av_weekly(data)
@@ -709,7 +709,7 @@ def task_WT_monthly1(depends_on, produces):
     model = WelchTest(Data=pd.read_pickle(depends_on), code1=1, code2=4)
     with open(produces, "wb") as f:
         pickle.dump(model, f)
-    
+
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel.pkl")
 @pytask.mark.produces(BLD / "python" / "stats" / "MonthlyPanel_WT2.pickle")
@@ -897,14 +897,3 @@ def task_summary_of_data(depends_on, produces):
     )
     with open(produces, "wb") as f:
         pickle.dump(model, f)
-
-
-
-
-
-
-
-
-
-
-
