@@ -55,8 +55,6 @@ def _generate_dummy_variables_fixed_extension(
     The columns to be replaced are also the same as the extension condition that we used to extend the list to generate the variables.
     In the end, all the columns have a fixed replaced variable {final_value_variable}
 
-    Generate new variables based on a condition and replace values of the variable based on another condition.
-
     Args:
     - df: pandas dataframe
     - variable_conditional_extension: name of the column in the dataframe to use as condition for replacing the variable
@@ -175,7 +173,7 @@ def _generate_variables_based_on_list_and_loop(
     -----------
     df : pandas.DataFrame
         The input DataFrame to generate new variables in.
-    condition_type : str
+    condition_type : str or tuple
         The type of condition to apply for replacing values of the new variable.
         Possible values are "condition from another variable" and "condition from original variable".
     new_generated_variable : str
@@ -198,6 +196,9 @@ def _generate_variables_based_on_list_and_loop(
         The DataFrame with the new generated variable added based on the conditions.
 
     """
+    if isinstance(condition_type, tuple):
+        condition_type = condition_type[0]
+
     if condition_type == "condition from another variable":
         df[
             new_generated_variable
@@ -266,10 +267,7 @@ def _generate_total_thefts2_mon(df, variable_complex_condition, cond1=72, cond2=
     df = df.assign(total_thefts2=pd.Series())
     df["total_thefts2"] = df["total_thefts2"].tolist()
     for i in range(1, len(df)):
-        if (
-            df[variable_complex_condition].iloc[i] == cond1
-            or df[variable_complex_condition].iloc[i] == cond2
-        ):
+        if df[variable_complex_condition].iloc[i] in [cond1, cond2]:
             df["total_thefts2"].loc[i] == df["total_thefts"].iloc[i].cumsum()
     df.loc[
         (df[variable_complex_condition] != cond1)
@@ -290,8 +288,8 @@ def _generate_variables_different_conditions(
     condition_v3=8,
     condition_v4=10,
     condition_v5=12,
-    multiple1_v_cond=(30 / 17),
-    multiple2_v_cond=(30 / 31),
+    multiple1_v_cond=None,
+    multiple2_v_cond=None,
 ):
     """Generates a new variable {new_variable_v_cond} in a dataframe based on the values
     of another existing variable {ori_variable_v_cond} and a condition on a variable.
@@ -315,6 +313,12 @@ def _generate_variables_different_conditions(
     - pandas.DataFrame: A new dataframe with the new variable added and values of the new variable generated based on the specified conditions.
 
     """
+    if multiple1_v_cond is None:
+        multiple1_v_cond = 30 / 17
+
+    if multiple2_v_cond is None:
+        multiple2_v_cond = 30 / 31
+
     df[new_variable_v_cond] = df[ori_variable_v_cond]
     df.loc[df[variable_conditional_v_cond] == condition_v1, new_variable_v_cond] = (
         df[ori_variable_v_cond] * multiple1_v_cond
@@ -500,13 +504,20 @@ def _generate_variables_based_on_various_lists(
     - df: Pandas DataFrame with the newly created variables.
 
     """
-    list_names_place = []
-    list_names_place.extend(
-        [
-            f"mbelg{i}"
-            for i in ["apr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]
-        ],
-    )
+    list_names_place = [
+        f"mbelg{i}"
+        for i in [
+            "apr",
+            "may",
+            "jun",
+            "jul",
+            "ago",
+            "sep",
+            "oct",
+            "nov",
+            "dec",
+        ]
+    ]
     list_names_place.extend(
         [
             f"monce{i}"
@@ -520,11 +531,14 @@ def _generate_variables_based_on_various_lists(
         ],
     )
 
-    list_names_month = []
-    list_names_month.extend([f"month{i}" for i in range(4, 13)])
+    list_names_month = [f"month{i}" for i in range(4, 13)]
+    """This is making a loop over the three different elements of
+    list_names_variouslists_m2.
 
-    """ This is making a loop over the three different elements of list_names_variouslists_m2. Ity is usimng an index to go through thje 27 elements in list_names_place
-    and it is using a second loop to go over the elemensr of list_names_month. """
+    Ity is usimng an index to go through thje 27 elements in list_names_place and it is
+    using a second loop to go over the elemensr of list_names_month.
+
+    """
     for i in range(3):
         start_idx = i * 9
         for j in range(9):
@@ -776,7 +790,7 @@ def monthlypanel_1(
         df,
         variable_conditional_extension="distance_to_jewish_inst",
         variable_name="cuad{}",
-        range_loop=range(0, 8),
+        range_loop=range(8),
     )
     df = _generate_similar_named_variables(
         df,
