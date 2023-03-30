@@ -711,7 +711,7 @@ def task_WT_monthly1(depends_on, produces):
     model = WelchTest(Data=pd.read_pickle(depends_on), code1=1, code2=4)
     with open(produces, "wb") as f:
         pickle.dump(model, f)
-
+    
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel.pkl")
 @pytask.mark.produces(BLD / "python" / "stats" / "MonthlyPanel_WT2.pickle")
