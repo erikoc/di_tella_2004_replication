@@ -561,8 +561,8 @@ def task_areg_clus5_monthly(depends_on, produces):
 
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel3.pkl")
-@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus5.pickle")
-def task_areg_clus5_monthly(depends_on, produces):
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus6.pickle")
+def task_areg_clus6_monthly(depends_on, produces):
     model = areg_clus(
         Data=pd.read_pickle(depends_on),
         variable_y="total_thefts",
@@ -580,8 +580,8 @@ def task_areg_clus5_monthly(depends_on, produces):
 
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel3.pkl")
-@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus6.pickle")
-def task_areg_clus6_monthly(depends_on, produces):
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus7.pickle")
+def task_areg_clus7_monthly(depends_on, produces):
     model = areg_clus(
         Data=pd.read_pickle(depends_on),
         variable_y="total_thefts",
@@ -599,8 +599,8 @@ def task_areg_clus6_monthly(depends_on, produces):
 
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel3.pkl")
-@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus7.pickle")
-def task_areg_clus7_monthly(depends_on, produces):
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus8.pickle")
+def task_areg_clus8_monthly(depends_on, produces):
     model = areg_clus(
         Data=pd.read_pickle(depends_on),
         variable_y="total_thefts",
@@ -618,8 +618,8 @@ def task_areg_clus7_monthly(depends_on, produces):
 
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel3.pkl")
-@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus8.pickle")
-def task_areg_clus8_monthly(depends_on, produces):
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus9.pickle")
+def task_areg_clus9_monthly(depends_on, produces):
     model = areg_clus(
         Data=pd.read_pickle(depends_on),
         variable_y="total_thefts",
@@ -637,8 +637,8 @@ def task_areg_clus8_monthly(depends_on, produces):
 
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel_new.pkl")
-@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus9.pickle")
-def task_areg_clus9_monthly(depends_on, produces):
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus10.pickle")
+def task_areg_clus10_monthly(depends_on, produces):
     model = areg_clus(
         Data=pd.read_pickle(depends_on),
         variable_y="total_thefts",
@@ -656,8 +656,8 @@ def task_areg_clus9_monthly(depends_on, produces):
 
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel_new.pkl")
-@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus10.pickle")
-def task_areg_clus10_monthly(depends_on, produces):
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus11.pickle")
+def task_areg_clus11_monthly(depends_on, produces):
     model = areg_clus(
         Data=pd.read_pickle(depends_on),
         variable_y="total_thefts",
@@ -675,8 +675,8 @@ def task_areg_clus10_monthly(depends_on, produces):
 
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel_new.pkl")
-@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus11.pickle")
-def task_areg_clus11_monthly(depends_on, produces):
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus12.pickle")
+def task_areg_clus12_monthly(depends_on, produces):
     model = areg_clus(
         Data=pd.read_pickle(depends_on),
         variable_y="total_thefts",

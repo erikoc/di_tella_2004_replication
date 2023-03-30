@@ -144,6 +144,7 @@ def task_create_MonthlyPanel_normal_regression3(depends_on, produces):
 
 
 
+
 @pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_single.pickle")
 @pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_single.text")
 def task_create_MonthlyPanel_areg_single(depends_on, produces):
@@ -167,6 +168,201 @@ def task_create_MonthlyPanel_areg_double(depends_on, produces):
 @pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_triple.pickle")
 @pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_triple.text")
 def task_create_MonthlyPanel_areg_triple(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary2().tables[1]
+        latex = table.to_latex()
+        with open(produces, "w") as f:
+            f.writelines(latex)
+
+
+
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus1.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_clus1.text")
+def task_create_MonthlyPanel_areg_clus1(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary2().tables[1]
+        latex = table.to_latex()
+        with open(produces, "w") as f:
+            f.writelines(latex)
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus2.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_clus2.text")
+def task_create_MonthlyPanel_areg_clus2(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary2().tables[1]
+        latex = table.to_latex()
+        with open(produces, "w") as f:
+            f.writelines(latex)
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus3.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_clus3.text")
+def task_create_MonthlyPanel_areg_clus3(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary2().tables[1]
+        latex = table.to_latex()
+        with open(produces, "w") as f:
+            f.writelines(latex)
+
+
+
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_reg_robust1.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_reg_robust1.text")
+def task_create_MonthlyPanel_reg_robust1(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary2().tables[1]
+        latex = table.to_latex()
+        with open(produces, "w") as f:
+            f.writelines(latex)
+            
+
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus4.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_clus4.text")
+def task_create_MonthlyPanel_areg_clus4(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary2().tables[1]
+        latex = table.to_latex()
+        with open(produces, "w") as f:
+            f.writelines(latex)
+            
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus_abs1.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_clus_abs1.text")
+def task_create_MonthlyPanel_areg_clus_abs1(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary2().tables[1]
+        latex = table.to_latex()
+        with open(produces, "w") as f:
+            f.writelines(latex)
+
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_double2.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_double2.text")
+def task_create_MonthlyPanel_areg_double2(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary2().tables[1]
+        latex = table.to_latex()
+        with open(produces, "w") as f:
+            f.writelines(latex)
+
+            
+            
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_poisson1.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_poisson1.text")
+def task_create_MonthlyPanel_poisson1(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary.as_latex()
+        with open(produces, "w") as f:
+            f.writelines(table)
+
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_poisson2.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_poisson2.text")
+def task_create_MonthlyPanel_poisson2(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary.as_latex()
+        with open(produces, "w") as f:
+            f.writelines(table)
+            
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_poisson3.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_poisson3.text")
+def task_create_MonthlyPanel_poisson3(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary.as_latex()
+        with open(produces, "w") as f:
+            f.writelines(table)
+            
+
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus_abs2.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_clus_abs2.text")
+def task_create_MonthlyPanel_areg_clus_abs2(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary2().tables[1]
+        latex = table.to_latex()
+        with open(produces, "w") as f:
+            f.writelines(latex)
+
+
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus5.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_clus5.text")
+def task_create_MonthlyPanel_areg_clus5(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary2().tables[1]
+        latex = table.to_latex()
+        with open(produces, "w") as f:
+            f.writelines(latex)
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus6.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_clus6.text")
+def task_create_MonthlyPanel_areg_clus6(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary2().tables[1]
+        latex = table.to_latex()
+        with open(produces, "w") as f:
+            f.writelines(latex)
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus7.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_clus7.text")
+def task_create_MonthlyPanel_areg_clus7(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary2().tables[1]
+        latex = table.to_latex()
+        with open(produces, "w") as f:
+            f.writelines(latex)
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus8.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_clus8.text")
+def task_create_MonthlyPanel_areg_clus8(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary2().tables[1]
+        latex = table.to_latex()
+        with open(produces, "w") as f:
+            f.writelines(latex)
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus9.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_clus9.text")
+def task_create_MonthlyPanel_areg_clus9(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary2().tables[1]
+        latex = table.to_latex()
+        with open(produces, "w") as f:
+            f.writelines(latex)
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus10.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_clus10.text")
+def task_create_MonthlyPanel_areg_clus10(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        model = pickle.load(f)
+        table = model.summary2().tables[1]
+        latex = table.to_latex()
+        with open(produces, "w") as f:
+            f.writelines(latex)
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus11.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_areg_clus11.text")
+def task_create_MonthlyPanel_areg_clus11(depends_on, produces):
     with open(depends_on, "rb") as f:
         model = pickle.load(f)
         table = model.summary2().tables[1]
