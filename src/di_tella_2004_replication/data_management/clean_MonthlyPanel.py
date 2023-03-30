@@ -70,11 +70,11 @@ def _generate_dummy_variables_fixed_extension(
 
     """
     for i in range_loop:
-        list_names_ext = []
-        list_names_ext.extend([variable_name.format(i)])
+        list_names_ext = [variable_name.format(i)]
         df[list(list_names_ext)] = original_value_variable
         df.loc[
-            df[variable_conditional_extension] == i, variable_name.format(i),
+            df[variable_conditional_extension] == i,
+            variable_name.format(i),
         ] = final_value_variable
     return df
 
@@ -110,23 +110,29 @@ def _rep_variables_based_on_condition(
     """
     if type_of_condition == "bigger than":
         df.loc[
-            df[conditional_variable_replace] > conditional_number, variable_to_replace,
+            df[conditional_variable_replace] > conditional_number,
+            variable_to_replace,
         ] = final_value_replace
         return df
     elif type_of_condition == "smaller than":
         df.loc[
-            df[conditional_variable_replace] < conditional_number, variable_to_replace,
+            df[conditional_variable_replace] < conditional_number,
+            variable_to_replace,
         ] = final_value_replace
         return df
     elif type_of_condition == "equal to":
         df.loc[
-            df[conditional_variable_replace] == conditional_number, variable_to_replace,
+            df[conditional_variable_replace] == conditional_number,
+            variable_to_replace,
         ] = final_value_replace
         return df
 
 
 def _generate_similar_named_variables(
-    df, original_variables, fixed_variable, name_change="p",
+    df,
+    original_variables,
+    fixed_variable,
+    name_change="p",
 ):
     """This functions is generating a list of variables that have a quite similar name
     compared to an already existing set of variables.
@@ -158,7 +164,8 @@ def _generate_variables_based_on_list_and_loop(
     new_original_value,
     value_originallist=1,
 ):
-    """Generates a new variable {new_generated_variable} with an original value
+    """Generates a new variable {new_generated_variable} with an original value.
+
     {new_original_value} in a pandas DataFrame {df} based on conditions.
 
     {"condition from another variable", "condition from original variable"} on a list of variables {list_a} and a range of values {list_b},
@@ -196,10 +203,12 @@ def _generate_variables_based_on_list_and_loop(
             new_generated_variable
         ] = new_original_value  # in this case new_original_value is a number
         for col, i in zip(
-            list_a, list_b,
+            list_a,
+            list_b,
         ):  # first list is a list of variables, second is a range
             df.loc[
-                df[col] == value_originallist, new_generated_variable,
+                df[col] == value_originallist,
+                new_generated_variable,
             ] = i  # we need a variable original list
         return df
     if condition_type == "condition from original variable":
@@ -207,14 +216,18 @@ def _generate_variables_based_on_list_and_loop(
             new_original_value
         ]  # in this case new_original_value is a column of the dataframe
         for i, j in zip(
-            list_a, list_b,
+            list_a,
+            list_b,
         ):  # first list is a range of number, second is also one
             df.loc[df[new_original_value] == i, new_generated_variable] = j
         return df
 
 
 def _generate_variable_basedon_doublelist(
-    df, list_generated_variable, list_original_variable, fixed_variable,
+    df,
+    list_generated_variable,
+    list_original_variable,
+    fixed_variable,
 ):
     """This function generates new variables listed on a list {list_generated_variable}
     in a dataframe {df} using a multiplication rule by a fixed variable {fixed_variable}
@@ -281,7 +294,8 @@ def _generate_variables_different_conditions(
     multiple2_v_cond=(30 / 31),
 ):
     """Generates a new variable {new_variable_v_cond} in a dataframe based on the values
-    of another existing variable {ori_variable_v_cond} and a condition on a variable
+    of another existing variable {ori_variable_v_cond} and a condition on a variable.
+
     {variable_conditional_v_cond} in the data frame {df}.
 
     Args:
@@ -327,7 +341,8 @@ def _generate_variables_original_with_no_value_after_replace(
     """Generates a set of variables with no values {list_variables_original_novalue} in
     a dataframe {df}. The value of some of the variables on the list are replaced with
     values of an original variable in the dataframe {equalizing_variable} if a condition
-    for another variable {conditional_variable_for_novalue} in the data frame is met
+    for another variable {conditional_variable_for_novalue} in the data frame is met.
+
     {condition_change_value}.
 
     Args:
@@ -366,7 +381,8 @@ def _egenerator_sum(
     egenerator_scale_factor=4,
 ):
     """Generates a new variable {new_egenerator_variable} in a dataframe {df} based on
-    the sum of an existing variable {by_variable} filtered by
+    the sum of an existing variable {by_variable} filtered by.
+
     {variable_egenerator_filter}. Then, replaces the values of an existing variable
     {egenerator_variable_tochange} in the data frame with the new variable
     {new_egenerator_variable} scaled by a given factor {egenerator_scale_facto} if an
@@ -453,7 +469,8 @@ def _complex_variable_generator(
     """
     for col, i in zip(list_names_complexa, range_complex):
         df.loc[
-            df[variable_replace_condition_complex] == col, variable_replace_complex,
+            df[variable_replace_condition_complex] == col,
+            variable_replace_complex,
         ] = i
     df[generate_var_complex] = (
         df[variable_condition_complex] + scale_complex * df[variable_replace_complex]
@@ -461,7 +478,8 @@ def _complex_variable_generator(
     for col1, col2 in zip(list_names_complexb, list_names_complexa):
         df[col1] = 0
         df.loc[
-            df[variable_replace_condition_complex] == col2, col1,
+            df[variable_replace_condition_complex] == col2,
+            col1,
         ] = final_value_complex
     return df
 
@@ -561,7 +579,8 @@ def _generate_multiplevariables_listbased(
     list_names_multi_variables,
     list_names_multi_general,
 ):
-    """This function is list based. Given some list entries. Given an inbuilt list
+    """This function is list based. Given some list entries. Given an inbuilt list.
+
     {list_value}, it generates different values based on a multiplication rule with for
     two nested loops using two lists {list_names_multi_variables,
     list_names_multi_general}.
@@ -641,7 +660,8 @@ def _generate_various_variables_conditional(
     range_variable_conditional=range(4, 7),
     final_value_conditional=1,
 ):
-    """Generates a set of new variables from a list
+    """Generates a set of new variables from a list.
+
     {list_genenerate_variables_conditional} in a data frame {df} with an original value.
 
     {original_value_conditional}. After that, using the numbers of elements of the list and also a range {range_variable_conditional}
@@ -663,7 +683,8 @@ def _generate_various_variables_conditional(
     for col in list_genenerate_variables_conditional:
         df[col] = original_value_conditional
     for col, i in zip(
-        list_genenerate_variables_conditional, range_variable_conditional,
+        list_genenerate_variables_conditional,
+        range_variable_conditional,
     ):
         df.loc[df[conditional_variable] > i, col] = final_value_conditional
     return df
@@ -676,7 +697,8 @@ def _generate_variables_specificrule_list(
     list_new_variable_specific,
     range_specific_loop=[0, 3, 6],
 ):
-    """This function is generating specific new variables
+    """This function is generating specific new variables.
+
     {list_variable_generate_specific} in a dataframe {df} based on an already existing
     set of variables in the data frame {list_variable_extisting_specific,
     list_new_variable_specific} and this is done over a loop specifically designed by
@@ -771,7 +793,10 @@ def monthlypanel_1(
         value_originallist=1,
     )
     df = _generate_variable_basedon_doublelist(
-        df, list_generated_variable, list_original_variable, fixed_variable,
+        df,
+        list_generated_variable,
+        list_original_variable,
+        fixed_variable,
     )
     df = _generate_variables_based_on_list_and_loop(
         df,
@@ -828,7 +853,10 @@ def monthlypanel_2(
         inplace=True,
     )
     df = _generate_variables_different_conditions(
-        df, new_variable_v_cond, ori_variable_v_cond, variable_conditional_v_cond,
+        df,
+        new_variable_v_cond,
+        ori_variable_v_cond,
+        variable_conditional_v_cond,
     )
     df = _generate_variables_original_with_no_value_after_replace(
         df,
@@ -916,7 +944,9 @@ def monthlypanel_3(
         column3_three_conditions,
     )
     df = _generate_multiplevariables_listbased(
-        df, list_names_multi_variables, list_names_multi_general,
+        df,
+        list_names_multi_variables,
+        list_names_multi_general,
     )
     return df
 
@@ -958,12 +988,15 @@ def monthlypanel_new(
     df[new_variable] = df[variable_original] - df[variable_original_substract]
     df[list(list_various_generate)] = original_value_various_list
     df.loc[
-        df[conditional_var_simple] == cond_value_simple, variable_simple_replace,
+        df[conditional_var_simple] == cond_value_simple,
+        variable_simple_replace,
     ] = value_assigned_simple
     for i in range_replace:
         df.loc[df[conditional_variable] == i, f"month{i}"] = value_assigned_various
     df = _generate_various_variables_conditional(
-        df, list_genenerate_variables_conditional, conditional_variable,
+        df,
+        list_genenerate_variables_conditional,
+        conditional_variable,
     )
     df = _generate_variables_specificrule_list(
         df,

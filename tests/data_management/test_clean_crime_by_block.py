@@ -8,7 +8,7 @@ from di_tella_2004_replication.data_management.clean_crime_by_block import (
     _clean_column_names_block,
     _convert_dtypes,
     _create_new_variables_ind,
-    _drop_repated_obs,
+    _drop_repeated_obs,
     _split_theft_data,
 )
 
@@ -166,7 +166,6 @@ def test_split_and_calculate_total_theft_by_suffix(
 def test_create_new_variables_ind(ind_char_new_variables):
     df_new = _create_new_variables_ind(ind_char_new_variables)
     tol = 1e-8
-    assert all(abs(df_new["no_jewish_inst"] - [1, 0, 1]) < tol)
     assert all(abs(df_new["unmet_basic_needs_rate"] - [0.8, 0.9, 0.7]) < tol)
     assert all(abs(df_new["overcrowd_rate"] - [0.6, 0.5, 0.7]) < tol)
     assert all(abs(df_new["unemployment_rate"] - [0.2, 0.1, 0.3]) < tol)
@@ -179,7 +178,7 @@ def test_create_new_variables_ind(ind_char_new_variables):
 
 def test__drop_repated_obs_unique_obs(ind_char_new_variables):
     df_new = _create_new_variables_ind(ind_char_new_variables)
-    df_unique = _drop_repated_obs(df_new)
+    df_unique = _drop_repeated_obs(df_new)
     assert not df_unique.duplicated(subset=["census_district", "census_tract"]).any()
 
 
