@@ -3,6 +3,7 @@ import pyreadstat
 import pytest
 from di_tella_2004_replication.config import SRC
 from di_tella_2004_replication.data_management.clean_crime_by_block import (
+    _calculate_theft_differences,
     _calculate_total_theft_by_suffix,
     _clean_column_names_block,
     _convert_dtypes,
@@ -180,3 +181,39 @@ def test__drop_repated_obs_unique_obs(ind_char_new_variables):
     df_new = _create_new_variables_ind(ind_char_new_variables)
     df_unique = _drop_repated_obs(df_new)
     assert not df_unique.duplicated(subset=["census_district", "census_tract"]).any()
+
+
+import pandas as pd
+
+
+def test_calculate_theft_differences():
+    # Create a sample DataFrame for testing
+    data = {
+        "tot_theft_hv3": [10, 20, 30],
+        "tot_theft_lv3": [2, 4, 6],
+        "tot_theft_night3": [6, 12, 18],
+        "tot_theft_day3": [1, 2, 3],
+        "tot_theft_weekday3": [9, 18, 27],
+        "tot_theft_weekend3": [1, 2, 3],
+    }
+    df = pd.DataFrame(data)
+
+    # Call the function being tested
+    result = _calculate_theft_differences(df, 3)
+
+    # Define the expected output
+    expected_output = {
+        "tot_theft_hv3": [10, 20, 30],
+        "tot_theft_lv3": [2, 4, 6],
+        "tot_theft_night3": [6, 12, 18],
+        "tot_theft_day3": [1, 2, 3],
+        "tot_theft_weekday3": [9, 18, 27],
+        "tot_theft_weekend3": [1, 2, 3],
+        "dif_hv_lv3": [8, 16, 24],
+        "dif_night_day3": [5, 10, 15],
+        "dif_weekday_weekend3": [8, 16, 24],
+    }
+    expected_output_df = pd.DataFrame(expected_output)
+
+    # Compare the actual and expected outputs
+    pd.testing.assert_frame_equal(result, expected_output_df)

@@ -139,6 +139,8 @@ def _split_theft_data(theft_data, month, maxrange=24):
         pd.DataFrame: The split theft data.
 
     """
+    new_cols = []
+
     for i in range(1, maxrange):
         common_conditions = (theft_data[f"theft{i}"] != 0) & (
             theft_data[f"theft{i}month"] == month
@@ -173,11 +175,13 @@ def _split_theft_data(theft_data, month, maxrange=24):
             elif suffix == "weekend":
                 condition = common_conditions & theft_data[f"theft{i}day"].between(6, 7)
 
-            theft_data.loc[condition, f"theft_{suffix}{i}{month}"] = theft_data.loc[
+            new_col_name = f"theft_{suffix}{i}{month}"
+            new_cols.append(new_col_name)
+            theft_data.loc[:, new_col_name] = 0
+            theft_data.loc[condition, new_col_name] = theft_data.loc[
                 condition,
                 f"theft{i}",
             ]
-            theft_data.loc[~condition, f"theft_{suffix}{i}{month}"] = 0
 
     return theft_data
 
