@@ -112,6 +112,8 @@ def task_create_results_group_ind_char_python(depends_on, produces):
 
 "MonthlyPanel"
 
+# Regressions
+
 @pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_normal_regression1.pickle")
 @pytask.mark.produces(BLD / "python" / "tables" / "MonthlyPanel_normal_regression1.text")
 def task_create_MonthlyPanel_normal_regression1(depends_on, produces):
@@ -369,3 +371,12 @@ def task_create_MonthlyPanel_areg_clus11r(depends_on, produces):
         latex = table.to_latex()
         with open(produces, "w") as f:
             f.writelines(latex)
+
+# Stats
+
+@pytask.mark.depends_on(BLD / "python" / "stats" / "table_ind_char.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "table_ind_char.tex")
+def task_create_results_group_ind_char_python(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        tests.to_latex(produces)
