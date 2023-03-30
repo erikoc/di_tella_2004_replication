@@ -89,3 +89,16 @@ def testings_div(regression, variable_test, testing_number, division_f):
         pass
     else:
         pass
+
+
+def summarize_data(
+    df
+):
+    summary = df[
+    (df["month"] > 7)
+    & (df["jewish_inst"] == 0)
+    & (df["jewish_inst_one_block_away_1"] == 0)
+    & (df["cuad2"] == 0)
+    & ((df["totalpre"] != 0) | (df["totalpos"] != 0))]["total_thefts"].describe()
+    
+    return summary

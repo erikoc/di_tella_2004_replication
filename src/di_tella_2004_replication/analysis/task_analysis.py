@@ -104,15 +104,55 @@ def areg_weekly3(depends_on, produces):
 
 # for regressions #################################################################
 from di_tella_2004_replication.analysis.monthly_panel_regression import (
+    normal_regression,
     areg_single,
     areg_double,
     areg_triple,
     reg_robust,
     areg_clus,
     areg_clus_abs,
-    poisson_reg
+    poisson_reg,
 )
 from di_tella_2004_replication.config import BLD
+
+
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_normal_regression1.pickle")
+def normal_regression1_monthly(depends_on, produces):
+    model =normal_regression(
+        Data = pd.read_pickle(depends_on)[pd.read_pickle(depends_on)["post"] == 1],
+        formula = "total_thefts ~ jewish_inst",
+        columns = [f"month{i}" for i in range(5, 13)]     
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+        
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_normal_regression2.pickle")
+def normal_regression2_monthly(depends_on, produces):
+    model =normal_regression(
+        Data = pd.read_pickle(depends_on)[pd.read_pickle(depends_on)["post"] == 1],
+        formula = "total_thefts ~ jewish_inst + jewish_inst_one_block_away_1",
+        columns = [f"month{i}" for i in range(5, 13)]     
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+        
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_normal_regression3.pickle")
+def normal_regression3_monthly(depends_on, produces):
+    model =normal_regression(
+        Data = pd.read_pickle(depends_on)[pd.read_pickle(depends_on)["post"] == 1],
+        formula = "total_thefts ~ jewish_inst + jewish_inst_one_block_away_1 + cuad2",
+        columns = [f"month{i}" for i in range(5, 13)]     
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)      
+        
+        
+        
+        
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
 @pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_single.pickle")
@@ -231,12 +271,425 @@ def areg_clus3_monthly(depends_on, produces):
 
 
 
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_reg_robust1.pickle")
+def reg_robust1_monthly(depends_on, produces):
+    model =reg_robust(
+        Data = pd.read_pickle(depends_on),
+        variable_y = "total_thefts",
+        variable_x = [
+        "jewish_inst",
+        "jewish_inst_one_block_away_1",
+        "cuad2",
+        "jewish_inst_p",
+        "jewish_inst_one_block_away_1_p",
+        "cuad2p",
+        "month5",
+        "month6",
+        "month7",
+        "month8",
+        "month9",
+        "month10",
+        "month11",
+        "month12",
+        ]
+                      
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus4.pickle")
+def areg_clus4_monthly(depends_on, produces):
+    model =areg_clus(
+        Data = pd.read_pickle(depends_on),
+        variable_y = "theftscoll",
+        variable_x = [
+            "jewish_inst_p",
+            "jewish_inst_one_block_away_1_p",
+            "cuad2p",
+            "month5",
+            "month6",
+            "month7",
+            "month8",
+            "month9",
+            "month10",
+            "month11",
+            "month12",
+        ]     
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus_abs1.pickle")
+def areg_clus_abs1_monthly(depends_on, produces):
+    model =areg_clus_abs(
+        Data = pd.read_pickle(depends_on),
+        drop_subset = [
+            "total_thefts",
+            "jewish_inst_p",
+            "jewish_inst_one_block_away_1_p",
+            "cuad2p",
+            "month5",
+            "month6",
+            "month7",
+            "month8",
+            "month9",
+            "month10",
+            "month11",
+            "month12",
+        ],
+        variable_y = "total_thefts",
+        variable_x = [
+            "jewish_inst_p",
+            "jewish_inst_one_block_away_1_p",
+            "cuad2p",
+            "month5",
+            "month6",
+            "month7",
+            "month8",
+            "month9",
+            "month10",
+            "month11",
+            "month12",
+        ],  
+        dummy_variable = "observ"   
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+ 
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_double2.pickle")
+def areg_double2_monthly(depends_on, produces):
+    model =areg_double(
+        Data = pd.read_pickle(depends_on),
+        type_condition = "unequal",
+        variable_loga = "totalpre",
+        variable_logb = "totalpos",
+        a = 0,
+        variable_fe = "observ",
+        variable_y = "total_thefts",
+        variable_x = [
+            "jewish_inst_p",
+            "jewish_inst_one_block_away_1_p",
+            "cuad2p",
+            "month5",
+            "month6",
+            "month7",
+            "month8",
+            "month9",
+            "month10",
+            "month11",
+            "month12",
+        ]   
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+
+
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_poisson1.pickle")
+def poisson1_monthly(depends_on, produces):
+    model =poisson_reg(
+        Data = pd.read_pickle(depends_on),
+        y_variable = "total_thefts",
+        x_variable = [
+            "jewish_inst_p",
+            "jewish_inst_one_block_away_1_p",
+            "cuad2p",
+            "month5",
+            "month6",
+            "month7",
+            "month8",
+            "month9",
+            "month10",
+            "month11",
+            "month12",
+        ],
+        index_variables = ["observ", "month"],
+        type_of_possion = "fixed effects",
+        weight = None,
+        x_irra = None   
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+        
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_poisson2.pickle")
+def poisson2_monthly(depends_on, produces):
+    model =poisson_reg(
+        Data = pd.read_pickle(depends_on),
+        y_variable = "total_thefts",
+        x_variable = [
+            "jewish_inst_p",
+            "jewish_inst_one_block_away_1_p",
+            "cuad2p",
+            "month5",
+            "month6",
+            "month7",
+            "month8",
+            "month9",
+            "month10",
+            "month11",
+            "month12",
+        ],
+        index_variables = ["observ", "month"],
+        type_of_possion = "fixed effects",
+        weight = 'w',
+        x_irra = None   
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+        
+ 
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_poisson3.pickle")
+def poisson3_monthly(depends_on, produces):
+    model =poisson_reg(
+        Data = pd.read_pickle(depends_on),
+        y_variable = "total_thefts",
+        x_variable = [
+            "jewish_inst_p",
+            "jewish_inst_one_block_away_1_p",
+            "cuad2p",
+            "month5",
+            "month6",
+            "month7",
+            "month8",
+            "month9",
+            "month10",
+            "month11",
+            "month12",
+        ],
+        index_variables = ["observ", "month"],
+        type_of_possion = "fixed effects",
+        weight = 'w',
+        x_irra =["jewish_inst_p", "jewish_inst_one_block_away_1_p", "cuad2p"]   
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)       
+        
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus_abs2.pickle")
+def areg_clus_abs2_monthly(depends_on, produces):
+    model =areg_clus_abs(
+        Data = pd.read_pickle(depends_on),
+        drop_subset = [
+            "total_thefts",
+            "jewish_inst_p",
+            "jewish_inst_one_block_away_1_p",
+            "cuad2p",
+            "month5",
+            "month6",
+            "month7",
+            "month8",
+            "month9",
+            "month10",
+            "month11",
+            "month12",
+        ],
+        variable_y = "total_thefts",
+        variable_x = [
+            "jewish_inst_p",
+            "jewish_inst_one_block_away_1_p",
+            "cuad2p",
+            "month5",
+            "month6",
+            "month7",
+            "month8",
+            "month9",
+            "month10",
+            "month11",
+            "month12",
+        ],  
+        dummy_variable = "code2"   
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus5.pickle")
+def areg_clus5_monthly(depends_on, produces):
+        list_names_place = []
+        list_names_place.extend(
+        [
+        f"mbelg{i}"
+        for i in ["apr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]
+        ],
+        )
+        list_names_place.extend(
+        [
+        f"monce{i}"
+        for i in ["apr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]
+        ],
+        )
+        list_names_place.extend(
+        [
+        f"mvcre{i}"
+        for i in ["apr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]
+        ],
+        )
+        variablex= ["jewish_inst_p", "jewish_inst_one_block_away_1_p", "cuad2p"]
+        variablex.extend(list_names_place)
+        model =areg_clus(
+            Data = pd.read_pickle(depends_on),
+            variable_y = "total_thefts",
+            variable_x = variablex
+        )
+        with open(produces, "wb") as f:
+            pickle.dump(model, f)
+
+
+
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel3.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus5.pickle")
+def areg_clus5_monthly(depends_on, produces):
+    model =areg_clus(
+        Data = pd.read_pickle(depends_on),
+        variable_y = "total_thefts",
+        variable_x = [
+            "public_building_or_embassy_p",
+            "public_building_or_embassy_1_p",
+            "public_building_or_embassy_cuad2p",
+            "n_public_building_or_embassy_p",
+            "n_public_building_or_embassy_1_p",
+            "n_public_building_or_embassy_cuad2p",
+        ]     
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel3.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus6.pickle")
+def areg_clus6_monthly(depends_on, produces):
+    model =areg_clus(
+        Data = pd.read_pickle(depends_on),
+        variable_y = "total_thefts",
+        variable_x = [
+            "gas_station_p",
+            "gas_station_1_p",
+            "gas_station_cuad2p",
+            "n_gas_station_p",
+            "n_gas_station_1_p",
+            "n_gas_station_cuad2p",
+        ]     
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel3.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus7.pickle")
+def areg_clus7_monthly(depends_on, produces):
+    model =areg_clus(
+        Data = pd.read_pickle(depends_on),
+        variable_y = "total_thefts",
+        variable_x = [
+            "bank_p",
+            "bank_1_p",
+            "bank_cuad2p",
+            "n_bank_p",
+            "n_bank_1_p",
+            "n_bank_cuad2p",
+        ]     
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel3.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus8.pickle")
+def areg_clus8_monthly(depends_on, produces):
+    model =areg_clus(
+        Data = pd.read_pickle(depends_on),
+        variable_y = "total_thefts",
+        variable_x = [
+            "all_locations_p",
+            "all_locations_1_p",
+            "all_locations_cuad2p",
+            "n_all_locations_p",
+            "n_all_locations_1_p",
+            "n_all_locations_cuad2p",
+        ]     
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel_new.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus9.pickle")
+def areg_clus9_monthly(depends_on, produces):
+    model =areg_clus(
+        Data = pd.read_pickle(depends_on),
+        variable_y = "total_thefts",
+        variable_x = [
+            "one_jewish_inst_1_p",
+            "one_jewish_inst_one_block_away_1_p",
+            "one_cuad2p",
+            "month5",
+            "month6",
+            "month7",
+        ]     
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel_new.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus10.pickle")
+def areg_clus10_monthly(depends_on, produces):
+    model =areg_clus(
+        Data = pd.read_pickle(depends_on),
+        variable_y = "total_thefts",
+        variable_x = [
+            "two_jewish_inst_1_p",
+            "two_jewish_inst_one_block_away_1_p",
+            "two_cuad2p",
+            "month5",
+            "month6",
+            "month7",
+        ]     
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)   
+
+
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel_new.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus11.pickle")
+def areg_clus11_monthly(depends_on, produces):
+    model =areg_clus(
+        Data = pd.read_pickle(depends_on),
+        variable_y = "total_thefts",
+        variable_x = [
+            "three_jewish_inst_1_p",
+            "three_jewish_inst_one_block_away_1_p",
+            "three_cuad2p",
+            "month5",
+            "month6",
+            "month7",
+        ]     
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)         
+
+
 
 # for stats ############################################################
 from di_tella_2004_replication.analysis.monthly_panel_stats import (
     WelchTest,
     testings,
-    testings_div
+    testings_div,
+    summarize_data
 )
 
 ### WELCH TESTS first part
@@ -451,3 +904,15 @@ def testings3_areg_clus3(depends_on, produces):
     )
     with open(produces, "wb") as f:
         pickle.dump(model, f)
+        
+        
+@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
+@pytask.mark.produces(BLD / "python" / "models" / "Summary_of_data.pickle")
+def summary_of_data(depends_on, produces):
+    model =summarize_data(
+        df = pd.read_pickle(depends_on),                  
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)
+        
+        

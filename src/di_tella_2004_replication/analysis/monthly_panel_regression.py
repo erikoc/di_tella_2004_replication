@@ -1,61 +1,27 @@
 import numpy as np
 import pandas as pd
 import statsmodels.api as smm
+import statsmodels.formula.api as sm
 from linearmodels.panel import PanelOLS
 
-""""
+
+
 # Regressions
 
-# reg totrob institu1 month* if post==1, robust;
-formula1 = "total_thefts ~ jewish_inst"
-formula1 = "+".join(
-    [formula1] + [f"month{i}" for i in range(5, 13)],
-)  # This is using a list comprehension
-regression1 = sm.ols(formula1, data=MonthlyPanel2[MonthlyPanel2["post"] == 1]).fit()
-# reg totrob institu1 inst3_1 month* if post==1, robust;
-formula2 = "total_thefts ~ jewish_inst_one_block_away_1"
-formula2 = "+".join(
-    [formula2] + [f"month{i}" for i in range(5, 13)],
-)  # This is using a list comprehension
-regression2 = sm.ols(formula2, data=MonthlyPanel2[MonthlyPanel2["post"] == 1]).fit()
-# reg totrob institu1 inst3_1 cuad2 month* if post==1, robust;
-formula3 = "total_thefts ~ jewish_inst + jewish_inst_one_block_away_1 + cuad2"
-formula3 = "+".join(
-    [formula3] + [f"month{i}" for i in range(5, 13)],
-)  # This is using a list comprehension
-regression3 = sm.ols(formula3, data=MonthlyPanel2[MonthlyPanel2["post"] == 1]).fit()
+def normal_regression(Data, formula, columns):
+    """
+    Performs a normal linear regression analysis using the provided formula and column names.
 
-# test institu1=-0.08080; # the hypothesis being tested is that the coefficient for "institu1" is equal to -0.08080
-variable_test1 = "jewish_inst"
-testing_number1 = -0.08080
-test_diff1 = testings(regression1, variable_test1, testing_number1)
+    Parameters:
+    Data (pandas DataFrame): The input data for the regression analysis.
+    formula (str): The formula to use for the regression analysis, in the format "y ~ x1 + x2 + ...".
+    columns (list): A list of column names to include in the regression analysis.
 
-# test inst3_1=-0.01398;
-variable_test2 = "jewish_inst_one_block_away_1"
-testing_number2 = -0.01398
-test_diff2 = testings(regression2, variable_test2, testing_number2)
-
-# test cuad2=-0.00218;
-variable_test3 = "cuad2"
-testing_number3 = -0.00218
-test_diff3 = testings(regression3, variable_test3, testing_number3)
-
-# test institu1=-0.0543919;
-variable_test11 = "jewish_inst"
-testing_number11 = -0.0543919
-test_diff11 = testings(regression1, variable_test11, testing_number11)
-
-# test inst3_1=-0.0124224;
-variable_test22 = "jewish_inst_one_block_away_1"
-testing_number22 = -0.0124224
-test_diff22 = testings(regression2, variable_test22, testing_number22)
-
-# test cuad2=-0.0242257;
-variable_test33 = "cuad2"
-testing_number33 = -0.0242257
-test_diff33 = testings(regression3, variable_test33, testing_number33)
-
-"""
+    Returns:
+    An instance of the OLS regression results class from the statsmodels package.
+    """
+    formula = formula + " + " + " + ".join(columns)
+    return sm.ols(formula, data=Data).fit()
 
 
 def areg_single(Data, variable_log, a, variable_fe, variable_y, variable_x):
@@ -358,3 +324,5 @@ def poisson_reg(
         predictions = reg.predict(X[x_irra])
         irr_predictions = np.exp(predictions)
         return reg, params, predictions, irr_predictions
+
+
