@@ -15,12 +15,16 @@ from di_tella_2004_replication.analysis.monthly_panel_regression import (
 from di_tella_2004_replication.analysis.monthly_panel_stats import (
     WelchTest,
     testings,
+    summarize_data,
+    various_testings
 )
 from di_tella_2004_replication.analysis.weekly_panel_regression import (
     regression_WeeklyPanel,
 )
 from linearmodels.panel import PanelOLS
 
+
+"WEEKLY"
 
 @pytest.fixture()
 def input_data_regression_WeeklyPanel():
@@ -49,6 +53,10 @@ def test_regression_WeeklyPanel(input_data_regression_WeeklyPanel):
         abs=1e-3,
     )  # Check first parameter with tolerance
 
+
+
+
+"MONTHLY"
 
 @pytest.fixture()
 def input_data_WelchTest():
@@ -128,7 +136,10 @@ def input_data_areg_clus():
 def input_data_areg_clus_abs():
     # generate a sample dataset for testing
     Data = pd.DataFrame(
-        {"y": [1, 2, 3], "x": [4, 5, 6], "z": [7, 8, 9], "dummy": [1, 1, 2]},
+        {"y": [1, 2, 3], 
+         "x": [4, 5, 6], 
+         "z": [7, 8, 9], 
+         "dummy": [1, 1, 2]},
     )
     y_variable = Data["y"]
     x_variable = Data["x"]
