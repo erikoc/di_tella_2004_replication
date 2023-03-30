@@ -3,7 +3,7 @@ import pyreadstat
 import pytest
 from di_tella_2004_replication.config import SRC
 from di_tella_2004_replication.data_management.clean_crime_by_block import (
-    _clean_column_names,
+    _clean_column_names_block,
     _convert_dtypes,
     _split_theft_data,
 )
@@ -95,12 +95,12 @@ def theft_df_expected_cols():
 
 
 def test_clean_column_names(test_df, expected_df):
-    df_cleaned = _clean_column_names(test_df)
+    df_cleaned = _clean_column_names_block(test_df)
     assert list(df_cleaned.columns) == list(expected_df.columns)
 
 
 def test_clean_column_names_data(test_df, expected_df):
-    pd.testing.assert_frame_equal(_clean_column_names(test_df), expected_df)
+    pd.testing.assert_frame_equal(_clean_column_names_block(test_df), expected_df)
 
 
 def test_convert_dtypes(expected_df):
