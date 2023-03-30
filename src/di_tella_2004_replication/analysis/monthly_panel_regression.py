@@ -293,7 +293,7 @@ def poisson_reg(
         )
         reg = model.fit(cov_type="clustered", cluster_entity=True)
         params = reg.params
-        return reg, params
+        return reg #params
     elif type_of_possion == "fixed effects weighted":
         w = Data[weight]
         data["iweight"] = w
@@ -307,7 +307,7 @@ def poisson_reg(
         )
         reg = model.fit(cov_type="clustered", cluster_entity=True)
         params = reg.params
-        return reg, params
+        return reg #params
     elif type_of_possion == "fixed effects weighted irr":
         w = Data[weight]
         data["iweight"] = w
@@ -323,6 +323,6 @@ def poisson_reg(
         params = reg.params
         predictions = reg.predict(X[x_irra])
         irr_predictions = np.exp(predictions)
-        return reg, params, predictions, irr_predictions
+        return reg  # params, predictions, irr_predictions
 
 
