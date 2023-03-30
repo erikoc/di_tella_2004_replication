@@ -1,15 +1,14 @@
 """Tasks for managing the data."""
+import pandas as pd
 import pyreadstat
 import pytask
-import pandas as pd
-
-
-"""Crime by Block and WeeklyPanel"""
 
 from di_tella_2004_replication.config import BLD, SRC
 from di_tella_2004_replication.data_management.clean_crime_by_block import (
     process_crime_by_block,
     process_ind_char_data,
+)
+from di_tella_2004_replication.data_management.clean_WeeklyPanel import (
     process_weekly_panel,
 )
 
@@ -41,8 +40,6 @@ def task_process_weekly_panel_python(depends_on, produces):
     weekly_panel.to_pickle(produces)
 
 
-"""Monthly Panel"""
-
 from di_tella_2004_replication.config import BLD, SRC
 from di_tella_2004_replication.data_management.clean_MonthlyPanel import (
     monthlypanel_1,
@@ -59,8 +56,8 @@ def task_monthlypanel_1(depends_on, produces):
     data, meta = pyreadstat.read_dta(depends_on)
     MonthlyPanel = monthlypanel_1(data)
     MonthlyPanel.to_pickle(produces)
- 
-    
+
+
 @pytask.mark.produces(BLD / "python" / "data" / "MonthlyPanel2.pkl")
 @pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel.pkl")
 def task_monthlypanel_2(depends_on, produces):
@@ -77,6 +74,7 @@ def task_monthlypanel_3(depends_on, produces):
     data = pd.read_pickle(depends_on)
     MonthlyPanel3 = monthlypanel_3(data)
     MonthlyPanel3.to_pickle(produces)
+
 
 @pytask.mark.produces(BLD / "python" / "data" / "MonthlyPanel_new.pkl")
 @pytask.mark.depends_on(SRC / "data" / "MonthlyPanel.dta")
