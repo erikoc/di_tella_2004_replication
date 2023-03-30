@@ -91,14 +91,44 @@ def testings_div(regression, variable_test, testing_number, division_f):
         pass
 
 
-def summarize_data(
-    df
-):
+
+def summarize_data(df):
+    """
+    This function summarizes the total number of thefts in a pandas DataFrame based on certain conditions.
+    
+    Args:
+    - df (pandas.DataFrame): The DataFrame containing the data to summarize.
+    
+    Returns:
+    - A pandas Series object containing descriptive statistics of the total number of thefts, 
+      including count, mean, standard deviation, minimum, and maximum values.
+    """
     summary = df[
     (df["month"] > 7)
     & (df["jewish_inst"] == 0)
     & (df["jewish_inst_one_block_away_1"] == 0)
     & (df["cuad2"] == 0)
-    & ((df["totalpre"] != 0) | (df["totalpos"] != 0))]["total_thefts"].describe()
-    
+    & ((df["totalpre"] != 0) | (df["totalpos"] != 0)) ]["total_thefts"].describe()
     return summary
+
+
+def various_testings(list_names_data, reg):
+    """
+    This function performs various statistical tests on a linear regression model and returns the results for each test as a dictionary.
+    
+    Args:
+    - list_names_data (list): A list containing the names of variables and their corresponding indices in the linear regression model.
+    - reg (statsmodels.regression.linear_model.RegressionResultsWrapper): A linear regression model object obtained using statsmodels.
+    
+    Returns:
+    - A dictionary containing the results of various statistical tests performed on the linear regression model. 
+      The keys of the dictionary are the variable names, and the values are the results of the corresponding tests.
+    """
+    tests = [
+    (list_names_data[0], list_names_data[3]),
+    (list_names_data[1], list_names_data[4]),
+    (list_names_data[2], list_names_data[5]),
+    ]
+    test_res = {}
+    for var, test_num in tests:
+        test_res[var]= testings(reg, var, reg.params[test_num])

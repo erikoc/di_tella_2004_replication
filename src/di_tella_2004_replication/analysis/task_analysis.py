@@ -710,6 +710,7 @@ from di_tella_2004_replication.analysis.monthly_panel_stats import (
     testings,
     testings_div,
     summarize_data,
+    various_testings
 )
 
 ### WELCH TESTS first part
@@ -939,4 +940,79 @@ def summary_of_data(depends_on, produces):
     with open(produces, "wb") as f:
         pickle.dump(model, f)
         
+
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus5.pickle")
+@pytask.mark.produces(BLD / "python" / "models" / "joint_tests_areg_clus5_monthly.pickle")
+def joint_tests_areg_clus5(depends_on, produces):
+    list_names_data3 = [
+    "public_building_or_embassy_p",
+    "public_building_or_embassy_1_p",
+    "public_building_or_embassy_cuad2p",
+    "n_public_building_or_embassy_p",
+    "n_public_building_or_embassy_1_p",
+    "n_public_building_or_embassy_cuad2p",
+    ]
+    model = various_testings(
+        list_names_data = list_names_data3,
+        reg = pd.read_pickle(depends_on) 
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)     
+
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus6.pickle")
+@pytask.mark.produces(BLD / "python" / "models" / "joint_tests_areg_clus6_monthly.pickle")
+def joint_tests_areg_clus6(depends_on, produces):
+    list_names_data3 = [
+    "gas_station_p",
+    "gas_station_1_p",
+    "gas_station_cuad2p",
+    "n_gas_station_p",
+    "n_gas_station_1_p",
+    "n_gas_station_cuad2p",
+    ]
+    model = various_testings(
+        list_names_data = list_names_data3,
+        reg = pd.read_pickle(depends_on) 
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f) 
+  
         
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus7.pickle")
+@pytask.mark.produces(BLD / "python" / "models" / "joint_tests_areg_clus7_monthly.pickle")
+def joint_tests_areg_clus7(depends_on, produces):
+    list_names_data3 = [
+    "bank_p",
+    "bank_1_p",
+    "bank_cuad2p",
+    "n_bank_p",
+    "n_bank_1_p",
+    "n_bank_cuad2p",
+    ]
+    model = various_testings(
+        list_names_data = list_names_data3,
+        reg = pd.read_pickle(depends_on) 
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f) 
+        
+
+@pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus8.pickle")
+@pytask.mark.produces(BLD / "python" / "models" / "joint_tests_areg_clus8_monthly.pickle")
+def joint_tests_areg_clus8(depends_on, produces):
+    list_names_data3 = [
+    "all_locations_p",
+    "all_locations_1_p",
+    "all_locations_cuad2p",
+    "n_all_locations_p",
+    "n_all_locations_1_p",
+    "n_all_locations_cuad2p",
+    ]
+    model = various_testings(
+        list_names_data = list_names_data3,
+        reg = pd.read_pickle(depends_on) 
+    )
+    with open(produces, "wb") as f:
+        pickle.dump(model, f)    
