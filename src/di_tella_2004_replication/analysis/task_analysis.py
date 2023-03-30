@@ -127,6 +127,9 @@ from di_tella_2004_replication.analysis.monthly_panel_regression import (
     areg_single,
     areg_triple,
     normal_regression,
+    reg_robust,
+    poisson_reg,
+    areg_clus_abs
 )
 from di_tella_2004_replication.config import BLD
 
@@ -323,7 +326,7 @@ def task_reg_robust1_monthly(depends_on, produces):
 def task_areg_clus4_monthly(depends_on, produces):
     model = areg_clus(
         Data=pd.read_pickle(depends_on),
-        variable_y="theftscoll",
+        variable_y="total_thefts2",
         variable_x=[
             "jewish_inst_p",
             "jewish_inst_one_block_away_1_p",
@@ -361,8 +364,8 @@ def task_areg_clus_abs1_monthly(depends_on, produces):
             "month11",
             "month12",
         ],
-        variable_y="total_thefts",
-        variable_x=[
+        y_variable="total_thefts",
+        x_variable=[
             "jewish_inst_p",
             "jewish_inst_one_block_away_1_p",
             "cuad2p",
@@ -513,8 +516,8 @@ def task_areg_clus_abs2_monthly(depends_on, produces):
             "month11",
             "month12",
         ],
-        variable_y="total_thefts",
-        variable_x=[
+        y_variable="total_thefts",
+        x_variable=[
             "jewish_inst_p",
             "jewish_inst_one_block_away_1_p",
             "cuad2p",

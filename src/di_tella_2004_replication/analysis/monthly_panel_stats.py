@@ -58,9 +58,11 @@ def regression_testings(regression, variable_test, testing_number):
     ]
     pvalue = 2 * (1 - scy.stats.t.cdf(np.abs(tvalue), regression.df_resid))
     if pvalue < 0.05:
-        pass
+        result = (f"The coefficient of {variable_test}] is significantly different from {testing_number} with p-value", pvalue)
+        return result
     else:
-        pass
+        result = (f"The coefficient of {variable_test} is not significantly different from {testing_number} with p-value", pvalue)
+        return result
 
 
 def testings_div(regression, variable_test, testing_number, division_f):
@@ -86,9 +88,11 @@ def testings_div(regression, variable_test, testing_number, division_f):
     )
     pvalue = 2 * (1 - scy.stats.t.cdf(np.abs(tvalue), regression.df_resid))
     if pvalue < 0.05:
-        pass
+        result = (f"The coefficient of {variable_test}] is significantly different from {testing_number} with p-value", pvalue)
+        return result
     else:
-        pass
+        result = (f"The coefficient of {variable_test} is not significantly different from {testing_number} with p-value", pvalue)
+        return result
 
 
 def summarize_data(df):
