@@ -35,7 +35,7 @@ def WelchTest(Data, code1, code2):
     t, p = stats.ttest_ind(cod_1, cod_2, equal_var=False)
 
 
-def regression_testings(regression, variable_test, testing_number):
+def regression_testing(regression, variable_test, testing_number):
     """Performs a t-test to determine if a given variable in a regression model is
     significantly different from a specified value.
 
@@ -58,10 +58,16 @@ def regression_testings(regression, variable_test, testing_number):
     ]
     pvalue = 2 * (1 - scy.stats.t.cdf(np.abs(tvalue), regression.df_resid))
     if pvalue < 0.05:
-        result = (f"The coefficient of {variable_test}] is significantly different from {testing_number} with p-value", pvalue)
+        result = (
+            f"The coefficient of {variable_test}] is significantly different from {testing_number} with p-value",
+            pvalue,
+        )
         return result
     else:
-        result = (f"The coefficient of {variable_test} is not significantly different from {testing_number} with p-value", pvalue)
+        result = (
+            f"The coefficient of {variable_test} is not significantly different from {testing_number} with p-value",
+            pvalue,
+        )
         return result
 
 
@@ -88,10 +94,16 @@ def testings_div(regression, variable_test, testing_number, division_f):
     )
     pvalue = 2 * (1 - scy.stats.t.cdf(np.abs(tvalue), regression.df_resid))
     if pvalue < 0.05:
-        result = (f"The coefficient of {variable_test}] is significantly different from {testing_number} with p-value", pvalue)
+        result = (
+            f"The coefficient of {variable_test}] is significantly different from {testing_number} with p-value",
+            pvalue,
+        )
         return result
     else:
-        result = (f"The coefficient of {variable_test} is not significantly different from {testing_number} with p-value", pvalue)
+        result = (
+            f"The coefficient of {variable_test} is not significantly different from {testing_number} with p-value",
+            pvalue,
+        )
         return result
 
 

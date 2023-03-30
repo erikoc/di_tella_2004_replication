@@ -1,55 +1,70 @@
-import pandas as pd
-import statsmodels.api as smm
+import statsmodels.api as sm
+from linearmodels.iv import absorbing
 
 
-def regression_WeeklyPanel(Data, y_variable, type_of_regression):
-    """Performs a fixed effects regression on a weekly panel dataset.
+def abs_regression_models_weekly(df, type_of_regression):
+    """Perform panel regression analysis for total thefts on the input dataframe using
+    absorbing regression models, considering weekly dummy variables and different types
+    of regression.
 
     Args:
-        Data (pd.DataFrame): The weekly panel dataset to use for the regression.
-        y_variable (str): The name of the endogenous variable to use in the regression.
-        type_of_regression (str): The type of regression to perform. Must be either "unclustered" or "clustered".
+    df (pandas.DataFrame): Input dataframe containing the necessary variables,
+                           including 'tot_theft', 'treatment', 'treatment_1d',
+                           'treatment_2d', 'block', and weekly dummy variables.
+    type_of_regression (str): Type of regression to perform, either "robust" or "clustered".
 
     Returns:
-        pd.Series: The regression coefficients.
-
-    Notes:
-        This function creates a fixed effects regression using the "observ" variable as the fixed effect.
-        If type_of_regression is "unclustered", the function returns the coefficients for an unclustered regression.
-        If type_of_regression is "clustered", the function returns the coefficients for a clustered regression.
+    statsmodels.regression.linear_panel.PanelResults: Fitted absorbing regression model results.
 
     """
-    # Creating a list (using list comprehension) of the columns to be created
-    list_names = ["week1"]
-    list_names.extend([f"week{i}" for i in range(2, 40)])
+    abs_model = absorbing.AbsorbingLS(
+        df["total_thefts"],
+        sm.add_constant(
+            df[
+                ["treatment", "treatment_1d", "treatment_2d"]
+                + [f"week_dummy_{i}" for i in range(2, 39) if i not in [16, 17]]
+            ],
+        ),
+        absorb=df["block"].to_frame().astype(float),
+        drop_absorbed=True,
+    )
 
-    WeeklyP = Data[(Data["week"] != 16) & (Data["week"] != 17)]
-    y = WeeklyP[y_variable]
-    x = WeeklyP[
-        ["treatment", "treatment_1d", "treatment_2d"]
-    ]  # inst1p = jewish_inst_p, inst3_1p = jewish_int_one_block_away_1_p
-    x = list(x.columns) + list_names
-    x_1 = WeeklyP[x]
-    if type_of_regression == "unclustered":
-        # Check if the modified MonthlyPanel_new is a pandas DataFrame
-        X = smm.add_constant(x_1)
-        reg = smm.OLS(y, X)
-        result = reg.fit(
-            cov_type="cluster",
-            cov_kwds={"groups": WeeklyP["block"]},
-            hasconst=True,
-        )
-        params = result.params
-        return params
+    if type_of_regression == "robust":
+        abs_results = abs_model.fit(cov_type="robust", debiased=True)
     elif type_of_regression == "clustered":
-        dummies = pd.get_dummies(
-            WeeklyP["treatment_2d"],
-        )  # to capture the fixed efefcts by codigo2
-        X = pd.concat([x_1, dummies], axis=1)
-        result = smm.OLS(y, X).fit(
-            cov_type="cluster",
-            cov_kwds={"groups": WeeklyP["block"]},
-            use_t=True,
-        )  # with cluster for observ
-        params = result.params
-        return params
+        abs_results = abs_model.fit(cov_type="clustered")
+
+    return abs_results
+
+
+def abs_regression_models_av_weekly(df):
+    """Perform panel regression analysis for average weekly thefts on the input
+    dataframe using absorbing regression models, considering weekly dummy variables and
+    clustering by entity.
+
+    Args:
+    df (pandas.DataFrame): Input dataframe containing the necessary variables,
+                           including 'av_weekly_thefts', 'treatment', 'treatment_1d',
+                           'treatment_2d', 'block', and weekly dummy variables.
+
+    Returns:
+    statsmodels.regression.linear_panel.PanelResults: Fitted absorbing regression model results
+                                                      with clustered standard errors.
+
+    Example:
+    Given a dataframe 'data' with the necessary variables, perform a panel regression analysis:
+
+    """
+    abs_model = absorbing.AbsorbingLS(
+        df["av_weekly_thefts"],
+        sm.add_constant(
+            df[
+                ["treatment", "treatment_1d", "treatment_2d"]
+                + [f"week_dummy_{i}" for i in range(2, 39) if i not in [16, 17]]
+            ],
+        ),
+        absorb=df["block"].to_frame().astype(float),
+        drop_absorbed=True,
+    )
+
+    return abs_model.fit(cov_type="clustered")
