@@ -84,3 +84,19 @@ def task_create_results_abs_dif_python(depends_on, produces):
         table = model[suffix].summary.as_latex()
         with open(produces[suffix], "w") as f:
             f.writelines(table)
+
+
+@pytask.mark.depends_on(BLD / "python" / "stats" / "test_ind_char.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "test_ind_char.tex")
+def task_create_results_test_ind_char_python(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        tests.to_latex(produces)
+
+
+@pytask.mark.depends_on(BLD / "python" / "stats" / "table_ind_char.pickle")
+@pytask.mark.produces(BLD / "python" / "tables" / "table_ind_char.tex")
+def task_create_results_group_ind_char_python(depends_on, produces):
+    with open(depends_on, "rb") as f:
+        tests = pickle.load(f)
+        tests.to_latex(produces)
