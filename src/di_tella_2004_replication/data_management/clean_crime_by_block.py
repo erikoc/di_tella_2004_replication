@@ -118,13 +118,9 @@ def _drop_repated_obs(df):
         "census_tract" variables.
 
     """
-    for i in range(1, len(df)):
-        if (df["frcensal"].iloc[i] == df["frcensal"].iloc[i - 1]) and (
-            df["distrito"].iloc[i] == df["distrito"].iloc[i - 1]
-        ):
-            df.drop(index=i, inplace=True)
+    df_unique = df.drop_duplicates(subset=["census_district", "census_tract"])
 
-    return df
+    return df_unique
 
 
 def _split_theft_data(theft_data, month, maxrange=24):
