@@ -118,9 +118,7 @@ def _drop_repated_obs(df):
         "census_tract" variables.
 
     """
-    df_unique = df.drop_duplicates(subset=["census_district", "census_tract"])
-
-    return df_unique
+    return df.drop_duplicates(subset=["census_district", "census_tract"])
 
 
 def _split_theft_data(theft_data, month, maxrange=24):
