@@ -886,13 +886,3 @@ def task_testings3_areg_clus3(depends_on, produces):
     )
     with open(produces, "wb") as f:
         pickle.dump(model, f)
-
-
-@pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
-@pytask.mark.produces(BLD / "python" / "stats" / "Summary_of_data.pickle")
-def task_summary_of_data(depends_on, produces):
-    model = summarize_data(
-        df=pd.read_pickle(depends_on),
-    )
-    with open(produces, "wb") as f:
-        pickle.dump(model, f)
