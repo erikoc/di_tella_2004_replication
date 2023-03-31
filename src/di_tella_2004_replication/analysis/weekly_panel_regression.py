@@ -8,13 +8,13 @@ def abs_regression_models_weekly(df, type_of_regression):
     of regression.
 
     Args:
-    df (pandas.DataFrame): Input dataframe containing the necessary variables,
-                           including 'tot_theft', 'treatment', 'treatment_1d',
-                           'treatment_2d', 'block', and weekly dummy variables.
-    type_of_regression (str): Type of regression to perform, either "robust" or "clustered".
+     df (pandas.DataFrame): Input dataframe containing the necessary variables,
+                            including 'tot_theft', 'treatment', 'treatment_1d',
+                            'treatment_2d', 'block', and weekly dummy variables.
+     type_of_regression (str): Type of regression to perform, either "robust" or "clustered".
 
     Returns:
-    statsmodels.regression.linear_panel.PanelResults: Fitted absorbing regression model results.
+    Fitted absorbing regression model results.
 
     """
     abs_model = absorbing.AbsorbingLS(
@@ -48,8 +48,7 @@ def abs_regression_models_av_weekly(df):
                            'treatment_2d', 'block', and weekly dummy variables.
 
     Returns:
-    statsmodels.regression.linear_panel.PanelResults: Fitted absorbing regression model results
-                                                      with clustered standard errors.
+    Fitted absorbing regression model results with clustered standard errors.
 
     Example:
     Given a dataframe 'data' with the necessary variables, perform a panel regression analysis:

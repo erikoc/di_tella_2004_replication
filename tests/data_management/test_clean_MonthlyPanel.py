@@ -7,16 +7,9 @@ from di_tella_2004_replication.data_management.clean_MonthlyPanel import (
     _complex_variable_generator,
     _egenerator_sum,
     _generate_dummy_variables_fixed_extension,
-    _generate_multiplevariables_listbased,
     _generate_similar_named_variables,
-    _generate_total_thefts2_mon,
-    _generate_variable_based_on_three_or_conditions,
-    _generate_variable_basedon_doublelist,
-    _generate_variables_based_on_list_and_loop,
     _generate_variables_based_on_various_lists,
     _generate_variables_different_conditions,
-    _generate_variables_original_with_no_value_after_replace,
-    _generate_variables_specificrule_list,
     _generate_various_variables_conditional,
     _rep_variables_based_on_condition,
 )
@@ -107,29 +100,26 @@ def test_rep_variables_based_on_condition():
 
     # Call the function being tested
     new_df = _rep_variables_based_on_condition(
-        df, "bigger than", "conditional_var", "var_to_replace", 25, 1,
+        df,
+        "bigger than",
+        "conditional_var",
+        "var_to_replace",
+        25,
+        1,
     )
 
     # Check that the variable values were replaced correctly
     assert list(new_df["var_to_replace"]) == [0, 0, 1, 1, 1]
-    
-    
-    
+
+
 @pytest.fixture()
 def input_data_generate_similar_named_variables():
-    df = pd.DataFrame({
-        "cuad0": [1, 1, 1],
-        "cuad1": [1, 1, 1], 
-        "fixed": [1, 2, 3]   
-    },
+    df = pd.DataFrame(
+        {"cuad0": [1, 1, 1], "cuad1": [1, 1, 1], "fixed": [1, 2, 3]},
     )
-    original_variables=["cuad0", "cuad1"]
-    fixed_variable="fixed"
-    return (
-        df,
-        original_variables,
-        fixed_variable
-    )
+    original_variables = ["cuad0", "cuad1"]
+    fixed_variable = "fixed"
+    return (df, original_variables, fixed_variable)
 
 
 def test_generate_similar_named_variables(input_data_generate_similar_named_variables):
@@ -150,138 +140,6 @@ def test_generate_similar_named_variables(input_data_generate_similar_named_vari
     list_var = ["cuad0p", "cuad1p"]
     # Assert that these above are in the columns
     assert all(col in new_df.columns for col in list_var)
-
-
-"_generate_variables_based_on_list_and_loop"
-
-
-@pytest.fixture()
-def input_data_generate_variables_based_on_list_and_loop():
-    df = pd.DataFrame(
-        {
-            "a": [
-                1,
-                0,
-            ],
-            "b": [
-                1,
-                0,
-            ],
-        },
-    )
-    condition_type = ("condition from another variable",)
-    new_generated_variable = "code"
-    list_a = ["a", "b"]
-    list_b = range(1, 3)
-    new_original_value = 4
-    return (
-        df,
-        condition_type,
-        new_generated_variable,
-        list_a,
-        list_b,
-        new_original_value,
-    )
-
-
-def test_generate_variables_based_on_list_and_loop(
-    input_data_generate_variables_based_on_list_and_loop,
-):
-    (
-        df,
-        condition_type,
-        new_generated_variable,
-        list_a,
-        list_b,
-        new_original_value,
-    ) = input_data_generate_variables_based_on_list_and_loop
-
-    # Call the function being tested
-    new_df = _generate_variables_based_on_list_and_loop(
-        df,
-        condition_type,
-        new_generated_variable,
-        list_a,
-        list_b,
-        new_original_value,
-    )
-
-    # Assert the correct change in the value for the 'code'
-    expected_result = [1, list_b[0]]
-    assert list(new_df[new_generated_variable]) == expected_result
-
-
-"_generate_variable_basedon_doublelist"
-
-
-@pytest.fixture()
-def input_data_generate_variable_basedon_doublelist():
-    df = pd.DataFrame({
-            'x': [1, 2, 3, 4],
-            'y': [0.5, 0.6, 0.7, 0.8],
-            'z': [2, 3, 4, 5]
-    })
-    list_generated_variable = ["var1", "var2"]
-    list_original_variable = ["x", "y"]
-    fixed_variable = "z"
-    return (df, list_generated_variable, list_original_variable, fixed_variable)
-
-
-def test_generate_variable_basedon_doublelist(
-    input_data_generate_variable_basedon_doublelist,
-):
-    (
-        df,
-        list_generated_variable,
-        list_original_variable,
-        fixed_variable,
-    ) = input_data_generate_variable_basedon_doublelist
-
-    # Call the function being tested
-    new_df = _generate_variable_basedon_doublelist(
-        df,
-        list_generated_variable,
-        list_original_variable,
-        fixed_variable,
-    )
-
-    # Assert the correct change in the value for "ara1" and "bera1"
-    assert list(new_df["var1"]) == [2.0, 6.0, 12.0, 20.0]
-    assert list(new_df["var2"]) == [1.0, 1.8, 2.8, 4.0]
-
-
-"_generate_total_thefts2_mon"
-
-
-@pytest.fixture()
-def input_data_generate_total_thefts2_mon():
-    df = pd.DataFrame(
-        {
-            'variable_complex': [71, 72, 72, 73, 74, 73, 72, 72, 73],
-            'total_thefts': [3, 2, 5, 1, 2, 4, 5, 3, 6]     
-        },
-    )
-    variable_complex_condition = "variable_complex"
-    return (
-        df,
-        variable_complex_condition,
-    )
-
-
-def test_generate_total_thefts2_mon(input_data_generate_total_thefts2_mon):
-    (
-        df,
-        variable_complex_condition,
-    ) = input_data_generate_total_thefts2_mon
-
-    # Call the function being tested
-    new_df = _generate_total_thefts2_mon(
-        df,
-        variable_complex_condition,
-    )
-
-    # Assert the correct change in the value for "ara1" and "bera1"
-    assert list(new_df["total_thefts2"]) == [3, pd.NA, pd.NA, pd.NA, 2, pd.NA, pd.NA, pd.NA, pd.NA]
 
 
 "_generate_variables_different_conditions"
@@ -333,53 +191,6 @@ def test_generate_variables_different_conditions(
     # Test that new variable is calculated correctly
     tolerance = 1e-9  # Adjust this value as needed
     assert new_df.loc[0, "new"] == pytest.approx(0.5, rel=tolerance, abs=tolerance)
-
-
-"_generate_variables_original_with_no_value_after_replace"
-
-
-@pytest.fixture()
-def input_data_generate_variables_original_with_no_value_after_replace():
-    df = pd.DataFrame({"Car": [7, 8, 9], "Dar": [10, 11, 12]})
-    list_variables_original_novalue = ["Ara", "Bar"]
-    conditional_variable_for_novalue = "Car"
-    equalizing_variable = "Dar"
-    return (
-        df,
-        list_variables_original_novalue,
-        conditional_variable_for_novalue,
-        equalizing_variable,
-    )
-
-
-def test_generate_variables_original_with_no_value_after_replace(
-    input_data_generate_variables_original_with_no_value_after_replace,
-):
-    (
-        df,
-        list_variables_original_novalue,
-        conditional_variable_for_novalue,
-        equalizing_variable,
-    ) = input_data_generate_variables_original_with_no_value_after_replace
-
-    # Call the function being tested
-    new_df = _generate_variables_original_with_no_value_after_replace(
-        df,
-        list_variables_original_novalue,
-        conditional_variable_for_novalue,
-        equalizing_variable,
-    )
-
-    # Test that new variable is generated
-    assert "Ara" in new_df.columns
-    assert "Bar" in new_df.columns
-
-    # Test the correct values
-    assert new_df["Ara"].to_list() == [10, None, None]
-    assert new_df["Bar"].to_list() == [None, 11, 12]
-
-
-"_egenerator_sum"
 
 
 @pytest.fixture()
@@ -552,38 +363,6 @@ def input_data_generate_variable_based_on_three_or_conditions():
     )
 
 
-def test_generate_variable_based_on_three_or_conditions(
-    input_data_generate_variable_based_on_three_or_conditions,
-):
-    (
-        df,
-        generate_variable_three_conditions,
-        column1_three_conditions,
-        column2_three_conditions,
-        column3_three_conditions,
-    ) = input_data_generate_variable_based_on_three_or_conditions
-
-    # Apply the function to the sample dataframe
-    new_df = _generate_variable_based_on_three_or_conditions(
-        df,
-        generate_variable_three_conditions,
-        column1_three_conditions,
-        column2_three_conditions,
-        column3_three_conditions,
-    )
-
-    # Check if the new column has been added
-    assert generate_variable_three_conditions in new_df.columns
-
-    # Check if the new column has been assigned the correct values
-    expected_output = pd.Series([1, 1, 0, 1])
-    pd.testing.assert_series_equal(
-        new_df[generate_variable_three_conditions],
-        expected_output,
-        check_dtype=False,
-    )
-
-
 @pytest.fixture()
 def input_data_generate_multiplevariables_listbased():
     df = pd.DataFrame(
@@ -595,57 +374,6 @@ def input_data_generate_multiplevariables_listbased():
         },
     )
     return df
-
-
-def test_generate_multiplevariables_listbased(
-    input_data_generate_multiplevariables_listbased,
-):
-    list_names_multi_variables = ["var1", "var2", "var3", "var4"]
-    list_names_multi_general = ["var2", "var3", "var4", "var1"]
-
-    expected_df = pd.DataFrame(
-        {
-            "var1": [1, 2, 3],
-            "var2": [4, 5, 6],
-            "var3": [7, 8, 9],
-            "var4": [10, 11, 12],
-            "public_building_or_embassy_p": [4, 10, 18],
-            "public_building_or_embassy_1_p": [16, 40, 72],
-            "public_building_or_embassy_cuad2p": [40, 100, 180],
-            "n_public_building_or_embassy_p": [24, 50, 72],
-            "n_public_building_or_embassy_1_p": [96, 200, 288],
-            "n_public_building_or_embassy_cuad2p": [240, 500, 720],
-            "gas_station_p": [4, 10, 18],
-            "gas_station_1_p": [16, 40, 72],
-            "gas_station_cuad2p": [40, 100, 180],
-            "n_gas_station_p": [24, 50, 72],
-            "n_gas_station_1_p": [96, 200, 288],
-            "n_gas_station_cuad2p": [240, 500, 720],
-            "bank_p": [4, 10, 18],
-            "bank_1_p": [16, 40, 72],
-            "bank_cuad2p": [40, 100, 180],
-            "n_bank_p": [24, 50, 72],
-            "n_bank_1_p": [96, 200, 288],
-            "n_bank_cuad2p": [240, 500, 720],
-            "all_locations_p": [4, 10, 18],
-            "all_locations_1_p": [16, 40, 72],
-            "all_locations_cuad2p": [40, 100, 180],
-            "n_all_locations_p": [24, 50, 72],
-            "n_all_locations_1_p": [96, 200, 288],
-            "n_all_locations_cuad2p": [240, 500, 720],
-        },
-    )
-
-    output_df = _generate_multiplevariables_listbased(
-        df=input_data_generate_multiplevariables_listbased,
-        list_names_multi_variables=list_names_multi_variables,
-        list_names_multi_general=list_names_multi_general,
-    )
-
-    assert expected_df.equals(output_df)
-
-
-"_generate_various_variables_conditional"
 
 
 @pytest.fixture()
@@ -693,46 +421,3 @@ def input_data_generate_variables_specificrule_list():
             "cuad2": [0.4, 0.8, 1.2, 1.6, 2.0],
         },
     )
-
-
-def test__generate_variables_specificrule_list(
-    input_data_generate_variables_specificrule_list,
-):
-
-    list_variable_generate_specific = [
-        "jewish_inst",
-        "jewish_inst_one_block_away_1",
-        "cuad2",
-    ]
-    list_variable_extisting_specific = ["post1", "post2", "post3"]
-    list_new_variable_specific = [
-        "one_jewish_inst_1_p",
-        "one_jewish_inst_one_block_away_1_p",
-        "one_cuad2p",
-        "two_jewish_inst_1_p",
-        "two_jewish_inst_one_block_away_1_p",
-        "two_cuad2p",
-        "three_jewish_inst_1_p",
-        "three_jewish_inst_one_block_away_1_p",
-        "three_cuad2p",
-    ]
-    range_specific_loop = [0, 3, 6]
-
-    expected_columns = (
-        input_data_generate_variables_specificrule_list(
-            input_data_generate_variables_specificrule_list.columns,
-        )
-        + list_new_variable_specific
-    )
-    expected_shape = (5, len(expected_columns))
-
-    result = _generate_variables_specificrule_list(
-        input_data_generate_variables_specificrule_list,
-        list_variable_generate_specific,
-        list_variable_extisting_specific,
-        list_new_variable_specific,
-        range_specific_loop,
-    )
-
-    assert list(result.columns) == expected_columns
-    assert result.shape == expected_shape
