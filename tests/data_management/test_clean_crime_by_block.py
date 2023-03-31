@@ -4,11 +4,16 @@ import pytest
 from di_tella_2004_replication.config import SRC
 from di_tella_2004_replication.data_management.clean_crime_by_block import (
     _calculate_theft_differences,
+    _calculate_total_theft_by_suffix,
     _clean_column_names_block,
     _convert_dtypes,
+    _create_new_variables,
     _create_new_variables_ind,
+    _create_panel_data,
     _drop_repeated_obs,
     _split_theft_data,
+    process_crime_by_block,
+    process_ind_char_data,
 )
 
 
@@ -168,37 +173,84 @@ def test__drop_repated_obs_unique_obs(ind_char_new_variables):
     assert not df_unique.duplicated(subset=["census_district", "census_tract"]).any()
 
 
-import pandas as pd
+def test_calculate_total_thefts_by_suffix(original_data):
+    df = _clean_column_names_block(original_data)
+    df = _convert_dtypes(df)
+
+    theft_data = df.loc[:, df.columns.str.startswith("theft")]
+
+    for i in range(1, 24):
+        theft_data.loc[theft_data[f"theft{i}corner"] == 1, f"theft{i}"] = 0.25
+
+    for month in range(4, 13):
+        theft_data = _split_theft_data(theft_data, month)
+        theft_data = _calculate_total_theft_by_suffix(theft_data, month)
+        cols_list = [
+            f"tot_theft_{suffix}{month}"
+            for suffix in ["hv", "lv", "night", "day", "weekday", "weekend"]
+        ]
+
+    assert set(cols_list).issubset(set(theft_data.columns))
 
 
-def test_calculate_theft_differences():
-    # Create a sample DataFrame for testing
-    data = {
-        "tot_theft_hv3": [10, 20, 30],
-        "tot_theft_lv3": [2, 4, 6],
-        "tot_theft_night3": [6, 12, 18],
-        "tot_theft_day3": [1, 2, 3],
-        "tot_theft_weekday3": [9, 18, 27],
-        "tot_theft_weekend3": [1, 2, 3],
-    }
-    df = pd.DataFrame(data)
+def test_create_panel_data_and_new_variables(original_data):
+    df = _clean_column_names_block(original_data)
+    df = _convert_dtypes(df)
 
-    # Call the function being tested
-    result = _calculate_theft_differences(df, 3)
+    theft_data = df.loc[:, df.columns.str.startswith("theft")]
+    ind_char_data = df[[col for col in df.columns if not col.startswith("theft")]]
 
-    # Define the expected output
-    expected_output = {
-        "tot_theft_hv3": [10, 20, 30],
-        "tot_theft_lv3": [2, 4, 6],
-        "tot_theft_night3": [6, 12, 18],
-        "tot_theft_day3": [1, 2, 3],
-        "tot_theft_weekday3": [9, 18, 27],
-        "tot_theft_weekend3": [1, 2, 3],
-        "dif_hv_lv3": [8, 16, 24],
-        "dif_night_day3": [5, 10, 15],
-        "dif_weekday_weekend3": [8, 16, 24],
-    }
-    expected_output_df = pd.DataFrame(expected_output)
+    for i in range(1, 24):
+        theft_data.loc[theft_data[f"theft{i}corner"] == 1, f"theft{i}"] = 0.25
 
-    # Compare the actual and expected outputs
-    pd.testing.assert_frame_equal(result, expected_output_df)
+    for month in range(4, 13):
+        theft_data = _split_theft_data(theft_data, month)
+        theft_data = _calculate_total_theft_by_suffix(theft_data, month)
+        theft_data = _calculate_theft_differences(theft_data, month)
+
+    theft_cols = [col for col in theft_data.columns if col.startswith("theft")]
+    theft_data = theft_data.drop(columns=theft_cols)
+    theft_data = theft_data.reset_index(names=["block"])
+
+    crime_by_block_panel = _create_panel_data(ind_char_data, theft_data)
+    crime_by_block_panel = _create_new_variables(
+        crime_by_block_panel,
+        time_variable="month",
+        event_time=7,
+    )
+
+    assert not (
+        (crime_by_block_panel["treatment"] == 0).all()
+        and (crime_by_block_panel["treatment_1d"] == 0).all()
+        and (crime_by_block_panel["treatment_2d"] == 0).all()
+    )
+
+    prefixes = [
+        "tot_theft_hv",
+        "tot_theft_lv",
+        "dif_hv_lv",
+        "tot_theft_night",
+        "tot_theft_day",
+        "dif_night_day",
+        "tot_theft_weekday",
+        "tot_theft_weekend",
+        "dif_weekday_weekend",
+    ]
+    for prefix in prefixes:
+        matching_columns = [
+            col for col in crime_by_block_panel.columns if col.startswith(prefix)
+        ]
+        assert (
+            len(matching_columns) == 1
+        ), f"Found {len(matching_columns)} columns that start with {prefix}"
+
+
+def test_process_crime_by_block(original_data):
+    df = process_crime_by_block(original_data)
+    assert not any(col.startswith("theft") for col in df.columns)
+    assert len(df) == 876 * 9
+
+
+def test_process_ind_char_data(original_data):
+    df = process_ind_char_data(original_data)
+    assert not any(col.startswith("theft") for col in df.columns)
