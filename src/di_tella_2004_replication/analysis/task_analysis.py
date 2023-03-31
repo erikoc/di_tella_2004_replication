@@ -697,7 +697,6 @@ def task_areg_clus12_monthly(depends_on, produces):
 from di_tella_2004_replication.analysis.monthly_panel_stats import (
     WelchTest,
     regression_testing,
-    summarize_data,
 )
 
 ### WELCH TESTS first part
