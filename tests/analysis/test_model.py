@@ -222,7 +222,7 @@ def input_data_poisson_reg():
 
 def test_poisson_reg(input_data_poisson_reg):
 
-    Data, y_variable, x_variable, index_variables, type_of_possion, weight, x_irra = input_data_areg_clus_abs
+    Data, y_variable, x_variable, index_variables, type_of_possion, weight, x_irra = input_data_poisson_reg
 
     # Implementing the regression
     result = poisson_reg(Data, y_variable, x_variable, index_variables, type_of_possion, weight, x_irra)
