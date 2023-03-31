@@ -74,7 +74,6 @@ def task_comparison_table_ind_chat_python(depends_on, produces):
 
 """WeeklyPanel"""
 
-# for regressions #######################################################
 
 from di_tella_2004_replication.analysis.weekly_panel_regression import (
     abs_regression_models_av_weekly,
@@ -111,7 +110,6 @@ def task_abs_reg_av_weekly(depends_on, produces):
 
 """MonthlyPanel"""
 
-# for regressions #################################################################
 from di_tella_2004_replication.analysis.monthly_panel_regression import (
     areg_clus,
     areg_clus_abs,
@@ -530,13 +528,20 @@ def task_areg_clus_abs2_monthly(depends_on, produces):
 @pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel2.pkl")
 @pytask.mark.produces(BLD / "python" / "models" / "MonthlyPanel_areg_clus5.pickle")
 def task_areg_clus5_monthly(depends_on, produces):
-    list_names_place = []
-    list_names_place.extend(
-        [
-            f"mbelg{i}"
-            for i in ["apr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]
-        ],
-    )
+    list_names_place = [
+        f"mbelg{i}"
+        for i in [
+            "apr",
+            "may",
+            "jun",
+            "jul",
+            "ago",
+            "sep",
+            "oct",
+            "nov",
+            "dec",
+        ]
+    ]
     list_names_place.extend(
         [
             f"monce{i}"
@@ -549,8 +554,12 @@ def task_areg_clus5_monthly(depends_on, produces):
             for i in ["apr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dec"]
         ],
     )
-    variablex = ["jewish_inst_p", "jewish_inst_one_block_away_1_p", "cuad2p"]
-    variablex.extend(list_names_place)
+    variablex = [
+        "jewish_inst_p",
+        "jewish_inst_one_block_away_1_p",
+        "cuad2p",
+        *list_names_place,
+    ]
     model = areg_clus(
         Data=pd.read_pickle(depends_on),
         variable_y="total_thefts",
@@ -693,13 +702,10 @@ def task_areg_clus12_monthly(depends_on, produces):
         pickle.dump(model, f)
 
 
-# for stats ############################################################
 from di_tella_2004_replication.analysis.monthly_panel_stats import (
     WelchTest,
     regression_testing,
 )
-
-### WELCH TESTS first part
 
 
 @pytask.mark.depends_on(BLD / "python" / "data" / "MonthlyPanel.pkl")
@@ -724,9 +730,6 @@ def task_WT_monthly3(depends_on, produces):
     model = WelchTest(Data=pd.read_pickle(depends_on), code1=3, code2=4)
     with open(produces, "wb") as f:
         pickle.dump(model, f)
-
-
-### Testings second areg simple, double, triple
 
 
 @pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_single.pickle")
@@ -799,9 +802,6 @@ def task_testings_areg2_triple_Monthly(depends_on, produces):
     )
     with open(produces, "wb") as f:
         pickle.dump(model, f)
-
-
-### Testings second areg_clus
 
 
 @pytask.mark.depends_on(BLD / "python" / "models" / "MonthlyPanel_areg_clus1.pickle")

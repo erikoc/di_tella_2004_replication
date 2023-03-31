@@ -8,6 +8,12 @@ from di_tella_2004_replication.data_management.clean_crime_by_block import (
     process_crime_by_block,
     process_ind_char_data,
 )
+from di_tella_2004_replication.data_management.clean_MonthlyPanel import (
+    monthlypanel_1,
+    monthlypanel_2,
+    monthlypanel_3,
+    monthlypanel_new,
+)
 from di_tella_2004_replication.data_management.clean_WeeklyPanel import (
     process_weekly_panel,
 )
@@ -38,15 +44,6 @@ def task_process_weekly_panel_python(depends_on, produces):
     data, meta = pyreadstat.read_dta(depends_on)
     weekly_panel = process_weekly_panel(data)
     weekly_panel.to_pickle(produces)
-
-
-from di_tella_2004_replication.config import BLD, SRC
-from di_tella_2004_replication.data_management.clean_MonthlyPanel import (
-    monthlypanel_1,
-    monthlypanel_2,
-    monthlypanel_3,
-    monthlypanel_new,
-)
 
 
 @pytask.mark.produces(BLD / "python" / "data" / "MonthlyPanel.pkl")

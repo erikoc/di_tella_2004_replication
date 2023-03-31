@@ -14,8 +14,6 @@ from di_tella_2004_replication.data_management.clean_MonthlyPanel import (
     _rep_variables_based_on_condition,
 )
 
-"_clean_column_names_mon"
-
 
 @pytest.fixture()
 def original_data():
@@ -78,7 +76,6 @@ def test_generate_dummy_variables_fixed_extension():
         final_value_variable=1,
     )
 
-    # Check that new columns were added
     expected_columns = [
         "month5",
         "month6",
@@ -93,12 +90,10 @@ def test_generate_dummy_variables_fixed_extension():
 
 
 def test_rep_variables_based_on_condition():
-    # Create a simple test DataFrame
     df = pd.DataFrame(
         {"conditional_var": [10, 20, 30, 40, 50], "var_to_replace": [0, 0, 0, 0, 0]},
     )
 
-    # Call the function being tested
     new_df = _rep_variables_based_on_condition(
         df,
         "bigger than",
@@ -108,7 +103,6 @@ def test_rep_variables_based_on_condition():
         1,
     )
 
-    # Check that the variable values were replaced correctly
     assert list(new_df["var_to_replace"]) == [0, 0, 1, 1, 1]
 
 
@@ -129,16 +123,13 @@ def test_generate_similar_named_variables(input_data_generate_similar_named_vari
         fixed_variable,
     ) = input_data_generate_similar_named_variables
 
-    # Call the function being tested
     new_df = _generate_similar_named_variables(
         df,
         original_variables,
         fixed_variable,
     )
 
-    # Test that new columns were added
     list_var = ["cuad0p", "cuad1p"]
-    # Assert that these above are in the columns
     assert all(col in new_df.columns for col in list_var)
 
 
@@ -151,8 +142,8 @@ def input_data_generate_variables_different_conditions():
     new_variable_v_cond = "new"
     ori_variable_v_cond = "var1"
     variable_conditional_v_cond = "var_con"
-    multiple1_v_cond = 0.5  # changed respective to original value for the function
-    multiple2_v_cond = 0.75  # changed respective to original value for the function
+    multiple1_v_cond = 0.5
+    multiple2_v_cond = 0.75
     return (
         df,
         new_variable_v_cond,
@@ -175,7 +166,6 @@ def test_generate_variables_different_conditions(
         multiple2_v_cond,
     ) = input_data_generate_variables_different_conditions
 
-    # Call the function being tested
     new_df = _generate_variables_different_conditions(
         df,
         new_variable_v_cond,
@@ -185,11 +175,9 @@ def test_generate_variables_different_conditions(
         multiple2_v_cond=multiple2_v_cond,
     )
 
-    # Test that new variable is generated
     assert "new" in new_df.columns
 
-    # Test that new variable is calculated correctly
-    tolerance = 1e-9  # Adjust this value as needed
+    tolerance = 1e-9
     assert new_df.loc[0, "new"] == pytest.approx(0.5, rel=tolerance, abs=tolerance)
 
 
@@ -199,14 +187,14 @@ def input_data_egenerator_sum():
         {
             "by": [1, 1, 2, 2, 2],
             "filter": [3, 4, 5, 6, 7],
-            "conditional": [8, 8, 9, 9, 9],  # Fix the typo here
+            "conditional": [8, 8, 9, 9, 9],
             "egenerator": [10, 11, 12, 13, 14],
         },
     )
     new_egenerator_variable = "variable_new"
     by_variable = "by"
     variable_egenerator_filter = "filter"
-    condional_egenerator_variable = "conditional"  # And here
+    condional_egenerator_variable = "conditional"
     egenerator_variable_tochange = "egenerator"
     return (
         df,
@@ -228,7 +216,6 @@ def test_egenerator_sum(input_data_egenerator_sum):
         egenerator_variable_tochange,
     ) = input_data_egenerator_sum
 
-    # Call the function being tested
     new_df = _egenerator_sum(
         df,
         new_egenerator_variable,
@@ -238,11 +225,7 @@ def test_egenerator_sum(input_data_egenerator_sum):
         egenerator_variable_tochange,
     )
 
-    # Assert that the new variable has been created and has the correct values
     assert new_df[new_egenerator_variable].equals(pd.Series([7, 7, 18, 18, 18]))
-
-
-"_complex_variable_generator"
 
 
 @pytest.fixture()
@@ -282,7 +265,6 @@ def test_complex_variable_generator(input_data_complex_variable_generator):
         list_names_complexb,
     ) = input_data_complex_variable_generator
 
-    # Call the function being tested
     new_df = _complex_variable_generator(
         df,
         list_names_complexa,
@@ -293,12 +275,8 @@ def test_complex_variable_generator(input_data_complex_variable_generator):
         list_names_complexb,
     )
 
-    # Assert that the generated variable is calculated correctly
     expected_generate_var = pd.Series([1001, 2002, 3003, 1004, 2005], name="code2")
     pd.testing.assert_series_equal(new_df[generate_var_complex], expected_generate_var)
-
-
-"_generate_variables_based_on_various_lists"
 
 
 @pytest.fixture()
@@ -329,16 +307,11 @@ def test_generate_variables_based_on_various_lists(
 
     (df, list_names_variouslists) = input_data_generate_variables_based_on_various_lists
 
-    # Call the function being tested
     new_df = _generate_variables_based_on_various_lists(df, list_names_variouslists)
 
-    # Quick asserts
     assert list(new_df["mbelgapr"]) == [1, 4, 9, 16, 25]
     assert list(new_df["monceapr"]) == [6, 14, 24, 36, 50]
     assert list(new_df["mvcreapr"]) == [11, 24, 39, 56, 75]
-
-
-"_generate_variable_based_on_three_or_conditions"
 
 
 @pytest.fixture()
@@ -404,20 +377,3 @@ def test_generate_various_variables_conditional(
     assert list(new_df["post1"]) == [0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
     assert list(new_df["post2"]) == [0, 0, 0, 0, 0, 1, 1, 1, 1, 1]
     assert list(new_df["post3"]) == [0, 0, 0, 0, 0, 0, 1, 1, 1, 1]
-
-
-"_generate_variables_specificrule_list"
-
-
-@pytest.fixture()
-def input_data_generate_variables_specificrule_list():
-    return pd.DataFrame(
-        {
-            "post1": [1, 2, 3, 4, 5],
-            "post2": [6, 7, 8, 9, 10],
-            "post3": [11, 12, 13, 14, 15],
-            "jewish_inst": [0.2, 0.4, 0.6, 0.8, 1.0],
-            "jewish_inst_one_block_away_1": [0.3, 0.6, 0.9, 1.2, 1.5],
-            "cuad2": [0.4, 0.8, 1.2, 1.6, 2.0],
-        },
-    )
