@@ -1,9 +1,5 @@
-import io
-import sys
-
 import pandas as pd
 import pytest
-import statsmodels.api as smm
 from di_tella_2004_replication.analysis.monthly_panel_regression import (
     areg_clus,
     areg_clus_abs,
@@ -11,24 +7,12 @@ from di_tella_2004_replication.analysis.monthly_panel_regression import (
     poisson_reg,
     reg_robust,
 )
-
-from di_tella_2004_replication.analysis.monthly_panel_stats import (
-    WelchTest
-)
-
-from di_tella_2004_replication.analysis.weekly_panel_regression import (
-    regression_WeeklyPanel,
-)
-from linearmodels.panel import PanelOLS
-
-
-
-
-
+from di_tella_2004_replication.analysis.monthly_panel_stats import WelchTest
 
 "MONTHLY"
 
 # Stats
+
 
 @pytest.fixture()
 def input_data_WelchTest():
@@ -38,6 +22,7 @@ def input_data_WelchTest():
     code1 = 1
     code2 = 2
     return Data, code1, code2
+
 
 def test_WelchTest(input_data_WelchTest):
     Data, code1, code2 = input_data_WelchTest
@@ -51,12 +36,8 @@ def test_WelchTest(input_data_WelchTest):
     assert round(p, 3) == expected_p
 
 
-
-
-
-
-
 # Regressions
+
 
 @pytest.fixture()
 def input_data_areg_triple():
@@ -88,6 +69,7 @@ def input_data_areg_triple():
         variable_x,
     )
 
+
 def test_areg_triple(input_data_areg_triple):
     (
         Data,
@@ -117,16 +99,13 @@ def test_areg_triple(input_data_areg_triple):
     assert round(result.params[1], 2) == 1.0
 
 
-
-
-
-
 @pytest.fixture()
 def input_data_reg_robust():
     Data = pd.DataFrame({"x": [1, 2, 3, 4, 5], "y": [1, 3, 2, 5, 10]})
     variable_y = "y"
     variable_x = "x"
     return Data, variable_y, variable_x
+
 
 def test_reg_robust(input_data_reg_robust):
     Data, variable_y, variable_x = input_data_reg_robust
@@ -138,26 +117,18 @@ def test_reg_robust(input_data_reg_robust):
     assert round(result.params[0], 3) == 1.399
 
 
-
-
-
-
 @pytest.fixture()
 def input_data_areg_clus():
     Data = pd.DataFrame(
-        {
-            "x": [1, 2, 3, 4, 5],
-            "y": [1, 3, 2, 5, 10],
-            'observ' : [1, 2, 3, 4, 5]
-        },
+        {"x": [1, 2, 3, 4, 5], "y": [1, 3, 2, 5, 10], "observ": [1, 2, 3, 4, 5]},
     )
     variable_y = "y"
     variable_x = "x"
     return Data, variable_y, variable_x
 
+
 def test_areg_clus(input_data_areg_clus):
-    
-    Data, variable_y, variable_x = input_data_areg_clus 
+    Data, variable_y, variable_x = input_data_areg_clus
 
     # Implementing the regression
     result = areg_clus(Data, variable_y, variable_x)
@@ -166,18 +137,16 @@ def test_areg_clus(input_data_areg_clus):
     assert round(result.params[1], 2) == 2.0
 
 
-
-
-
-
 @pytest.fixture()
 def input_data_areg_clus_abs():
     # generate a sample dataset for testing
     Data = pd.DataFrame(
-        {"y": [1, 2, 3, 4], 
-         "x": [4, 5, 6, 7], 
-         "z": [7, 8, 9, 10], 
-         "dummy": [1, 1, 2, 2]},
+        {
+            "y": [1, 2, 3, 4],
+            "x": [4, 5, 6, 7],
+            "z": [7, 8, 9, 10],
+            "dummy": [1, 1, 2, 2],
+        },
     )
     y_variable = "y"
     x_variable = "x"
@@ -187,7 +156,6 @@ def input_data_areg_clus_abs():
 
 
 def test_areg_clus_abs(input_data_areg_clus_abs):
-    
     Data, drop_subset, y_variable, x_variable, dummy_variable = input_data_areg_clus_abs
 
     # Implementing the regression
@@ -197,35 +165,55 @@ def test_areg_clus_abs(input_data_areg_clus_abs):
     assert round(result.params[1], 2) == -3.0
 
 
-
-
-
-
 @pytest.fixture()
 def input_data_poisson_reg():
-    Data = pd.DataFrame({
-        'y': [1, 2, 0, 4, 1, 3, 2, 0],
-        'x1': [1, 2, 3, 4, 5, 6, 7, 8],
-        'x2': [0, 1, 0, 1, 0, 1, 0, 1],
-        'index1': [1, 1, 1, 1, 2, 2, 2, 2],
-        'index2': [1, 1, 2, 2, 1, 1, 2, 2],
-    })
-    y_variable = 'y'
-    x_variable = ['x1', 'x2']
-    index_variables = ['index1', 'index2']
-    type_of_possion = 'fixed effects'
+    Data = pd.DataFrame(
+        {
+            "y": [1, 2, 0, 4, 1, 3, 2, 0],
+            "x1": [1, 2, 3, 4, 5, 6, 7, 8],
+            "x2": [0, 1, 0, 1, 0, 1, 0, 1],
+            "index1": [1, 1, 1, 1, 2, 2, 2, 2],
+            "index2": [1, 1, 2, 2, 1, 1, 2, 2],
+        },
+    )
+    y_variable = "y"
+    x_variable = ["x1", "x2"]
+    index_variables = ["index1", "index2"]
+    type_of_possion = "fixed effects"
     weight = None
-    x_irra = ['x1', 'x2']
-    return Data, y_variable, x_variable, index_variables, type_of_possion, weight, x_irra
-
+    x_irra = ["x1", "x2"]
+    return (
+        Data,
+        y_variable,
+        x_variable,
+        index_variables,
+        type_of_possion,
+        weight,
+        x_irra,
+    )
 
 
 def test_poisson_reg(input_data_poisson_reg):
-
-    Data, y_variable, x_variable, index_variables, type_of_possion, weight, x_irra = input_data_poisson_reg
+    (
+        Data,
+        y_variable,
+        x_variable,
+        index_variables,
+        type_of_possion,
+        weight,
+        x_irra,
+    ) = input_data_poisson_reg
 
     # Implementing the regression
-    result = poisson_reg(Data, y_variable, x_variable, index_variables, type_of_possion, weight, x_irra)
+    result = poisson_reg(
+        Data,
+        y_variable,
+        x_variable,
+        index_variables,
+        type_of_possion,
+        weight,
+        x_irra,
+    )
 
     # Assert it accomplishes our precalculated values rounded up
     assert round(result.params[0], 2) == 1.25
