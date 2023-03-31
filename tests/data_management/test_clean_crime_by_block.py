@@ -1,12 +1,13 @@
+import numpy as np
 import pandas as pd
 import pyreadstat
 import pytest
 from di_tella_2004_replication.config import SRC
 from di_tella_2004_replication.data_management.clean_crime_by_block import (
     _calculate_theft_differences,
-    _calculate_total_theft_by_suffix,
     _clean_column_names_block,
     _convert_dtypes,
+    _create_new_variables,
     _create_new_variables_ind,
     _drop_repeated_obs,
     _split_theft_data,
@@ -150,19 +151,6 @@ def test_split_theft_data_shape(theft_df):
     assert theft_data.shape == (2, 23)
 
 
-def test_split_theft_data_cols(theft_df, theft_df_expected_cols):
-    theft_data = _split_theft_data(theft_df, month=1, maxrange=3)
-    assert list(theft_data.columns) == theft_df_expected_cols
-
-
-def test_split_and_calculate_total_theft_by_suffix(
-    theft_df,
-    expected_total_theft_by_suffix,
-):
-    theft_data = _split_theft_data(theft_df, month=1, maxrange=3)
-    theft_data = _calculate_total_theft_by_suffix(theft_data, month=1)
-
-
 def test_create_new_variables_ind(ind_char_new_variables):
     df_new = _create_new_variables_ind(ind_char_new_variables)
     tol = 1e-8
@@ -216,3 +204,53 @@ def test_calculate_theft_differences():
 
     # Compare the actual and expected outputs
     pd.testing.assert_frame_equal(result, expected_output_df)
+
+
+@pytest.fixture()
+def sample_data():
+    # create sample data
+    df = pd.DataFrame(
+        {
+            "jewish_inst": [1, 0, 1, 1],
+            "jewish_inst_one_block_away": [0, 1, 1, 0],
+            "distance_to_jewish_inst": [1, 2, 2, 2],
+            "month": [5, 6, 7, 8],
+        },
+    )
+
+    return df
+
+
+def test_create_new_variables(sample_data):
+    # convert jewish_inst and jewish_inst_one_block_away to binary variables
+    sample_data["jewish_inst"] = np.where(sample_data["jewish_inst"] > 0, 1, 0)
+    sample_data["jewish_inst_one_block_away"] = np.where(
+        sample_data["jewish_inst_one_block_away"] > 0,
+        1,
+        0,
+    )
+
+    # call the function to create new variables
+    result = _create_new_variables(sample_data, "month", 7)
+
+    # check that the new variables were created correctly
+    assert all(result["jewish_inst_only_one_block_away"] == [-1, 1, 0, -1])
+    assert set(result.columns) == {
+        "jewish_inst",
+        "jewish_inst_one_block_away",
+        "distance_to_jewish_inst",
+        "month",
+        "month_5",
+        "month_6",
+        "month_7",
+        "month_8",
+        "post",
+        "treatment",
+        "treatment_1d",
+        "treatment_2d",
+        "jewish_inst_only_one_block_away",
+    }
+    assert all(result["post"] == [0, 0, 0, 1])
+    assert all(result["treatment"] == [0, 0, 0, 1])
+    assert all(result["treatment_1d"] == [0, 1, 0, 0])
+    assert all(result["treatment_2d"] == [0, 0, 0, 0])
