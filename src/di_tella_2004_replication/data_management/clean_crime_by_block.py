@@ -105,26 +105,6 @@ def _create_new_variables_ind(df):
     return df
 
 
-def _drop_repeated_obs(df):
-    """Drops duplicate observations from a DataFrame based on the "census_district",
-    "census_tract" and "jewish_inst" variables.
-
-    Args:
-        df (pandas.DataFrame): The input DataFrame.
-
-    Returns:
-        pandas.DataFrame: A new DataFrame that contains only the unique combinations of "census_district" and
-        "census_tract" variables.
-
-    """
-    df_jewish1 = df[df["jewish_inst"] == 1]
-    df_jewish1 = df_jewish1.drop_duplicates(subset=["census_district", "census_tract"])
-    df_jewish0 = df[df["jewish_inst"] == 0]
-    df_jewish0 = df_jewish0.drop_duplicates(subset=["census_district", "census_tract"])
-
-    return pd.concat([df_jewish1, df_jewish0])
-
-
 def _split_theft_data(theft_data, month, maxrange=24):
     """Splits the theft data into different categories based on specific conditions for
     a given month.
@@ -340,5 +320,7 @@ def process_ind_char_data(df):
     ind_char_data = df[[col for col in df.columns if not col.startswith("theft")]]
 
     ind_char_data = _create_new_variables_ind(ind_char_data)
-    ind_char_data = _drop_repeated_obs(ind_char_data)
+    ind_char_data = ind_char_data.drop_duplicates(
+        subset=["census_district", "census_tract"],
+    )
     return ind_char_data

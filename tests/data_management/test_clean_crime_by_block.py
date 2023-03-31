@@ -10,7 +10,6 @@ from di_tella_2004_replication.data_management.clean_crime_by_block import (
     _create_new_variables,
     _create_new_variables_ind,
     _create_panel_data,
-    _drop_repeated_obs,
     _split_theft_data,
     process_crime_by_block,
     process_ind_char_data,
@@ -167,12 +166,6 @@ def test_create_new_variables_ind(ind_char_new_variables):
     ]
 
 
-def test__drop_repated_obs_unique_obs(ind_char_new_variables):
-    df_new = _create_new_variables_ind(ind_char_new_variables)
-    df_unique = _drop_repeated_obs(df_new)
-    assert not df_unique.duplicated(subset=["census_district", "census_tract"]).any()
-
-
 def test_calculate_total_thefts_by_suffix(original_data):
     df = _clean_column_names_block(original_data)
     df = _convert_dtypes(df)
@@ -254,3 +247,4 @@ def test_process_crime_by_block(original_data):
 def test_process_ind_char_data(original_data):
     df = process_ind_char_data(original_data)
     assert not any(col.startswith("theft") for col in df.columns)
+    assert not df.duplicated(subset=["census_district", "census_tract"]).any()

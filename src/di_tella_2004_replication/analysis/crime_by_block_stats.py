@@ -15,6 +15,7 @@ def t_tests_crime_by_block(df):
         t-test between the two groups.
 
     """
+    df = df.drop_duplicates(subset=["census_district", "census_tract"])
     group1_data = df.loc[df["jewish_inst"] == 1]
     group2_data = df.loc[df["jewish_inst"] == 0]
     results = {}
