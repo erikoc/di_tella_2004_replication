@@ -2,10 +2,10 @@
 import shutil
 
 import pytask
-from pytask_latex import compilation_steps as cs
 from di_tella_2004_replication.config import BLD, PAPER_DIR
+from pytask_latex import compilation_steps as cs
 
-documents = ["di_tella_2004_replication", "di_tella_2004_replication_pres"]
+documents = ["di_tella_2004_replication"]
 
 for document in documents:
 
