@@ -112,6 +112,24 @@ def test_rep_variables_based_on_condition():
 
     # Check that the variable values were replaced correctly
     assert list(new_df["var_to_replace"]) == [0, 0, 1, 1, 1]
+    
+    
+    
+@pytest.fixture()
+def input_data_generate_similar_named_variables():
+    df = pd.DataFrame({
+        "cuad0": [1, 1, 1],
+        "cuad1": [1, 1, 1], 
+        "fixed": [1, 2, 3]   
+    },
+    )
+    original_variables=["cuad0", "cuad1"]
+    fixed_variable="fixed"
+    return (
+        df,
+        original_variables,
+        fixed_variable
+    )
 
 
 def test_generate_similar_named_variables(input_data_generate_similar_named_variables):
@@ -129,9 +147,9 @@ def test_generate_similar_named_variables(input_data_generate_similar_named_vari
     )
 
     # Test that new columns were added
-    list_var = ["cuad0p", "cuad1p", "cuad2p", "cuad3p", "cuad4p"]
+    list_var = ["cuad0p", "cuad1p"]
     # Assert that these above are in the columns
-    assert all(col in list_var for col in new_df.columns)
+    assert all(col in new_df.columns for col in list_var)
 
 
 "_generate_variables_based_on_list_and_loop"
@@ -198,10 +216,14 @@ def test_generate_variables_based_on_list_and_loop(
 
 @pytest.fixture()
 def input_data_generate_variable_basedon_doublelist():
-    df = pd.DataFrame({"ara": [1, 0, 1], "bera": [1, 0, 2], "post": [1, 2, 3]})
-    list_generated_variable = (["ara1", "bera1"],)
-    list_original_variable = (["ara", "bera"],)
-    fixed_variable = "post"
+    df = pd.DataFrame({
+            'x': [1, 2, 3, 4],
+            'y': [0.5, 0.6, 0.7, 0.8],
+            'z': [2, 3, 4, 5]
+    })
+    list_generated_variable = ["var1", "var2"]
+    list_original_variable = ["x", "y"]
+    fixed_variable = "z"
     return (df, list_generated_variable, list_original_variable, fixed_variable)
 
 
@@ -224,8 +246,8 @@ def test_generate_variable_basedon_doublelist(
     )
 
     # Assert the correct change in the value for "ara1" and "bera1"
-    assert list(new_df["ara1"]) == [1, 0, 2]
-    assert list(new_df["bera1"]) == [2, 0, 4]
+    assert list(new_df["var1"]) == [2.0, 6.0, 12.0, 20.0]
+    assert list(new_df["var2"]) == [1.0, 1.8, 2.8, 4.0]
 
 
 "_generate_total_thefts2_mon"
@@ -234,9 +256,12 @@ def test_generate_variable_basedon_doublelist(
 @pytest.fixture()
 def input_data_generate_total_thefts2_mon():
     df = pd.DataFrame(
-        {"ara": [72, 72, 73, 74, 73], "total_thefts": [10, 20, 30, 40, 50]},
+        {
+            'variable_complex': [71, 72, 72, 73, 74, 73, 72, 72, 73],
+            'total_thefts': [3, 2, 5, 1, 2, 4, 5, 3, 6]     
+        },
     )
-    variable_complex_condition = "ara"
+    variable_complex_condition = "variable_complex"
     return (
         df,
         variable_complex_condition,
@@ -256,7 +281,7 @@ def test_generate_total_thefts2_mon(input_data_generate_total_thefts2_mon):
     )
 
     # Assert the correct change in the value for "ara1" and "bera1"
-    assert list(new_df["total_thefts2"]) == [10, 30, 30, 40, 90]
+    assert list(new_df["total_thefts2"]) == [3, pd.NA, pd.NA, pd.NA, 2, pd.NA, pd.NA, pd.NA, pd.NA]
 
 
 "_generate_variables_different_conditions"
